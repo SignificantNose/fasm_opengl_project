@@ -31,8 +31,6 @@ proc Draw
 
 
 ; placing the camera
-
-
      ;invoke     glRotatef, [angle], 0.0,1.0,0.0
      ;fld        [angle]
      ;fdiv       [radian]
@@ -46,7 +44,7 @@ proc Draw
      ;fchs
      ;fstp       [light1Position.z]
 
-     ;invoke     glLightfv, GL_LIGHT0, GL_POSITION, light0Position
+     invoke     glLightfv, GL_LIGHT0, GL_POSITION, light0Position
      ;invoke     glLightfv, GL_LIGHT0, GL_SPOT_CUTOFF, myCutout
       ;invoke     glLightfv, GL_LIGHT0, GL_SPOT_DIRECTION, spotdir
 ;     invoke     glLightfv, GL_LIGHT1, GL_POSITION, light1Position
@@ -64,7 +62,7 @@ proc Draw
      ;stdcall    DrawMesh, cube
 
 ; draw
-     stdcall    Spline.GetPoint, cubeSpline, cubeTransform.position, [programTime]
+     ;stdcall    Spline.GetPoint, cubeSpline, cubeTransform.position, [programTime]
      ;stdcall    Spline.GetPoint, cameraSpline, cameraPosition, [programTime]
 
 
@@ -101,8 +99,18 @@ proc Draw
 
 ;     invoke     glUseProgram, ebx
 
+     invoke     glPushMatrix
+     invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, PlaneDiffuse
+     invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, PlaneAmbient
      stdcall    DrawMesh, plane, planeTransform
+     invoke     glPopMatrix
+
+
+     invoke     glPushMatrix
+     invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, BuildDiffuse
+     invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, BuildAmbient
      stdcall    DrawMesh, Building, cubeTransform
+     invoke     glPopMatrix
 
      invoke     SwapBuffers, [hdc]
 

@@ -61,7 +61,7 @@ proc Init uses esi
      stdcall     Mesh.CalculateNormals, plane
 
 
-     stdcall     Build.GeneratePackedTower, MyBuilding, 1.0
+     stdcall     Build.GeneratePackedTower, MyBuilding, 2.0
      ;mov         eax, [MyBuilding.vertices]
      ;mov         [cubeMesh.vertices], eax
      ;mov         eax, [MyBuilding.indices]
@@ -79,11 +79,11 @@ proc Init uses esi
 ;     stdcall Glext.InitShaders
 
      ;stdcall     Subdivide, mesh, mesh
-     ;invoke  glEnable, GL_LIGHTING
-     ;invoke  glEnable, GL_LIGHT0
-     ;invoke  glLightfv, GL_LIGHT0, GL_DIFFUSE, light0Diffuse
+     invoke  glEnable, GL_LIGHTING
+     invoke  glEnable, GL_LIGHT0
+     invoke  glLightfv, GL_LIGHT0, GL_DIFFUSE, light0Diffuse
      ;invoke     glLightfv, GL_LIGHT0, GL_POSITION, light0Position
-     ;invoke  glLightfv, GL_LIGHT0, GL_AMBIENT, light0Ambient
+     invoke  glLightfv, GL_LIGHT0, GL_AMBIENT, light0Ambient
      ;invoke  glLightfv, GL_LIGHT0, GL_SPECULAR, light0Specular
 
      ;invoke  glEnable, GL_LIGHT1

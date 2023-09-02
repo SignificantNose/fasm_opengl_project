@@ -17,13 +17,18 @@ zFar            dd      1000.0
 
 myCutout        dd              40.0
 spotdir         Vector3         0.0,0.0,0.0
-light0Position  Vector4         0.0, 3.0, 0.0, 1.0
-light0Ambient   ColorRGBA       0.2, 0.0, 0.0, 0.0
-light0Diffuse   ColorRGBA       10.0, 10.0, 10.0, 1.0
+light0Position  Vector4         5.0, 5.0, 5.0, 1.0
+light0Ambient   ColorRGBA       0.2, 0.2, 0.2, 0.0
+light0Diffuse   ColorRGBA       1.0, 1.0, 1.0, 1.0
 light0Specular  ColorRGBA       0.0, 0.0, 0.0, 1.0
 
 light1Position  Vector4         0.0, 2.1, 0.0, 1.0
 light1Diffuse   ColorRGBA       1.0, 0.0, 0.0, 1.0
+
+BuildDiffuse    ColorRGBA       0.3, 0.3, 0.3, 1.0
+BuildAmbient    ColorRGBA       0.2, 0.2, 0.2, 1.0
+PlaneDiffuse    ColorRGBA       0.0, 0.0, 0.0, 1.0
+PlaneAmbient    ColorRGBA       0.0, 0.3, 0.0, 1.0
 
 
 startTime       dd              ?
@@ -37,8 +42,8 @@ oneSecond       GLfloat      1000.0
 
 
 cubeMesh        PackedMesh    cubeVertices, cubeColors, cubeIndices, CUBE_TRIANGLES_COUNT
-cube            Mesh    0,0,0,0
-plane           Mesh    planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
+cube            Mesh          0,0,0,0
+plane           Mesh          planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
 MyBuilding      PackedMesh    0,0,0,0
 Building        Mesh          0,0,0,0
 seed            dd            ?
