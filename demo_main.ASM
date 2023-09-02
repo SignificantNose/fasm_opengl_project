@@ -42,6 +42,7 @@ plane           Mesh    planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
 MyBuilding      PackedMesh    0,0,0,0
 Building        Mesh          0,0,0,0
 seed            dd            ?
+RandomValue     dd            0
 
 
 planeTransform  Transform       <0.0, -1.0, 0.0>,\
@@ -68,7 +69,7 @@ cameraPosition2 Vector3         -5.0, 5.0, 0.0
 cameraDirPrev2  Vector3         -5.0, 5.0, -6.66
 cameraDirNext2  Vector3         -5.0, 5.0, 6.66
 
-cameraPosition  Vector3         10.0, 10.0, 10.0
+cameraPosition  Vector3         20.0, 20.0, 20.0
 targetPosition  Vector3         0.0, 0.0, 0.0
 upVector        Vector3         0.0, 1.0, 0.0
 

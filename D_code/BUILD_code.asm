@@ -9,120 +9,94 @@ aNinety   dw    90
 proc    Build.GeneratePackedTower uses ebx edi, resultMesh, scale
         locals
                 numOfFloorsLiterally    dd      ?
-                ;theMesh                 dd      ?
+                currHeight              dd      0.0
                 cosValue                dd      ?
                 sinValue                dd      ?
-                randValue               dd      ?
-                currHeight              dd      ?
+                sinValueNeg             dd      ?
+                cosValueNeg             dd      ?
         endl
 
-        ;invoke HeapAlloc, [hHeap], 8, sizeof.PackedMesh
-        ;mov [theMesh], eax                         ; theMesh = pointer to the memory loc, where the packed mesh is stored
-
-
+; generating the amount of floors; literal floors, not walls: walls = numOfFloorsLiterally-1
         stdcall Rand.GetRandomNumber, 2, 10                 ; generating the amount of floors
         mov     [numOfFloorsLiterally], eax     ; i can just push it?
 
+; allocating the memory and saving the handle
         xor edx, edx
         mov edi, 4*sizeof.Vertex
         mul edi                         ; eax = eax * 4 * 4 * 3
-
         push eax
         invoke HeapAlloc, [hHeap], 8
-
         mov edx, [resultMesh]
         mov [edx+PackedMesh.vertices], eax
         mov edi, eax
 
-
-
-        fldz
-        fstp [currHeight]
+; generating vertices
         mov ecx, [numOfFloorsLiterally]
 .GenVertices:
         push ecx
 
 ;gen sin, cos
         stdcall Rand.GetRandomNumber, ebx, 10000
-        mov [randValue], eax
         fild [aNinety]       ; 90
-        fild [randValue]     ; [0;10000], 90
+        fild [RandomValue]     ; [0;10000], 90
         fidiv [aThousand]    ; [0;10], 90
         fchs                 ; -x, 90
         fiadd [anEleven]     ; -x+11, 90
         fdivp                ; 90/(-x+11)
         fdiv  [aRadian]      ;angleRad
 
-        ;fsqrt        ; [0;100], meaning x^2
-        ;fsqrt        ; [0;10], meaning x
-        ;fchs         ; -x
-        ;fiadd [aTen] ; -x+10
-        ;fild  [aTen] ; 10, -x+10
-        ;fidiv [aHundred] ; 0.1, -x+10
-        ;faddp        ; -x+10.1
-        ;fld1         ; 1; -x+10.1
-        ;fdiv  st0,st1  ;1/(-x+10)
-        ;fimul [aNine]  ; angleDeg
-        ;fdiv  [aRadian]; angleRad
         fsincos        ; sin, cos
-        fmul  [scale]  ; R*sin, cos
-        fld   st1      ; cos, R*sin, cos
-        fmul  [scale]  ; R*cos, R*sin, cos
+        fmul [scale]   ; R*sin, cos
+        fld  st0       ; R*sin, R*sin, cos
+        fchs           ; -R*sin, R*sin, cos
+        fstp [sinValueNeg]   ; R*sin, cos
+        fstp [sinValue]      ; cos
+        fmul [scale]   ; R*cos
+        fld  st0       ; R*cos, R*cos
+        fchs           ; -R*cos, R*cos
+        fstp [cosValueNeg]   ; R*cos
+        fstp [cosValue]      ;
+
 
 ;gen vertices themselves
-        mov   edx, [currHeight]
-        fstp  [cosValue]
-        fstp  [sinValue]
+
         mov eax, [cosValue]
         stosd
-        mov eax, edx
+        mov eax, [currHeight]
         stosd
         mov eax, [sinValue]
         stosd
 
         jmp @F
 .GenVerticesContinue:
-        jmp .GenVertices                      ; eh
+        jmp .GenVertices
 @@:
 
-        fld   [sinValue]
-        fchs
-        fstp  [sinValue]
-        mov   eax, [sinValue]
+        mov   eax, [sinValueNeg]
         stosd
-        mov eax, edx
+        mov eax, [currHeight]
         stosd
         mov   eax, [cosValue]
         stosd
 
+        mov  eax, [cosValueNeg]
+        stosd
+        mov eax, [currHeight]
+        stosd
+        mov  eax, [sinValueNeg]
+        stosd
 
-        fld   [cosValue]
-        fchs
-        fstp  [cosValue]
-        mov  eax, [cosValue]
-        stosd
-        mov eax, edx
-        stosd
+
         mov  eax, [sinValue]
         stosd
-
-
-        fld [sinValue]
-        fchs
-        fstp [sinValue]
-        mov  eax, [sinValue]
+        mov eax, [currHeight]
         stosd
-        mov eax, edx
+        mov  eax, [cosValueNeg]
         stosd
-        mov  eax, [cosValue]
-        stosd
-
-
 
         fld     [currHeight]
         fadd    [scale]
         fstp    [currHeight]
-        mov edx, [currHeight]
 
         pop ecx
         loop .GenVerticesContinue
@@ -130,36 +104,43 @@ proc    Build.GeneratePackedTower uses ebx edi, resultMesh, scale
 ; generating indices
         xor edx, edx
         mov eax, [numOfFloorsLiterally]         ; = n
-        dec eax                                                                                   ; WARNING: THIS ONLY ALLOCATES ENOUGH MEMORY FOR OUTER WALLS
-        mov ecx, 6*4                 ; 6 = num of bytes for one wall, 4 = num of walls per *floor*
+        mov ecx, 6*4                            ; 6 = num of bytes for one wall, 4 = num of walls per *floor*
         mul ecx
+        sub eax, 6*2                            ; adjustment for walls (didn't decrease eax at first, needed to be corrected)
 
         push eax
-        invoke HeapAlloc, [hHeap], 8
-        mov ecx, [resultMesh]
-        mov [ecx+PackedMesh.indices], eax
+        invoke HeapAlloc, [hHeap], 8            ; allocates enough memory for outer walls and the floors at the top and at the bottom
+        mov edx, [resultMesh]
+        mov [edx+PackedMesh.indices], eax
         mov edi, eax
+
+
+        xor eax, eax
+
+        stdcall GenFloorCeil
+
 
         mov eax, [numOfFloorsLiterally]
         dec eax
+        mov ecx, eax                            ; the amount of walls i need to draw
         shl eax, 3
-        mov [ecx+PackedMesh.trianglesCount], eax
+        add eax, 4
+        mov [edx+PackedMesh.trianglesCount], eax
 
-
-        mov ecx, [numOfFloorsLiterally]                                        ; i can unite this part of code with the previous part
-        dec ecx                  ; the amount of walls i need to draw
         xor eax, eax
+
 
 .GenWalls:
         push ecx
         mov ecx, 3
 .GenSomeWalls:
-        stosb
+        stosb                      ; these parts of code look the same
         add al, 4
         stosb
         inc al
         stosb
-        stosb
+
+        stosb                      ; these parts of code look the same
         sub al, 4
         stosb
         dec al
@@ -167,12 +148,13 @@ proc    Build.GeneratePackedTower uses ebx edi, resultMesh, scale
         inc al
         loop .GenSomeWalls
 
-        stosb
+        stosb                       ; these parts of code look the same
         add al, 4
         stosb
         sub al, 3
         stosb
-        stosb
+
+        stosb                      ; these parts of code look the same
         sub al, 4
         stosb
         add al, 3
@@ -182,13 +164,35 @@ proc    Build.GeneratePackedTower uses ebx edi, resultMesh, scale
         pop ecx
         loop .GenWalls
 
+        stdcall GenFloorCeil
 
         mov eax, [cubeMesh.colors]  ; what the hell is this
-        mov ecx, [resultMesh]
-        mov [ecx+PackedMesh.colors], eax
+
+        mov [edx+PackedMesh.colors], eax
 
         ;mov eax, [theMesh]
         ;mov [resultMesh], eax
         ret
 
 endp
+
+
+; DO NOT LIKE THIS PROCEDURE AT ALL WANT TO DECAPITATE IT SO MUCH WHAT DO I DOOOOO
+; i just don't want to repeat code
+; so: DO NOT CALL THIS PROCEDURE OUTSIDE BUILD.GENERATEPACKEDTOWER UNDER ANY CIRCUMSTANCES
+proc    GenFloorCeil
+
+        stosb
+        inc al
+        stosb
+        inc al
+        stosb
+        stosb
+        inc al
+        stosb
+        sub al, 3
+        stosb
+
+        ret
+endp
+
