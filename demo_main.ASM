@@ -47,10 +47,8 @@ plane           Mesh          planeVertices, planeColors, 0, PLANE_VERTICES_COUN
 PackedTower     PackedMesh    0,0,0,0
 
 
-Tower           Building      <0,0,0,0>,\
-                              <<0.0, 0.0, 0.0>,\
-                                <0.0, 0.0, 0.0>,\
-                                <1.0, 1.0, 1.0>>
+Tower           Mesh          0,0,0,0
+MyTown          Town
 seed            dd            ?
 RandomValue     dd            0
 

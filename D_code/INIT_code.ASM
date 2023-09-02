@@ -69,8 +69,10 @@ proc Init uses esi
      ;mov         eax, [MyBuilding.trianglesCount]
      ;mov         [cubeMesh.trianglesCount], eax
      ;stdcall     Mesh.Generate, cubeMesh, cube, true
-     stdcall     Mesh.Generate, PackedTower, Tower.MeshData, true
-     stdcall     Mesh.CalculateNormals, Tower.MeshData
+     stdcall     Mesh.Generate, PackedTower, Tower, true
+     stdcall     Mesh.CalculateNormals, Tower
+
+     stdcall     Build.GenerateTown, 3, 2, 2.0, MyTown
 
      ;stdcall     Mesh.CalculateNormals, cube
 

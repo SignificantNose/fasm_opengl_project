@@ -12,6 +12,7 @@ proc Mesh.Generate uses ebx esi edi,\
                 indices         dd      ?
         endl
 
+        ;xor ebx, ebx
         mov     esi, [sourceMesh]                       ; esi has the address of the source mesh
         mov     edi, [resultMesh]
 

@@ -6,6 +6,9 @@ aThousand dw    1000
 anEleven  dw    11
 aNinety   dw    90
 startValue Vector3
+StartHeight     Vector3      0.0,0.0,0.0
+TempMesh        PackedMesh   0,0,0,0
+
 
 proc    Build.GeneratePackedTower uses ebx edi, resultMesh, startCoordsSrc, scale
         locals
@@ -260,77 +263,76 @@ endp
 
 
 
-proc Build.GenerateTown uses ebx edi, width: WORD, height: WORD, scale, resultTown
-        locals
-                TempMesh        PackedMesh
-        endl
-        mov ecx, [resultTown]
+proc Build.GenerateTown uses ebx edi, width, height, scale, resultTown
+        ;locals
+                ;TempMesh        PackedMesh
+                ;TempCoords      Vector3
+                ;StartHeight     Vector3         <?, 0.0, ?>
+        ;endl
+        mov ebx, [resultTown]
         mov edx, [scale]
-        mov [ecx+Town.scale], edx
+        mov [StartHeight.x], edx
+        mov [StartHeight.z], edx
         xor edx, edx
-        movzx eax, [width]
-        mov [ecx+Town.width], ax
-        movzx ebx, [height]
-        mov [ecx+Town.height], bx
-        mul ebx
-        mov [ecx+Town.total], eax
+        mov eax, [width]
+        mov [ebx+Town.width], eax
+        mov ecx, [height]
+        mov [ebx+Town.height], ecx
+        mul ecx
 
 
-        push eax                ; saving eax for the loop
+        ;push eax                ; saving eax for the loop
 
         xor edx, edx                    ; do i need to?
-        mov ebx, sizeof.Building
-        mul ebx
+        mov ecx, sizeof.Mesh
+        mul ecx
 
 
-        push eax             ; eax = amount of towers
+        push eax
         invoke  HeapAlloc, [hHeap], 8
-        mov [ecx+Town.towers], eax
+        mov [ebx+Town.towers], eax
         mov edi, eax
 
-        pop ecx
-
-.looper:
-        stdcall Build.GeneratePackedTower, TempMesh, 1.0
-        stdcall Mesh.Generate, TempMesh, edi+Tower.MeshData, true
-        stdcall Mesh.CalculateNormals, edi+Tower.MeshData
-        add edi, sizeof.Building
-        loop .looper
-
-        ret
-endp
-
-
-proc Build.SetTownPos uses edi, town, pos
-        locals
-                PosVec          Vector3
-                RotVec          Vector3
-                ScaleVec        Vector3
-        endl
-
-        mov esi, [pos]
-        stdcall Vector3.Copy, PosVec, esi+Transform.position
-        stdcall Vector3.Copy, RotVec, esi+Transform.rotation
-        stdcall Vector3.Copy, ScaleVec, esi+Transform.scale
-
-        mov edi, [town]
-        mov edx, [edi+Town.towers]
-        mov ecx, [edi+Town.height]
-
+        ;pop ecx
+        mov ecx, [height]
+        xor ebx, ebx
 .looperHeight:
         push ecx
-        mov ecx, [edi+Town.width]
 
+        mov ecx, [width]
 .looperWidth:
+        push ecx
+        stdcall Build.GeneratePackedTower, TempMesh, StartHeight, [scale]
+        push false
+        push edi
+        stdcall Mesh.Generate, TempMesh
+        push edi
+        stdcall Mesh.CalculateNormals
+        add edi, sizeof.Mesh
 
-        mov [edx+Building.PosData]
+        fld [StartHeight.x]
+        fadd [scale]
+        fadd [scale]
+        fstp [StartHeight.x]
 
-
+        pop ecx
         loop .looperWidth
+
+
+
+        mov eax, [scale]
+        mov [StartHeight.x], eax
+        fld [StartHeight.z]
+        fadd [scale]
+        fadd [scale]
+        fstp [StartHeight.z]
+
+
 
         pop ecx
         loop .looperHeight
 
-
         ret
 endp
+
+

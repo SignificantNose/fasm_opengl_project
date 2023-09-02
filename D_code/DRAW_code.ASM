@@ -109,7 +109,7 @@ proc Draw
      invoke     glPushMatrix
      invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, BuildDiffuse
      invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, BuildAmbient
-     stdcall    DrawMesh, Tower.MeshData, Tower.PosData
+     stdcall    DrawMesh, Tower, cubeTransform
      invoke     glPopMatrix
 
      invoke     SwapBuffers, [hdc]
