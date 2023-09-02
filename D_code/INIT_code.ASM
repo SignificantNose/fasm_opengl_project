@@ -72,7 +72,7 @@ proc Init uses esi
      stdcall     Mesh.Generate, PackedTower, Tower, true
      stdcall     Mesh.CalculateNormals, Tower
 
-     stdcall     Build.GenerateTown, 3, 2, 2.0, MyTown
+     stdcall     Build.GenerateTown, 3, 3, 1.0, MyTown
 
      ;stdcall     Mesh.CalculateNormals, cube
 

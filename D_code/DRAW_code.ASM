@@ -109,7 +109,8 @@ proc Draw
      invoke     glPushMatrix
      invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, BuildDiffuse
      invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, BuildAmbient
-     stdcall    DrawMesh, Tower, cubeTransform
+     ;stdcall    DrawMesh, Tower, cubeTransform
+     stdcall    DrawTown, MyTown, cubeTransform
      invoke     glPopMatrix
 
      invoke     SwapBuffers, [hdc]
@@ -160,6 +161,56 @@ proc DrawMesh uses esi,\
      invoke     glDisableClientState, GL_NORMAL_ARRAY
 
      invoke     glPopMatrix
+
+     ret
+endp
+
+
+proc DrawTown uses esi,\
+     town, transform
+
+     mov        esi, [town]
+     mov        edi, [transform]
+     mov ecx, [esi+Town.total]
+     mov eax, [esi+Town.towers]
+     mov esi, eax
+.looper:
+     push ecx
+; pushing the matrix, so that the changes do not affect anything but the current mesh
+     invoke     glPushMatrix
+
+
+; you spin me right round baby right round like a record baby right round round round           ('You Spin Me Round (Like a Record)' by Dead or Alive, 1985)
+     invoke     glTranslatef, [edi+Transform.position.x], [edi+Transform.position.y], [edi+Transform.position.z]
+     invoke     glRotatef, [edi+Transform.rotation.x], 1.0, 0.0, 0.0
+     invoke     glRotatef, [edi+Transform.rotation.y], 0.0, 1.0, 0.0
+     invoke     glRotatef, [edi+Transform.rotation.z], 0.0, 0.0, 1.0
+     invoke     glScalef, [edi+Transform.scale.x], [edi+Transform.scale.y], [edi+Transform.scale.z]
+
+; allowing to import the arrays of data
+     invoke     glEnableClientState, GL_VERTEX_ARRAY
+     invoke     glEnableClientState, GL_COLOR_ARRAY
+     invoke     glEnableClientState, GL_NORMAL_ARRAY
+
+     jmp @F
+.looperContinue:
+     jmp .looper
+@@:
+
+     invoke     glVertexPointer, 3, GL_FLOAT, ebx, [esi+Mesh.vertices]
+     invoke     glColorPointer, 3, GL_FLOAT, ebx, [esi+Mesh.colors]
+     invoke     glNormalPointer, GL_FLOAT, ebx, [esi+Mesh.normals]
+     invoke     glDrawArrays, GL_TRIANGLES, ebx, [esi+Mesh.verticesCount]
+
+     invoke     glDisableClientState, GL_VERTEX_ARRAY
+     invoke     glDisableClientState, GL_COLOR_ARRAY
+     invoke     glDisableClientState, GL_NORMAL_ARRAY
+
+     invoke     glPopMatrix
+
+     add esi, sizeof.Mesh
+     pop ecx
+     loop .looperContinue
 
      ret
 endp

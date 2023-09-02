@@ -26,7 +26,7 @@ proc    Build.GeneratePackedTower uses ebx edi, resultMesh, startCoordsSrc, scal
         push eax
         push startValue
         stdcall Vector3.Copy
-        fld     [startValue.z]
+        fld     [startValue.y]
         fstp    [currHeight]
 
 ; generating the amount of floors; literal floors, not walls: walls = numOfFloorsLiterally-1
@@ -279,6 +279,7 @@ proc Build.GenerateTown uses ebx edi, width, height, scale, resultTown
         mov ecx, [height]
         mov [ebx+Town.height], ecx
         mul ecx
+        mov [ebx+Town.total], eax
 
 
         ;push eax                ; saving eax for the loop
@@ -317,7 +318,6 @@ proc Build.GenerateTown uses ebx edi, width, height, scale, resultTown
 
         pop ecx
         loop .looperWidth
-
 
 
         mov eax, [scale]
