@@ -5,16 +5,26 @@ aRadian   dd    57.3
 aThousand dw    1000
 anEleven  dw    11
 aNinety   dw    90
+startValue Vector3
 
-proc    Build.GeneratePackedTower uses ebx edi, resultMesh, scale
+proc    Build.GeneratePackedTower uses ebx edi, resultMesh, startCoordsSrc, scale
         locals
                 numOfFloorsLiterally    dd      ?
-                currHeight              dd      0.0
+                currHeight              dd      ?
                 cosValue                dd      ?
                 sinValue                dd      ?
                 sinValueNeg             dd      ?
                 cosValueNeg             dd      ?
+                ;startValue              Vector3
+                temp                    dd      ?
         endl
+
+        mov eax, [startCoordsSrc]
+        push eax
+        push startValue
+        stdcall Vector3.Copy
+        fld     [startValue.z]
+        fstp    [currHeight]
 
 ; generating the amount of floors; literal floors, not walls: walls = numOfFloorsLiterally-1
         stdcall Rand.GetRandomNumber, 2, 10                 ; generating the amount of floors
@@ -60,39 +70,91 @@ proc    Build.GeneratePackedTower uses ebx edi, resultMesh, scale
 
 ;gen vertices themselves
 
-        mov eax, [cosValue]
+        ;mov eax, [cosValue]
+        ;stosd
+        ;mov eax, [currHeight]
+        ;stosd
+        ;mov eax, [sinValue]
+        ;stosd
+        fld [cosValue]
+        fadd [startValue.x]
+        fstp [temp]
+        mov eax, [temp]
         stosd
         mov eax, [currHeight]
         stosd
-        mov eax, [sinValue]
+        fld [sinValue]
+        fadd [startValue.z]
+        fstp [temp]
+        mov eax, [temp]
         stosd
+
+
 
         jmp @F
 .GenVerticesContinue:
         jmp .GenVertices
 @@:
 
-        mov   eax, [sinValueNeg]
+        ;mov   eax, [sinValueNeg]
+        ;stosd
+        ;mov eax, [currHeight]
+        ;stosd
+        ;mov   eax, [cosValue]
+        ;stosd
+        fld [sinValueNeg]
+        fadd [startValue.x]
+        fstp [temp]
+        mov eax, [temp]
         stosd
         mov eax, [currHeight]
         stosd
-        mov   eax, [cosValue]
+        fld [cosValue]
+        fadd [startValue.z]
+        fstp [temp]
+        mov eax, [temp]
         stosd
 
-        mov  eax, [cosValueNeg]
+        ;mov  eax, [cosValueNeg]
+        ;stosd
+        ;mov eax, [currHeight]
+        ;stosd
+        ;mov  eax, [sinValueNeg]
+        ;stosd
+        fld [cosValueNeg]
+        fadd [startValue.x]
+        fstp [temp]
+        mov eax, [temp]
         stosd
         mov eax, [currHeight]
         stosd
-        mov  eax, [sinValueNeg]
+        fld [sinValueNeg]
+        fadd [startValue.z]
+        fstp [temp]
+        mov eax, [temp]
         stosd
 
 
-        mov  eax, [sinValue]
+
+        ;mov  eax, [sinValue]
+        ;stosd
+        ;mov eax, [currHeight]
+        ;stosd
+        ;mov  eax, [cosValueNeg]
+        ;stosd
+        fld [sinValue]
+        fadd [startValue.x]
+        fstp [temp]
+        mov eax, [temp]
         stosd
         mov eax, [currHeight]
         stosd
-        mov  eax, [cosValueNeg]
+        fld [cosValueNeg]
+        fadd [startValue.z]
+        fstp [temp]
+        mov eax, [temp]
         stosd
+
 
         fld     [currHeight]
         fadd    [scale]
@@ -166,7 +228,7 @@ proc    Build.GeneratePackedTower uses ebx edi, resultMesh, scale
 
         stdcall GenFloorCeil
 
-        mov eax, [cubeMesh.colors]  ; what the hell is this
+        mov eax, [cubeMesh.colors]  ; what the hell is this ; delete after shaders done
 
         mov [edx+PackedMesh.colors], eax
 
@@ -196,3 +258,79 @@ proc    GenFloorCeil
         ret
 endp
 
+
+
+proc Build.GenerateTown uses ebx edi, width: WORD, height: WORD, scale, resultTown
+        locals
+                TempMesh        PackedMesh
+        endl
+        mov ecx, [resultTown]
+        mov edx, [scale]
+        mov [ecx+Town.scale], edx
+        xor edx, edx
+        movzx eax, [width]
+        mov [ecx+Town.width], ax
+        movzx ebx, [height]
+        mov [ecx+Town.height], bx
+        mul ebx
+        mov [ecx+Town.total], eax
+
+
+        push eax                ; saving eax for the loop
+
+        xor edx, edx                    ; do i need to?
+        mov ebx, sizeof.Building
+        mul ebx
+
+
+        push eax             ; eax = amount of towers
+        invoke  HeapAlloc, [hHeap], 8
+        mov [ecx+Town.towers], eax
+        mov edi, eax
+
+        pop ecx
+
+.looper:
+        stdcall Build.GeneratePackedTower, TempMesh, 1.0
+        stdcall Mesh.Generate, TempMesh, edi+Tower.MeshData, true
+        stdcall Mesh.CalculateNormals, edi+Tower.MeshData
+        add edi, sizeof.Building
+        loop .looper
+
+        ret
+endp
+
+
+proc Build.SetTownPos uses edi, town, pos
+        locals
+                PosVec          Vector3
+                RotVec          Vector3
+                ScaleVec        Vector3
+        endl
+
+        mov esi, [pos]
+        stdcall Vector3.Copy, PosVec, esi+Transform.position
+        stdcall Vector3.Copy, RotVec, esi+Transform.rotation
+        stdcall Vector3.Copy, ScaleVec, esi+Transform.scale
+
+        mov edi, [town]
+        mov edx, [edi+Town.towers]
+        mov ecx, [edi+Town.height]
+
+.looperHeight:
+        push ecx
+        mov ecx, [edi+Town.width]
+
+.looperWidth:
+
+        mov [edx+Building.PosData]
+
+
+        loop .looperWidth
+
+        pop ecx
+        loop .looperHeight
+
+
+        ret
+endp

@@ -61,7 +61,7 @@ proc Init uses esi
      stdcall     Mesh.CalculateNormals, plane
 
 
-     stdcall     Build.GeneratePackedTower, MyBuilding, 2.0
+     stdcall     Build.GeneratePackedTower, PackedTower, nullVector, 2.0
      ;mov         eax, [MyBuilding.vertices]
      ;mov         [cubeMesh.vertices], eax
      ;mov         eax, [MyBuilding.indices]
@@ -69,8 +69,9 @@ proc Init uses esi
      ;mov         eax, [MyBuilding.trianglesCount]
      ;mov         [cubeMesh.trianglesCount], eax
      ;stdcall     Mesh.Generate, cubeMesh, cube, true
-     stdcall     Mesh.Generate, MyBuilding, Building, true
-     stdcall     Mesh.CalculateNormals, Building
+     stdcall     Mesh.Generate, PackedTower, Tower.MeshData, true
+     stdcall     Mesh.CalculateNormals, Tower.MeshData
+
      ;stdcall     Mesh.CalculateNormals, cube
 
 

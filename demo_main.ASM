@@ -44,8 +44,13 @@ oneSecond       GLfloat      1000.0
 cubeMesh        PackedMesh    cubeVertices, cubeColors, cubeIndices, CUBE_TRIANGLES_COUNT
 cube            Mesh          0,0,0,0
 plane           Mesh          planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
-MyBuilding      PackedMesh    0,0,0,0
-Building        Mesh          0,0,0,0
+PackedTower     PackedMesh    0,0,0,0
+
+
+Tower           Building      <0,0,0,0>,\
+                              <<0.0, 0.0, 0.0>,\
+                                <0.0, 0.0, 0.0>,\
+                                <1.0, 1.0, 1.0>>
 seed            dd            ?
 RandomValue     dd            0
 
@@ -77,6 +82,8 @@ cameraDirNext2  Vector3         -5.0, 5.0, 6.66
 cameraPosition  Vector3         20.0, 20.0, 20.0
 targetPosition  Vector3         0.0, 0.0, 0.0
 upVector        Vector3         0.0, 1.0, 0.0
+
+nullVector      Vector3         0.0, 0.0, 0.0
 
 cubePoints:     Spline.Point    cubePosition1, cubePrev1, cubeDirection1, 1.0
                 Spline.Point    cubePosition2, cubePrev2, cubeDirection2, 2.0
