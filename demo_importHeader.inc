@@ -22,6 +22,7 @@
 
         include 'D_objects\Cube.inc'
         include 'D_objects\Plane.inc'
+        include 'D_objects\myPrimitive.inc'
 
 ; CONST
 true            =       1
@@ -29,6 +30,10 @@ false           =       0
 COLOR_DEPTH     =       24
 PFD_FLAGS       =       PFD_SUPPORT_OPENGL or PFD_DOUBLEBUFFER or PFD_DRAW_TO_WINDOW
 WINDOW_STYLE    =       WS_VISIBLE or WS_MAXIMIZE or WS_POPUP
+GL_VERTEX_SHADER=       0x8B31
+GL_ARRAY_BUFFER =       0x8892
+GL_STATIC_DRAW  =       0x88E4
+
 
 wndClass        WNDCLASS                0, WindowProc, 0, 0, 0, 0, 0, 0, 0, className
 pfd             PIXELFORMATDESCRIPTOR   sizeof.PIXELFORMATDESCRIPTOR, 1, PFD_FLAGS,\
