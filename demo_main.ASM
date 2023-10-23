@@ -137,6 +137,7 @@ VBO             GLuint          0
         include 'D_code\FILE_code.asm'
         include 'D_code\RANDOM_code.asm'
         include 'D_code\BUILD_code.asm'
+        include 'D_code\SOUND_code.asm'
 
 proc WinMain
      locals

@@ -4,6 +4,7 @@ proc Init uses esi
         aspect      dd ?
      endl
 
+
 ; acquiring the descriptor for the heap memory
      invoke      GetProcessHeap
      mov         [hHeap], eax
@@ -32,7 +33,6 @@ proc Init uses esi
      invoke      wglCreateContext, [hdc]
      invoke      wglMakeCurrent, [hdc], eax
      invoke      glViewport, 0, 0, [clientRect.right], [clientRect.bottom]              ; setting the render field from (0;0) to (width;height)
-
 
 
 ;; initializing the matrices
@@ -90,6 +90,8 @@ proc Init uses esi
      invoke     glEnableVertexAttribArray, 0
      invoke     glBindBuffer, GL_ARRAY_BUFFER, 0
      invoke     glBindVertexArray, 0
+
+     stdcall Sound.init
 
 ;     ;stdcall     Subdivide, mesh, mesh
 ;     invoke  glEnable, GL_LIGHTING

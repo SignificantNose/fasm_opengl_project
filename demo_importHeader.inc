@@ -19,6 +19,7 @@
         include 'D_structs\FILE_structs.inc'
         include 'D_structs\RANDOM_structs.inc'
         include 'D_structs\BUILD_structs.inc'
+        include 'D_STRUCTS\SOUND_structs.inc'
 
         include 'D_objects\Cube.inc'
         include 'D_objects\Plane.inc'
@@ -56,6 +57,7 @@ data import
         library kernel32, 'kernel32.dll',\
                 gdi32,    'gdi32.dll',\
                 user32,   'user32.dll',\
-                opengl32, 'opengl32.dll'
+                opengl32, 'opengl32.dll',\
+                dsound, 'dsound.dll'
 end data
 
