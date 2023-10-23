@@ -26,7 +26,7 @@ bytesPart2      dd      ?
 timeValue       dd      0.0
 oneSec          dd      0.00002267573
 ten             dd      10
-maxValue        dd      32767   
+maxValue        dd      2000  
 
 dsc             IDirectSound8                       ; it is a pointer to an interface?
 dsb             IDirectSoundBuffer8   
@@ -79,10 +79,36 @@ proc Sound.GenSample,\
     fsin                        ; sin(t*freq)
     jmp .getResult
 .square:
+    fld     [timeMem]           ; t
+    fmul    [freqMem]           ; t*freq
+    fsin                        ; sin(t*freq)
+    fldz                        ; 0, sin(t*freq)
+    fcomip  st0, st1            ; sin(t*freq)
+    fstp    st0
+    fld1
+    jae @F                      ; 0>sin
+    fchs
+@@:
     jmp .getResult
 .saw:
     jmp .getResult
 .triangle:
+
+    fld     [timeMem]           ; t
+    fmul    [freqMem]           ; t*freq
+    fsin                        ; sin(t*freq)
+    fld     st0                 ; sin, sin
+    fmul    st0, st0            ; sin^2, sin
+    fld1                        ; 1, sin^2, sin
+    fsubrp                      ; 1-sin^2, sin
+    fsqrt                       ; sqrt(1-sin^2), sin
+    fpatan                      ; arctg == arcsin
+    fld1                        ; 1, arcsin
+    fld1                        ; 1, 1, arcsin
+    faddp                       ; 2, arcsin
+    fmulp                       ; 2*arcsin
+    fldpi                       ; pi, 2*arcsin
+    fdivp                       ; 2*arcsin/pi
     jmp .getResult
 .noise:
 
@@ -120,7 +146,7 @@ proc Sound.init uses edi ecx
     cominvk     dsc, CreateSoundBuffer, dsbd, dsb, NULL
     cominvk     dsb, Lock, 0, [blockSize], ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
 
-    stdcall     Sound.CreateOsc, OSC_SINE, 440.0
+    stdcall     Sound.CreateOsc, OSC_TRIANGLE, 440.0
     mov         [myOsc], eax
 
     mov         edi, [ptrPart1]
