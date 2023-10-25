@@ -51,6 +51,14 @@ macro JumpIf value, label
 }
 
 
+; macro for comparing 2 top values on the FPU stack
+macro FPUCMP
+{
+        fcomip  st0, st1
+        fstp    st0
+}
+
+
 
 
 data import

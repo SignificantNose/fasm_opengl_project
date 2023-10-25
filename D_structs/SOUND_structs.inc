@@ -1,6 +1,26 @@
-struct Oscillator
-        oscType dw ?
-        freq    dd ?
+struct DoublyLinkedList
+       next              dd     ?
+       prev              dd     ?
+       data              dd     ?
+ends
+
+struct Note
+       freq              dd     ?
+       instrument        dw     ?       
+ends
+
+struct EnvelopeADSR
+       attackTime        dd     ?
+       decayTime         dd     ?
+       releaseTime       dd     ?
+
+       sustainAmpl       dd     ?
+       startAmpl         dd     ?
+ends
+
+struct Instrument
+       env               EnvelopeADSR
+       oscType           dw     ?
 ends
 
 struct GUID

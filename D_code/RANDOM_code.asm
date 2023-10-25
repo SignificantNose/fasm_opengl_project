@@ -64,3 +64,16 @@ proc Rand.MyGen, Min, Max
         ret
 endp
 
+; the more preferrable (i.e. later on) way to generate random numbers
+proc Rand.GetRandomInBetween, \
+        min, max
+    rdrand eax
+    mov ecx, [max]
+    sub ecx, [min]
+    inc ecx
+    xor edx, edx
+    div ecx
+    mov eax, edx
+    add eax, [min]
+    ret
+endp
