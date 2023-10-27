@@ -52,13 +52,29 @@ macro JumpIf value, label
 
 
 ; macro for comparing 2 top values on the FPU stack
-macro FPUCMP
+macro FPU_CMP
 {
         fcomip  st0, st1
         fstp    st0
 }
 
+macro push_st0                  ; 4 B          #REMEMBER: IT AFFECTS STACK
+{
+        push eax
+        fstp dword[esp]
+}
 
+macro FPU_LD reg                ; 4 B          #REMEMBER: IT AFFECTS STACK
+{
+        push reg
+        fld  dword[esp]
+}
+
+macro FPU_STP reg               ; 4 B          #REMEMBER: IT AFFECTS STACK
+{
+        fstp dword[esp]
+        pop reg
+}
 
 
 data import

@@ -6,7 +6,7 @@ ends
 
 struct Note
        freq              dd     ?
-       instrument        dw     ?       
+       instrumentOffset  dw     ?       
 ends
 
 struct EnvelopeADSR
@@ -15,12 +15,22 @@ struct EnvelopeADSR
        releaseTime       dd     ?
 
        sustainAmpl       dd     ?
-       startAmpl         dd     ?
+       startAmpl         dd     ?  
+
+       interpAttack      dw     ?
+       interpDecay       dw     ?
+       interpRelease     dw     ?
 ends
 
 struct Instrument
        env               EnvelopeADSR
        oscType           dw     ?
+ends
+
+struct Message
+       msgNote           Note
+       msgDuration       dd     ?
+       msgTrigger        dd     ?
 ends
 
 struct GUID

@@ -1,3 +1,20 @@
+;    mov     eax, 1.0                ; 5
+;    nop
+;    mov     [myowntest], eax        ; 5
+;    fld     [myowntest]             ; 6
+;    fmul    [myowntest]             ; 6
+;    fstp    [myowntest]             ; 6
+;    mov     eax, [myowntest]        ; 5
+;
+;    push    eax                     ; 1
+;    fld     dword[esp-4]            ; 4
+;    fmul    [myowntest]             ; 6
+;    fstp    dword[esp-4]            ; 4
+;    pop     eax                     ; 1
+
+;    fistp   word[esp]               ; 3
+;    fstp    dword[esp]              ; 3 
+
 DSSCL_NORMAL = 1
 DSSCL_PRIORITY = 2
 DSSCL_EXCLUSIVE = 3
@@ -17,15 +34,35 @@ STATE_OFF = 0
 STATE_ON = 1
 
 instruments:
-instrNoise     Instrument      <0,0,0,0,0>, OSC_NOISE
-INSTR_NOISE = ($-instruments)/sizeof.Instrument-1
+INSTR_SINE = ($-instruments)
+instrSine      Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_SINE
 
-instrSine      Instrument      <0,0,0,0,0>, OSC_SINE
-INSTR_SINE = ($-instruments)/sizeof.Instrument-1
+INSTR_NOISE = ($-instruments)
+instrNoise     Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
+
+INSTR_SAW = ($-instruments)
+instrSaw       Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_SAW
+
+INSTR_TRIANGLE = ($-instruments)
+instrTriangle  Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_TRIANGLE
 
 
 LIST_NONE       equ     0
 msgListHead     dd      LIST_NONE
+
+
+messages:
+msg1            Message <440.0, INSTR_TRIANGLE>, 4.0, 0.5
+msg2            Message <100.0, INSTR_TRIANGLE>, 1.0, 1.0
+msgEnd:
+
+messagesPtr     dd      messages
+
+
+INTERP_LINEAR   = 0
+INTERP_SQUARE   = 1
+INTERP_BISQUARE = 2
+INTERP_SINE     = 3
 
 
 BUFFERSIZE_BYTES equ  2*44100*16   
@@ -45,6 +82,7 @@ three           dd      3
 four            dd      4
 triangleTemp    dd      0.25
 
+DELETE_FLAG     = 0xFFFFFFFF
 dsc             IDirectSound8                       ; it is a pointer to an interface?
 dsb             IDirectSoundBuffer8   
 dsbd            DSBUFFERDESC sizeof.DSBUFFERDESC, DSBCAPS_GLOBALFOCUS or DSBCAPS_CTRLPOSITIONNOTIFY,\
@@ -66,25 +104,20 @@ endp
 
 
 proc Sound.GenSample,\
-    instrument, time, freq
+    soundMsg, time
 
-    ; need to get rid of it some time
-    locals
-        result      dw  ?
-        randBuffer  dd  ?
-        phaseBuffer dd  ?
-    endl
-
-
+    mov     eax, [soundMsg]
     ; transfer it to the other function later
     fld1                     ; 1 
     fld     [time]           ; t, 1
-    fmul    [freq]           ; t*freq, 1
+    fmul    [eax+Message.msgNote+Note.freq]           ; t*freq, 1
     fprem                    ; phase, 1
     fstp    st1              ; phase
 
-    mov     edx, [instrument]
-    movzx   eax, word[edx+Instrument.oscType]
+    movzx   eax, word[eax+Message.msgNote+Note.instrumentOffset]
+    add     eax, instruments
+    movzx     eax, word[eax+Instrument.oscType]
+    
 
     JumpIf OSC_SINE, .sine
     JumpIf OSC_SQUARE, .square
@@ -95,21 +128,20 @@ proc Sound.GenSample,\
     jmp .Return
 
 .sine:  
-    ; it's more convenient to do it in place, have to think about it
-    fstp    [phaseBuffer]
-    stdcall Sound.Hz2Angular, [phaseBuffer]
-    mov     [phaseBuffer], eax
-    fld     [phaseBuffer]    ; 2*pi*phase
+    push_st0
+    stdcall Sound.Hz2Angular
+    FPU_LD eax               ; 2*pi*phase
     fsin                     ; sin(2*pi*phase)
     jmp .getResult
 .square:
-    fstp    [phaseBuffer]
-    stdcall Sound.Hz2Angular, [phaseBuffer]
-    mov     [phaseBuffer], eax
-    fld     [phaseBuffer]    ; 2*pi*phase
+
+    ; combine with sine??
+    push_st0
+    stdcall Sound.Hz2Angular
+    FPU_LD eax
     fsin                     ; sin(2*pi*phase)
     fldz                     ; 0, sin    
-    FPUCMP                   ; 
+    FPU_CMP                   ; 
     fld1                     ; 1
     ja   @F
     fchs
@@ -121,22 +153,32 @@ proc Sound.GenSample,\
     fsubp                    ; 2*t-1
     jmp .getResult
 .triangle:
+    
+    fimul       [four]          ; 4*t
+    fchs                        ; -4*t
+    fld1                        ; 1, -4*t
+    faddp                       ; 1-4*t
+    fabs                        ; |1-4*t|
+    fchs                        ; -|1-4*t|
+    fiadd       [two]           ; 2-|1-4*t|
+    fabs                        ; |2-|1-4*t||
+    fld1                        ; 1, |2-|1-4*t||
+    fsubp                       ; |2-|1-4*t||-1
 
-    nop
-    fimul    [four]          ; 4*t
-    fld      st0             ; 4*t, 4*t
-    fld1                     ; 1, 4*t, 4*t
-    FPUCMP                   ; 4*t
-    ja      .getResult
-    fld      st0             ; 4*t, 4*t
-    fild      [three]        ; 3, 4*t, 4*t
-    FPUCMP                   ; 4*t
-    jb      .finalCase
-    fchs                     ; -4*t
-    fiadd   [two]            ; 2-4*t
-    jmp     .getResult
-.finalCase:
-    fisub    [four]          ; 4*t-4
+;;;    fimul    [four]          ; 4*t
+;;;    fld      st0             ; 4*t, 4*t
+;;;    fld1                     ; 1, 4*t, 4*t
+;;;    FPUCMP                   ; 4*t
+;;;    ja      .getResult
+;;;    fld      st0             ; 4*t, 4*t
+;;;    fild      [three]        ; 3, 4*t, 4*t
+;;;    FPUCMP                   ; 4*t
+;;;    jb      .finalCase
+;;;    fchs                     ; -4*t
+;;;    fiadd   [two]            ; 2-4*t
+;;;    jmp     .getResult
+;;;.finalCase:
+;;;    fisub    [four]          ; 4*t-4
 
 ;    fstp    [phaseBuffer]
 ;    stdcall Sound.Hz2Angular, [phaseBuffer]
@@ -159,9 +201,9 @@ proc Sound.GenSample,\
 .noise:
 
     ;stdcall     Rand.GetRandomNumber, 0, [randNoise]
+    fstp        st0                   ; 
     stdcall     Rand.GetRandomInBetween, 0, [randNoise]
-    mov         [randBuffer], eax
-    fild        [randBuffer]          ; x = [0,max]
+    FPU_LD eax                        ; x = [0,max]
     fild        [randNoise]           ; max, x
     fidiv       [two]                 ; max/2, x
     fsubp                             ; x = [-max/2,max/2]
@@ -173,8 +215,11 @@ proc Sound.GenSample,\
 
 .getResult:
     fimul   [maxValue]
-    fistp   word[result] 
-    mov     ax, [result]
+
+    xor eax, eax
+    push    eax
+    fistp   word[esp]
+    pop     eax
 
 
 .Return:
@@ -196,53 +241,20 @@ endp
 ;    ret
 ;endp
 
-
-
-; ADSR-get
-proc Sound.GetAmplitude,\
-    envelope, time
-
-    locals
-        envOnTime   dd  ?
-    endl
-
-    cmp     [eax+EnvelopeADSR.state], STATE_OFF
-    je .off
-
-    mov     eax, [envelope]
-    mov     edx, [eax+EnvelopeADSR.onTime]
-    mov     [envOnTime], edx
-
-    fld     [time]                  ; time
-    fsub    [envOnTime]             ; envTime
-
-    ; make macro for comparing float values
-
-
-    jmp .return
-
-.off:
-
-
-.return: 
-
-    ret
-endp
-
 proc Sound.NewMessage,\
-    pNote
+    soundMsg
 
     invoke HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
-    mov edx, [pNote]
+    mov edx, [soundMsg]
     mov [eax+DoublyLinkedList.data], edx
-    mov edx, [msgListHead]
-    
+
+    mov edx, [msgListHead]    
     mov [eax+DoublyLinkedList.next], edx
 
     ; CAN BE REMOVED: THE ALLOCATED MEMORY IS INITIALIZED WITH ZERO
     mov [eax+DoublyLinkedList.prev], LIST_NONE
     cmp edx, LIST_NONE
-    je .newListHead
+    je .return
     mov [edx+DoublyLinkedList.prev], eax
 .return:
     mov [msgListHead], eax
@@ -250,15 +262,16 @@ proc Sound.NewMessage,\
 endp
 
 proc Sound.RemoveMessage,\
-    msgNode
+    soundMsgNode
     
-    mov eax, [msgNode]
+    mov eax, [soundMsgNode]
     cmp eax, [msgListHead]
     je .isHead
 
     mov edx, [eax+DoublyLinkedList.prev]
     mov ecx, [eax+DoublyLinkedList.next]
     mov [edx+DoublyLinkedList.next], ecx
+    push ecx
     cmp ecx, LIST_NONE
     je .return
     mov [ecx+DoublyLinkedList.prev], edx
@@ -266,29 +279,234 @@ proc Sound.RemoveMessage,\
 .isHead:
     mov edx, [eax+DoublyLinkedList.next]
     mov [msgListHead], edx
+    push edx
 
 .return:
     invoke HeapFree, [hHeap], 0, eax
+    pop eax
+    ret
+endp
+
+proc Sound.interpolatePhase,\
+    interpType, phase
+
+    mov     eax, [interpType]
+
+    
+    fld     [phase]             ; phase
+    JumpIf  INTERP_LINEAR, .linear
+    JumpIf  INTERP_SQUARE, .square
+    JumpIf  INTERP_BISQUARE, .bisquare
+    JumpIf  INTERP_SINE, .sine
+
+    xor eax, eax
+    fstp    st0
+    jmp .return
+.linear:
+    ; yikes
+    jmp     .store
+.square:
+    fmul    [phase]             ; phase^2
+    jmp     .store
+.bisquare:
+    fmul    [phase]             ; phase^2
+    fld     st0                 ; phase^2, phase^2
+    fmulp                       ; phase^4
+
+    jmp     .store
+.sine:
+    fldpi                       ; pi, phase
+    fidiv   [two]               ; pi/2, phase
+    fmulp                       ; phase*pi/2
+    fsin                        ; sin(phase*pi/2)
+
+.store:
+    ;fstp    [phase]
+    ;mov     eax, [phase]        ; 11 B
+
+    push    eax                  ; 1 B
+    FPU_STP eax                  ; 4 B
+
+    
+
+.return:
+    ret
+endp
+
+proc Sound.ADSAmp,\
+    env, soundMsg, dt
+
+
+    mov     eax, [env]
+    fld     [dt]            ; dt
+
+.attack:
+    fld     st0                                             ; dt, dt
+    fsub    [eax+EnvelopeADSR.attackTime]    ; dt-tA, dt
+    fldz                                                    ; 0, dt-tA, dt
+    FPU_CMP                                                  ; dt
+    jb          .decay
+    
+    fdiv    [eax+EnvelopeADSR.attackTime]    ; phase
+
+
+    push    eax
+    FPU_STP ecx
+    movzx   eax, word[eax+EnvelopeADSR.interpRelease]
+    stdcall Sound.interpolatePhase, eax, ecx
+    jmp .return
+
+.decay:
+    fsub        [eax+EnvelopeADSR.attackTime]    ; dt-tA
+    fld         st0                                             ; dt-tA, dt-tA
+    fsub        [eax+EnvelopeADSR.decayTime]     ; dt-tA-tD, dt-tA
+    fldz                                                        ; 0, dt-tA-tD, dt-tA
+    FPU_CMP                                                      ; dt-tA
+    jb          .sustain
+    fdiv        [eax+EnvelopeADSR.decayTime]     ; phase
+    fchs                                                        ; -phase
+    fld1                                                        ; 1, -phase
+    faddp                                                       ; 1-phase
+
+
+    push        eax
+    FPU_STP     ecx
+
+    push        eax
+    movzx       eax, word[eax+EnvelopeADSR.interpDecay]
+    stdcall     Sound.interpolatePhase, eax, ecx
+    pop         ecx
+    FPU_LD      eax                                     ; [0;1] == sustain phase
+    fld         [ecx+EnvelopeADSR.startAmpl]                         ; 1, [0;1]
+    fsub        [ecx+EnvelopeADSR.sustainAmpl]                       ; dAmpl, [0;1]
+    fmulp                                               ; ampOffset == amplitude phase of decay
+    fadd        [ecx+EnvelopeADSR.sustainAmpl]                       ; res
+    push        ecx
+    FPU_STP     eax
+    jmp         .return   
+
+.sustain:
+    fstp        st0                              ; 
+    fld         [eax+EnvelopeADSR.sustainAmpl]   ; resultAmp
+    push        eax
+    FPU_STP     eax
+
+.return:
     ret
 endp
 
 
-proc Sound.PlayMsgList
+; returns the RELATIVE value of the amplitude
+proc Sound.GetADSRAmp,\
+    env, soundMsg, time
 
-    mov eax, [msgListHead]
+    mov         eax, [soundMsg]
+    fld         [time]                      ; t
+    fsub        [eax+Message.msgTrigger]    ; dt
+    fld         st0                         ; dt, dt
+    fsub        [eax+Message.msgDuration]   ; dt-tDur, dt
+    fld         st0                         ; dt-tDur, dt-tDur, dt
+    fldz                                    ; 0, dt-tDur, dt-tDur, dt
+    mov         eax, [env]
+    FPU_CMP                                 ; dt-tDur, dt
+    ja          .ADSphase
+
+    fdiv        [eax+EnvelopeADSR.releaseTime]   ; (dt-tDur)/tR, dt
+    fld         st0                 ; (dt-tDur)/tR, (dt-tDur)/tR, dt
+    fld1                            ; 1, (dt-tDur)/tR, (dt-tDur)/tR, dt
+    FPU_CMP                         ; (dt-tDur)/tR, dt
+    push        eax
+    FPU_STP     edx                 ; dt
+    fstp        st0                 ;
+    ja          .delete
+    movzx       eax, word[eax+EnvelopeADSR.interpRelease]
+
+    stdcall     Sound.interpolatePhase, eax, edx
+    push        eax
+
+    stdcall     Sound.ADSAmp, [env], [soundMsg], [soundMsg+Message.msgDuration]
+    FPU_LD      eax                 ; lastADSvalue
+    fmul        dword[esp]          ; resValue
+
+    jmp .return
+
+.delete:
+    mov         eax, DELETE_FLAG
+
+    jmp         .return
+
+.ADSphase:
+    fstp        st0                         ; dt
+    push        eax
+    FPU_STP     edx                         ; edx has dt
+    
+    stdcall     Sound.ADSAmp, [env], [soundMsg], edx     
+
+.return:
+    ret
+endp
+
+proc Sound.PlayMsgList,\
+    time
+
+    locals
+        tempMultiplier      dd      ?
+    endl
+
+    mov edx, [msgListHead]
+    xor eax, eax
 
 .looper:
-    cmp eax, LIST_NONE
+    cmp edx, LIST_NONE
     je .return
-
-    ; if the time has passed, remove it from the poll
-
     push eax
-    stdcall Sound.play, eax
+    push edx
+
+
+    mov ecx, [edx+DoublyLinkedList.data]
+    ; ecx has the pointer to the message
+    ;stdcall     Sound.GenSample, msg, [time]
+    ;stdcall     Sound.GetADSRAmp, ecx, [time]
+    ;multiply the acquired values and get the needed value
+
+    push ecx
+    stdcall     Sound.GenSample, ecx, [time]
+    pop         ecx
+    push        eax
+
+
+    movzx       eax, word[ecx+Message.msgNote+Note.instrumentOffset]
+    add         eax, instruments+Instrument.env
+    stdcall     Sound.GetADSRAmp, eax, ecx, [time]
+    cmp         eax, DELETE_FLAG
+    je          .delete
+
+
+
+    fld         dword[esp]              ; sample
+    push        eax
+    fmul        dword[esp]              ; resAmp
+    pop         eax
+    FPU_STP     eax                     ;
+
+
+    pop edx
+    mov edx, [edx+DoublyLinkedList.next]
+
+    pop ecx
+    add eax, ecx
+
+    jmp         .looper
+.delete:
+;    pop eax
+;    pop eax
+;    stdcall Sound.RemoveMessage, eax
     pop eax
+    stdcall     Sound.RemoveMessage
+    ; eax has the address of a next node
+    mov edx, eax
 
-
-    mov eax, [eax+SoundMsg.next]
+    pop ecx
     jmp .looper
 .return:
     ret
@@ -307,7 +525,29 @@ proc Sound.init uses edi ecx
     mov         ecx, BUFFERSIZE_BYTES/4
 .looper:
     push        ecx
-    stdcall     Sound.GenSample, instrSine, [timeValue], 440.0
+
+    ; add messages if necessary
+    mov         ecx, [messagesPtr]
+
+
+.addMsgs:
+    cmp         ecx, msgEnd
+    je          .msgsAdded
+    fld         [timeValue]                      ; t
+    fld         [ecx+Message.msgTrigger]         ; triggerTime, t
+    FPU_CMP
+    jae         .msgsAdded
+    push        ecx
+    stdcall     Sound.NewMessage, ecx
+    pop         ecx
+    add         ecx, sizeof.Message
+    mov         [messagesPtr], ecx
+    jmp         .addMsgs
+.msgsAdded:
+
+
+    mov         edx, [timeValue]
+    stdcall     Sound.PlayMsgList, edx
     stosw
     stosw   
 
@@ -316,6 +556,7 @@ proc Sound.init uses edi ecx
     fstp        [timeValue]
     pop         ecx
     loop .looper
+
 
     cominvk dsb, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
     
