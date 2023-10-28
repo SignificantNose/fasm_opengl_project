@@ -35,10 +35,10 @@ STATE_ON = 1
 
 instruments:
 INSTR_SINE = ($-instruments)
-instrSine      Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_SINE
+instrSine      Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_SINE
 
 INSTR_NOISE = ($-instruments)
-instrNoise     Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
+instrNoise     Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
 
 INSTR_SAW = ($-instruments)
 instrSaw       Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_SAW
@@ -46,14 +46,17 @@ instrSaw       Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEA
 INSTR_TRIANGLE = ($-instruments)
 instrTriangle  Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_TRIANGLE
 
+INSTR_HIHAT = ($-instruments)
+instrHiHat     Instrument      <0.0,0.181,0.048,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
 
 LIST_NONE       equ     0
 msgListHead     dd      LIST_NONE
 
 
 messages:
-msg1            Message <440.0, INSTR_TRIANGLE>, 4.0, 0.5
-msg2            Message <100.0, INSTR_TRIANGLE>, 1.0, 1.0
+msg1            Message <440.0, INSTR_SINE>, 3.0, 0.0
+;msg2            Message <440.0, INSTR_TRIANGLE>, 2.0, 0.0
+msg3            Message <100.0, INSTR_HIHAT>, 1.0, 0.1
 msgEnd:
 
 messagesPtr     dd      messages
@@ -107,7 +110,6 @@ proc Sound.GenSample,\
     soundMsg, time
 
     mov     eax, [soundMsg]
-    ; transfer it to the other function later
     fld1                     ; 1 
     fld     [time]           ; t, 1
     fmul    [eax+Message.msgNote+Note.freq]           ; t*freq, 1
@@ -203,7 +205,9 @@ proc Sound.GenSample,\
     ;stdcall     Rand.GetRandomNumber, 0, [randNoise]
     fstp        st0                   ; 
     stdcall     Rand.GetRandomInBetween, 0, [randNoise]
-    FPU_LD eax                        ; x = [0,max]
+    push        eax
+    fild        dword[esp]            ; x = [0,max]
+    pop         eax
     fild        [randNoise]           ; max, x
     fidiv       [two]                 ; max/2, x
     fsubp                             ; x = [-max/2,max/2]
@@ -416,18 +420,24 @@ proc Sound.GetADSRAmp,\
     fld1                            ; 1, (dt-tDur)/tR, (dt-tDur)/tR, dt
     FPU_CMP                         ; (dt-tDur)/tR, dt
     push        eax
+    fchs                            ; -(dt-tDur)/tR, dt
+    fld1                            ; 1, -(dt-tDur)/tR, dt
+    faddp                           ; 1-(dt-tDur)/tR, dt
     FPU_STP     edx                 ; dt
     fstp        st0                 ;
-    ja          .delete
+    jb          .delete
     movzx       eax, word[eax+EnvelopeADSR.interpRelease]
+
 
     stdcall     Sound.interpolatePhase, eax, edx
     push        eax
 
-    stdcall     Sound.ADSAmp, [env], [soundMsg], [soundMsg+Message.msgDuration]
+    mov         eax, [soundMsg]
+    stdcall     Sound.ADSAmp, [env], [soundMsg], [eax+Message.msgDuration]
     FPU_LD      eax                 ; lastADSvalue
+    pop         eax
     fmul        dword[esp]          ; resValue
-
+    FPU_STP     eax
     jmp .return
 
 .delete:
@@ -482,12 +492,55 @@ proc Sound.PlayMsgList,\
     je          .delete
 
 
+;;;;
+;
+;; 0.25
+;    FPU_LD      eax             ; phase
+;    fld1                        ; 1, phase
+;    fidiv       [four]          ; 0.25, phase
+;    pop         eax
+;    FPU_CMP                     ; 
+;    ja  @F          
+;
+;    ; > 0.25
+;    nop
+;@@:
+;; 0.5
+;    FPU_LD      eax             ; phase
+;    fld1                        ; 1, phase
+;    fidiv       [two]           ; 0.5, phase
+;    pop         eax
+;    FPU_CMP                     ;
+;    ja @F
+;    nop
+;
+;@@:
+;; 0.75
+;
+;
+;    FPU_LD      eax             ; phase
+;    fld1                        ; 1, phase
+;    fidiv       [four]          ; 0.25, phase
+;    fchs                        ; -0.25, phase
+;    fld1                        ; 1, -0.25, phase
+;    faddp                       ; 0.75, phase
+;    pop         eax
+;    FPU_CMP                     ; 
+;
+;    ja  @F
+;
+;    ; >0.75
+;    nop
+;@@:
+;
+;;;;
 
-    fld         dword[esp]              ; sample
+    fild        word[esp]               ; sample
     push        eax
     fmul        dword[esp]              ; resAmp
     pop         eax
-    FPU_STP     eax                     ;
+    fistp       word[esp]
+    pop         eax
 
 
     pop edx
