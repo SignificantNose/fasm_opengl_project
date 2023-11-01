@@ -44,7 +44,7 @@ proc Draw
      ;fchs
      ;fstp       [light1Position.z]
 
-     invoke     glLightfv, GL_LIGHT0, GL_POSITION, light0Position
+     ;invoke     glLightfv, GL_LIGHT0, GL_POSITION, light0Position
      ;invoke     glLightfv, GL_LIGHT0, GL_SPOT_CUTOFF, myCutout
       ;invoke     glLightfv, GL_LIGHT0, GL_SPOT_DIRECTION, spotdir
 ;     invoke     glLightfv, GL_LIGHT1, GL_POSITION, light1Position
@@ -66,9 +66,9 @@ proc Draw
      ;stdcall    Spline.GetPoint, cameraSpline, cameraPosition, [programTime]
 
 
-     invoke     glMatrixMode, GL_MODELVIEW
-     invoke     glLoadIdentity
-     stdcall    Matrix.LookAt, cameraPosition, targetPosition, upVector
+     ;invoke     glMatrixMode, GL_MODELVIEW
+     ;invoke     glLoadIdentity
+     ;stdcall    Matrix.LookAt, cameraPosition, targetPosition, upVector
 
 
 ;        cmp     [program], ebx
@@ -99,19 +99,24 @@ proc Draw
 
 ;     invoke     glUseProgram, ebx
 
-     invoke     glPushMatrix
-     invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, PlaneDiffuse
-     invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, PlaneAmbient
-     stdcall    DrawMesh, plane, planeTransform
-     invoke     glPopMatrix
-
-
-     invoke     glPushMatrix
-     invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, BuildDiffuse
-     invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, BuildAmbient
-     ;stdcall    DrawMesh, Tower, cubeTransform
-     stdcall    DrawTown, MyTown, cubeTransform
-     invoke     glPopMatrix
+     ;invoke     glPushMatrix
+     ;invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, PlaneDiffuse
+     ;invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, PlaneAmbient
+     ;stdcall    DrawMesh, plane, planeTransform
+     ;invoke     glPopMatrix
+     ;
+     ;
+     ;invoke     glPushMatrix
+     ;invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, BuildDiffuse
+     ;invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, BuildAmbient
+     ;;stdcall    DrawMesh, Tower, cubeTransform
+     ;stdcall    DrawTown, MyTown, cubeTransform
+     ;invoke     glPopMatrix
+     invoke     glBindVertexArray, [VAO]
+     invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
+     invoke     glUseProgram, [program]
+     invoke     glDrawArrays, GL_TRIANGLES, ebx, [myPrimitiveMesh.verticesCount]
+     invoke     glUseProgram, ebx
 
      invoke     SwapBuffers, [hdc]
 

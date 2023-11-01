@@ -45,6 +45,8 @@ cubeMesh        PackedMesh    cubeVertices, cubeColors, cubeIndices, CUBE_TRIANG
 cube            Mesh          0,0,0,0
 plane           Mesh          planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
 PackedTower     PackedMesh    0,0,0,0
+myPrimitiveMesh Mesh          myPrimitiveVertices, myPrimitiveColors, 0, myPrimitiveCount
+
 
 
 Tower           Mesh          0,0,0,0
@@ -96,15 +98,33 @@ cameraSpline    Spline          2, cameraPoints, true, 10.0
 
 
 
-fragmentShader  GLuint          0
-program         GLint           0
+; shaders data section
+vertexShaderText:
+                        file            "vertex.glsl"
+                        db              0
+        vertexShader    dd              vertexShaderText
 
+fragmentShaderText:
+                        file            "fragment.glsl"
+                        db              0
+        fragmentShader  dd              fragmentShaderText
+
+program         GLint           0
 timeLocation    GLint           0
 sizeLocation    GLint           0
+VAO             GLuint          0
+VBO             GLuint          0
 
-shaderFile      db              "fragment.glsl", 0
-timeName        db              "time", 0
-sizeName        db              "size", 0
+
+; legacy
+;fragmentShader  GLuint          0
+;program         GLint           0
+;
+;timeLocation    GLint           0
+;sizeLocation    GLint           0
+;shaderFile      db              "fragment.glsl", 0
+;timeName        db              "time", 0
+;sizeName        db              "size", 0
 
         include 'D_code\MESH_code.asm'
         include 'D_code\VECTOR_code.asm'
@@ -117,6 +137,7 @@ sizeName        db              "size", 0
         include 'D_code\FILE_code.asm'
         include 'D_code\RANDOM_code.asm'
         include 'D_code\BUILD_code.asm'
+        include 'D_code\SOUND_code.asm'
 
 proc WinMain
      locals

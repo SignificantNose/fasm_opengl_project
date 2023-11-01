@@ -1,0 +1,36 @@
+sound:
+    maybe it'll make sense to go through the whole list of the messages,
+    so that it'll be more flexible and you wouldn't need to place a new 
+    message riiiight there and there only.
+    For now:                Cancel: too expensive
+
+    I don't know if it's a good idea to make separate routines for adding
+    messages that are in the poll and for the sequencer update (speaking
+    of byte limitation). Speaking structure-wise, I think that it's
+    logical for now:        Separate routines for each step
+
+    thougths on the sequencer: it'll probably be more logical and right 
+    (in terms of the logic of the sequencer: it generates a SEQUENCE of
+    mesages) to allocate enough memory for each message separately, 
+    rather than looping through the message list and finding if the 
+    beat that is being generated is in the list or not, and then putting
+    it as a new message.
+    So for now:             allocate enough memory for each beat message
+    
+
+    remake the instrument offset logic
+    filter. Butterworth filter. please.
+    structure of the code. maybe create folder just with data that is 
+        necessary for this part of the project?
+    comment the code. please. I beg you.
+    resolve code duplication in Sound.AddSequencer and Sound.NewMessage
+    andlyze the data usage with 2 separate lists and 1 list (for sequencer)
+    look into cmovcc (conditional move)
+    look into xchg
+    look into changing the return value of GenSample to float
+    make LFO
+    
+    
+    
+unresolved:
+    macro for transferring the pattern to the reverse bit sequence

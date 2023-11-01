@@ -1,66 +1,103 @@
-proc Glext.LoadFunctions uses esi edi
 
+proc Glext.LoadFunctions uses esi edi
         mov     esi, extensionAddresses
         mov     edi, extensionNames
-
 .Scan:
         movzx   eax, byte[edi]
         cmp     eax, ebx
         je      .Return
-
         invoke  wglGetProcAddress, edi
         mov     [esi], eax
         add     esi, 4
-
         mov     al, 0
         mov     ecx, 0xFFFFFFFF
         repne   scasb
         jmp     .Scan
-
 .Return:
         ret
 endp
-
 
 proc Glext.InitShaders
-
-        invoke  glUseProgram, ebx
-
-        cmp     [program], ebx
-        je      @F
-
-        invoke  glDetachShader, [program], [fragmentShader]
-        invoke  glDeleteShader, [fragmentShader]
-        invoke  glDeleteProgram, [program]
-
-@@:
-        stdcall Glext.LoadShader, shaderFile, GL_FRAGMENT_SHADER
-        mov     [fragmentShader], eax
-
-        cmp     eax, ebx
-        jne     @F
-
-        mov     [program], ebx
-        jmp     .Return
-
-@@:
-        stdcall Glext.CreateProgram, ebx, eax
+        invoke  glCreateProgram
         mov     [program], eax
 
-        cmp     eax, ebx
-        je      .Return
+        stdcall CreateShader, vertexShader, GL_VERTEX_SHADER
+        invoke  glAttachShader, [program], eax
+        stdcall CreateShader, fragmentShader, GL_FRAGMENT_SHADER
+        invoke  glAttachShader, [program], eax
+        ;stdcall CreateShader, computeShader, GL_COMPUTE_SHADER
+        ;invoke  glAttachShader, [program], eax
 
-        invoke  glUseProgram, eax
-
-        invoke  glGetUniformLocation, [program], timeName
-        mov     [timeLocation], eax
-        invoke  glGetUniformLocation, [program], sizeName
-        mov     [sizeLocation], eax
-
-.Return:
-        ret
+        invoke  glLinkProgram, [program]
+        invoke  glUseProgram, [program]
 endp
 
+
+; these are the old implementations of these routines.
+; maybe it will make sense to make sense out of them later, but not now
+;proc Glext.LoadFunctions uses esi edi
+;
+;        mov     esi, extensionAddresses
+;        mov     edi, extensionNames
+;
+;.Scan:
+;        movzx   eax, byte[edi]
+;        cmp     eax, ebx
+;        je      .Return
+;
+;        invoke  wglGetProcAddress, edi
+;        mov     [esi], eax
+;        add     esi, 4
+;
+;        mov     al, 0
+;        mov     ecx, 0xFFFFFFFF
+;        repne   scasb
+;        jmp     .Scan
+;
+;.Return:
+;        ret
+;endp
+;
+;
+;proc Glext.InitShaders
+;
+;        invoke  glUseProgram, ebx
+;
+;        cmp     [program], ebx
+;        je      @F
+;
+;        invoke  glDetachShader, [program], [fragmentShader]
+;        invoke  glDeleteShader, [fragmentShader]
+;        invoke  glDeleteProgram, [program]
+;
+;@@:
+;        stdcall Glext.LoadShader, shaderFile, GL_FRAGMENT_SHADER
+;        mov     [fragmentShader], eax
+;
+;        cmp     eax, ebx
+;        jne     @F
+;
+;        mov     [program], ebx
+;        jmp     .Return
+;
+;@@:
+;        stdcall Glext.CreateProgram, ebx, eax
+;        mov     [program], eax
+;
+;        cmp     eax, ebx
+;        je      .Return
+;
+;        invoke  glUseProgram, eax
+;
+;        invoke  glGetUniformLocation, [program], timeName
+;        mov     [timeLocation], eax
+;        invoke  glGetUniformLocation, [program], sizeName
+;        mov     [sizeLocation], eax
+;
+;.Return:
+;        ret
+;endp
+;
 proc Glext.CreateProgram,\
      vertexShader, fragmentShader
 
@@ -147,5 +184,22 @@ proc Glext.LoadShader,\
         mov     eax, ebx
 
 .Return:
+        ret
+endp
+
+proc CreateShader\
+     shaderTextPtr, shaderType
+
+        locals
+                shader  dd      ?
+        endl
+
+        invoke  glCreateShader, [shaderType]
+        mov     [shader], eax
+        invoke  glShaderSource, [shader], 1, [shaderTextPtr], ebx
+        invoke  glCompileShader, [shader]
+
+        mov     eax, [shader]
+
         ret
 endp
