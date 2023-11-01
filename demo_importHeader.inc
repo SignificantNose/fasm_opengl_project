@@ -77,6 +77,7 @@ macro FPU_STP reg               ; 4 B          #REMEMBER: IT AFFECTS STACK
 }
 
 
+
 data import
         library kernel32, 'kernel32.dll',\
                 gdi32,    'gdi32.dll',\

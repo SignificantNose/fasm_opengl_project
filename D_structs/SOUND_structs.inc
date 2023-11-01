@@ -33,6 +33,21 @@ struct Message
        msgTrigger        dd     ?
 ends
 
+struct Sequencer
+       msgListHead       DoublyLinkedList
+       patternListHead   DoublyLinkedList
+       tempo             dd     ?
+       timeElapsed       dd     ?
+       timeOneBeat       dd     ?
+
+       totalBeats        dw     ?
+       beats             db     ?
+       subBeats          db     ?
+       currentBeat       dw     ?
+
+ends
+
+
 struct GUID
        Data1 dd ?
        Data2 dw ?

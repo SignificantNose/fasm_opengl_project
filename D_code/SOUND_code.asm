@@ -1,5 +1,4 @@
 ;    mov     eax, 1.0                ; 5
-;    nop
 ;    mov     [myowntest], eax        ; 5
 ;    fld     [myowntest]             ; 6
 ;    fmul    [myowntest]             ; 6
@@ -47,20 +46,58 @@ INSTR_TRIANGLE = ($-instruments)
 instrTriangle  Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_TRIANGLE
 
 INSTR_HIHAT = ($-instruments)
-instrHiHat     Instrument      <0.0,0.181,0.048,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
+instrHiHat     Instrument      <0.0001,0.181,0.1,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
 
 LIST_NONE       equ     0
 msgListHead     dd      LIST_NONE
 
 
+; Message poll
 messages:
 msg1            Message <440.0, INSTR_SINE>, 3.0, 0.0
+
 ;msg2            Message <440.0, INSTR_TRIANGLE>, 2.0, 0.0
-msg3            Message <100.0, INSTR_HIHAT>, 1.0, 0.1
+;msg1            Message <100.0, INSTR_HIHAT>, 0.1, 0.0
+;msg2            Message <100.0, INSTR_HIHAT>, 0.05, 0.16
+;msg3            Message <100.0, INSTR_HIHAT>, 0.05, 0.32
+;msg4            Message <100.0, INSTR_HIHAT>, 0.05, 0.5
+;msg5            Message <100.0, INSTR_HIHAT>, 0.05, 0.66
+;msg6            Message <100.0, INSTR_HIHAT>, 0.05, 0.82
+;msg7            Message <100.0, INSTR_HIHAT>, 0.05, 1.0
+;msg8            Message <100.0, INSTR_HIHAT>, 0.05, 1.16
+;msg9            Message <100.0, INSTR_HIHAT>, 0.05, 1.32
+;msg10           Message <100.0, INSTR_HIHAT>, 0.05, 1.48
+;msg11           Message <100.0, INSTR_HIHAT>, 0.05, 1.66
+;msg12           Message <100.0, INSTR_HIHAT>, 0.05, 1.82
+;msg13           Message <100.0, INSTR_HIHAT>, 0.05, 2.0
+;msg14           Message <100.0, INSTR_HIHAT>, 0.05, 2.16
+;msg15           Message <100.0, INSTR_HIHAT>, 0.05, 2.32
+;msg16           Message <100.0, INSTR_HIHAT>, 0.05, 2.50
+;msg17           Message <100.0, INSTR_HIHAT>, 0.05, 2.66
+;msg18           Message <100.0, INSTR_HIHAT>, 0.05, 2.82
+;msg19           Message <100.0, INSTR_HIHAT>, 0.05, 3.0
+;msg20           Message <100.0, INSTR_HIHAT>, 0.05, 3.16
+;msg21           Message <100.0, INSTR_HIHAT>, 0.05, 3.32
+;msg22           Message <100.0, INSTR_HIHAT>, 0.05, 3.50
+;msg23           Message <100.0, INSTR_HIHAT>, 0.05, 3.66
+;msg24           Message <100.0, INSTR_HIHAT>, 0.05, 3.82
+;msg25           Message <100.0, INSTR_HIHAT>, 0.05, 4.0
+;msg26           Message <100.0, INSTR_HIHAT>, 0.05, 4.16
+;msg27           Message <100.0, INSTR_HIHAT>, 0.05, 4.32
+;msg28           Message <100.0, INSTR_HIHAT>, 0.05, 4.48
+;msg29           Message <100.0, INSTR_HIHAT>, 0.05, 4.66
+;msg30           Message <100.0, INSTR_HIHAT>, 0.05, 4.82
+;msg31           Message <100.0, INSTR_HIHAT>, 0.05, 5.0
+;msg32           Message <100.0, INSTR_HIHAT>, 0.05, 5.16
+;msg33           Message <100.0, INSTR_HIHAT>, 0.05, 5.32
+;msg34           Message <100.0, INSTR_HIHAT>, 0.05, 5.48
+;msg4            Message <200.0, INSTR_HIHAT>, 1.0, 0.2
 msgEnd:
 
 messagesPtr     dd      messages
 
+seqMain         Sequencer       <LIST_NONE,LIST_NONE,0>, <LIST_NONE,LIST_NONE,0>, 60.0, 0.0, 0.0, 16, 4, 4, 0
+testMsg         Message <660.0,INSTR_HIHAT>, 0.1, 0.1
 
 INTERP_LINEAR   = 0
 INTERP_SQUARE   = 1
@@ -118,7 +155,7 @@ proc Sound.GenSample,\
 
     movzx   eax, word[eax+Message.msgNote+Note.instrumentOffset]
     add     eax, instruments
-    movzx     eax, word[eax+Instrument.oscType]
+    movzx   eax, word[eax+Instrument.oscType]
     
 
     JumpIf OSC_SINE, .sine
@@ -442,7 +479,6 @@ proc Sound.GetADSRAmp,\
 
 .delete:
     mov         eax, DELETE_FLAG
-
     jmp         .return
 
 .ADSphase:
@@ -492,48 +528,6 @@ proc Sound.PlayMsgList,\
     je          .delete
 
 
-;;;;
-;
-;; 0.25
-;    FPU_LD      eax             ; phase
-;    fld1                        ; 1, phase
-;    fidiv       [four]          ; 0.25, phase
-;    pop         eax
-;    FPU_CMP                     ; 
-;    ja  @F          
-;
-;    ; > 0.25
-;    nop
-;@@:
-;; 0.5
-;    FPU_LD      eax             ; phase
-;    fld1                        ; 1, phase
-;    fidiv       [two]           ; 0.5, phase
-;    pop         eax
-;    FPU_CMP                     ;
-;    ja @F
-;    nop
-;
-;@@:
-;; 0.75
-;
-;
-;    FPU_LD      eax             ; phase
-;    fld1                        ; 1, phase
-;    fidiv       [four]          ; 0.25, phase
-;    fchs                        ; -0.25, phase
-;    fld1                        ; 1, -0.25, phase
-;    faddp                       ; 0.75, phase
-;    pop         eax
-;    FPU_CMP                     ; 
-;
-;    ja  @F
-;
-;    ; >0.75
-;    nop
-;@@:
-;
-;;;;
 
     fild        word[esp]               ; sample
     push        eax
@@ -559,30 +553,16 @@ proc Sound.PlayMsgList,\
     ; eax has the address of a next node
     mov edx, eax
 
-    pop ecx
+    pop eax
     jmp .looper
 .return:
     ret
 endp
 
-proc Sound.init uses edi ecx
-    invoke      GetDesktopWindow
-    mov         [hDskWnd], eax          ; do I need it though?
-    invoke      DirectSoundCreate8, NULL, dsc, NULL
 
-    cominvk     dsc, SetCooperativeLevel, [hDskWnd], DSSCL_PRIORITY
-    cominvk     dsc, CreateSoundBuffer, dsbd, dsb, NULL
-    cominvk     dsb, Lock, 0, [blockSize], ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
+proc Sound.MessagePollAdd
 
-    mov         edi, [ptrPart1]
-    mov         ecx, BUFFERSIZE_BYTES/4
-.looper:
-    push        ecx
-
-    ; add messages if necessary
     mov         ecx, [messagesPtr]
-
-
 .addMsgs:
     cmp         ecx, msgEnd
     je          .msgsAdded
@@ -598,6 +578,211 @@ proc Sound.init uses edi ecx
     jmp         .addMsgs
 .msgsAdded:
 
+    ret
+endp
+
+
+
+; routine for defining starting time of sequencer
+; (relatively to the current time):
+; calculates the elapsed time, so that the 
+; sequencer starts playing [startTime] seconds
+; after the current time
+proc Sound.StartTimeSequencer,\
+    startTime
+
+    mov     eax, seqMain
+    fld     [startTime]                     ; startTime
+    fstp    [eax+Sequencer.timeElapsed]     ; 
+    mov     word[eax+Sequencer.currentBeat], -1
+
+    ret
+endp
+
+
+; routine for adding another instrument to the sequencer.
+; Takes the message values for the sequencer and the 
+; pattern of the message. Adds the sequencer instrument
+; to the main sequencer
+proc Sound.AddSequencer,\
+    soundMsg, pattern
+
+    
+; creating new message node
+    invoke  HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
+    mov     edx, [soundMsg]
+    mov     [eax+DoublyLinkedList.data], edx
+
+    mov     edx, [seqMain+Sequencer.msgListHead]
+    mov     [eax+DoublyLinkedList.next], edx
+    cmp     edx, LIST_NONE
+    je      .finishMessage
+    mov     [edx+DoublyLinkedList.prev], eax
+.finishMessage:
+    mov     [seqMain+Sequencer.msgListHead], eax
+
+; creating new pattern node
+    invoke  HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
+    mov     edx, [pattern]
+    mov     [eax+DoublyLinkedList.data], edx
+
+    mov     edx, [seqMain+Sequencer.patternListHead]
+    mov     [eax+DoublyLinkedList.next], edx
+
+    cmp     edx, LIST_NONE
+    je      .finishPattern
+    mov     [edx+DoublyLinkedList.prev], eax
+.finishPattern:
+    mov     [seqMain+Sequencer.patternListHead], eax
+
+    ret
+endp
+
+
+proc Sound.CreateMsgCopy uses edi esi,\
+    soundMsg
+
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Message
+    push    eax
+    mov     edi, eax
+    mov     esi, [soundMsg]
+    mov     ecx, sizeof.Message
+.looper:
+    lodsb
+    stosb
+    loop .looper
+    pop     eax
+
+    ret
+endp
+
+proc Sound.UpdateSequencer
+
+    mov     ecx, seqMain
+    fld     [ecx+Sequencer.timeElapsed]     ; tElapsed
+    fsub    [oneSec]                        ; newTime
+
+    fld     st0                             ; newTime, newTime
+    ;fld     [ecx+Sequencer.timeOneBeat]     ; dt, newTime, newTime
+    fldz                                    ; 0, newTime, newTime
+    FPU_CMP                                 ; newTime
+    ;jmp     .return
+    jbe      .return
+; adding another sequence of notes instead
+
+
+    ;fsub    [ecx+Sequencer.timeOneBeat]     ; finishTime
+    fadd    [ecx+Sequencer.timeOneBeat]      ; finishTime
+
+    mov     ax, word[ecx+Sequencer.currentBeat]
+    inc     ax
+    xor     edx, edx
+    div     word[ecx+Sequencer.totalBeats] 
+    ; now (e)dx has the current beat
+    mov     word[ecx+Sequencer.currentBeat], dx
+
+
+
+
+;goal: to copy a message in case it corresponds to the pattern and poll it
+
+    push    ecx
+
+    mov     eax, [ecx+Sequencer.patternListHead]
+    mov     ecx, [ecx+Sequencer.msgListHead]
+
+.looper:
+    cmp     ecx, LIST_NONE
+    je      .msgsEnded
+    push    ecx
+    push    eax
+    push    edx
+
+    mov     eax, [eax+DoublyLinkedList.data]
+    bt      eax, edx
+    jnc     .notNewMessage
+    ;mov     eax, [eax+DoublyLinkedList.data]
+    ;stdcall Sound.CreateMsgCopy, eax
+    stdcall  Sound.CreateMsgCopy, [ecx+DoublyLinkedList.data]
+    mov      ecx, [timeValue]
+    mov      [eax+Message.msgTrigger], ecx
+    stdcall  Sound.NewMessage, eax
+
+
+
+
+
+.notNewMessage:
+
+
+    pop     edx
+    pop     eax
+    pop     ecx
+    mov     eax, [eax+DoublyLinkedList.next]
+    mov     ecx, [ecx+DoublyLinkedList.next]
+    jmp     .looper
+
+.msgsEnded:
+    pop     ecx
+    
+.return:
+    fstp    [ecx+Sequencer.timeElapsed]     ;
+
+    ret
+endp
+
+
+proc Sound.init uses edi ecx
+    invoke      GetDesktopWindow
+    mov         [hDskWnd], eax          ; do I need it though?
+    invoke      DirectSoundCreate8, NULL, dsc, NULL
+
+    cominvk     dsc, SetCooperativeLevel, [hDskWnd], DSSCL_PRIORITY
+    cominvk     dsc, CreateSoundBuffer, dsbd, dsb, NULL
+    cominvk     dsb, Lock, 0, [blockSize], ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
+
+    
+; initialization of sequencer
+    mov         ecx, seqMain
+    mov         edx, 60.0
+    FPU_LD      edx                             ; 60.0
+    fdiv        [ecx+Sequencer.tempo]           ; dtOneBeat
+    movzx       eax, [ecx+Sequencer.beats]
+    push        eax
+    fidiv       dword[esp]                      ; dt
+    pop         eax
+    fstp        [ecx+Sequencer.timeOneBeat]     ; 
+    pop         edx
+    mov         dl, byte[ecx+Sequencer.beats]
+    mov         al, byte[ecx+Sequencer.subBeats]
+    imul        dl
+    mov         word[ecx+Sequencer.totalBeats], ax
+    nop
+    stdcall     Sound.AddSequencer, testMsg, 7555h
+    stdcall     Sound.StartTimeSequencer, 0.0
+
+; initialization of a global variable for one second
+    mov         eax, 44100
+    push        eax
+    fld1                    ; 1
+    fidiv       dword[esp]  ; dt
+    fstp        [oneSec]    ;
+    pop         eax
+
+
+
+    mov         edi, [ptrPart1]
+    mov         ecx, BUFFERSIZE_BYTES/4
+.looper:
+    push        ecx
+
+
+
+
+    ; add messages if necessary
+    stdcall     Sound.MessagePollAdd
+
+    stdcall     Sound.UpdateSequencer
 
     mov         edx, [timeValue]
     stdcall     Sound.PlayMsgList, edx
