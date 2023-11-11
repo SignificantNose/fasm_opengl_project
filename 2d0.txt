@@ -25,11 +25,17 @@ sound:
     comment the code. please. I beg you.
     resolve code duplication in Sound.AddSequencer and Sound.NewMessage
     andlyze the data usage with 2 separate lists and 1 list (for sequencer)
-    look into cmovcc (conditional move)
-    look into xchg
-    look into changing the return value of GenSample to float
     make LFO
-    
+    separate the data into initialized and uninitialized
+    think of adding multiple oscillators to one instrument (after implementing the filter) 
+    try making a reverb in matlab
+
+    make new things work!!!! (currently: 
+    instruments
+    envelopes
+    lfos
+    fxs
+    oscillators)
     
     
 unresolved:

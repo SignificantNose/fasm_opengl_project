@@ -115,7 +115,6 @@ sizeLocation    GLint           0
 VAO             GLuint          0
 VBO             GLuint          0
 
-
 ; legacy
 ;fragmentShader  GLuint          0
 ;program         GLint           0
@@ -182,3 +181,4 @@ proc WindowProc uses ebx,\
 .Return:
      ret
 endp
+

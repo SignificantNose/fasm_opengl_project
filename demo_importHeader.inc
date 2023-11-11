@@ -70,9 +70,21 @@ macro FPU_LD reg                ; 4 B          #REMEMBER: IT AFFECTS STACK
         fld  dword[esp]
 }
 
+macro FPU_ILD reg
+{
+        push reg
+        fild dword[esp]
+}
+
 macro FPU_STP reg               ; 4 B          #REMEMBER: IT AFFECTS STACK
 {
         fstp dword[esp]
+        pop reg
+}
+
+macro FPU_ISTP reg
+{
+        fistp dword[esp]
         pop reg
 }
 
@@ -84,5 +96,80 @@ data import
                 user32,   'user32.dll',\
                 opengl32, 'opengl32.dll',\
                 dsound, 'dsound.dll'
+        
+        import dsound,\
+               DirectSoundCaptureCreate,'DirectSoundCaptureCreate',\
+               DirectSoundCaptureCreate8,'DirectSoundCaptureCreate8',\
+               DirectSoundCaptureEnumerate ,'DirectSoundCaptureEnumerateA',\
+               DirectSoundCreate,'DirectSoundCreate',\
+               DirectSoundCreate8,'DirectSoundCreate8',\
+               DirectSoundEnumerate ,'DirectSoundEnumerateA',\
+               DirectSoundFullDuplexCreate,'DirectSoundFullDuplexCreate',\
+               DllCanUnloadNow,'DllCanUnloadNow',\
+               DllGetClassObject,'DllGetClassObject',\
+               GetDeviceID,'GetDeviceID'       
+
+        interface IDirectSound8,\
+                  QueryInterface,\
+                  AddRef,\
+                  Release,\
+                  CreateSoundBuffer,\
+                  GetCaps,\
+                  DuplicateSoundBuffer,\
+                  SetCooperativeLevel,\
+                  Compact,\
+                  GetSpeakerConfig,\
+                  SetSpeakerConfig,\
+                  Initialize,\
+                  VerifyCertification
+
+        interface IDirectSoundBuffer,\
+                  QueryInterface,\
+                  AddRef,\
+                  Release,\
+                  GetCaps,\
+                  GetCurrentPosition,\
+                  GetFormat,\
+                  GetVolume,\
+                  GetPan,\
+                  GetFrequency,\
+                  GetStatus,\
+                  Initialize,\
+                  Lock,\
+                  Play,\
+                  SetCurrentPosition,\
+                  SetFormat,\
+                  SetVolume,\
+                  SetPan,\
+                  SetFrequency,\
+                  Stop,\
+                  Unlock,\
+                  Restore
+
+        interface IDirectSoundBuffer8,\
+                  QueryInterface,\
+                  AddRef,\
+                  Release,\
+                  GetCaps,\
+                  GetCurrentPosition,\
+                  GetFormat,\
+                  GetVolume,\
+                  GetPan,\
+                  GetFrequency,\
+                  GetStatus,\
+                  Initialize,\
+                  Lock,\
+                  Play,\
+                  SetCurrentPosition,\
+                  SetFormat,\
+                  SetVolume,\
+                  SetPan,\
+                  SetFrequency,\
+                  Stop,\
+                  Unlock,\
+                  Restore,\
+                  SetFX,\
+                  AcquireResources,\
+                  GetObjectInPath
 end data
 
