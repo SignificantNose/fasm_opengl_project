@@ -36,7 +36,8 @@ sound:
     lfos
     fxs
     oscillators)
+    unison reduce code
     
-    
+    test filter, then implement 2-channel filter
 unresolved:
     macro for transferring the pattern to the reverse bit sequence

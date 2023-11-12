@@ -35,46 +35,8 @@ messages:
 
 msg1            UnprocessedMessage      <165.0, 6.0, 0.0>, INSTR_SINE
 msg2            UnprocessedMessage      <450.0,3.0,0.0>, INSTR_SINE
-msg3            UnprocessedMessage      <165.0,3.0,0.0>, INSTR_SAW
+msg3            UnprocessedMessage      <400.0,3.0,0.0>, INSTR_SAW
 
-;msg1            Message <440.0, INSTR_SINE>, 3.0, 0.0
-
-;msg2            Message <440.0, INSTR_TRIANGLE>, 2.0, 0.0
-;msg1            Message <100.0, INSTR_HIHAT>, 0.1, 0.0
-;msg2            Message <100.0, INSTR_HIHAT>, 0.05, 0.16
-;msg3            Message <100.0, INSTR_HIHAT>, 0.05, 0.32
-;msg4            Message <100.0, INSTR_HIHAT>, 0.05, 0.5
-;msg5            Message <100.0, INSTR_HIHAT>, 0.05, 0.66
-;msg6            Message <100.0, INSTR_HIHAT>, 0.05, 0.82
-;msg7            Message <100.0, INSTR_HIHAT>, 0.05, 1.0
-;msg8            Message <100.0, INSTR_HIHAT>, 0.05, 1.16
-;msg9            Message <100.0, INSTR_HIHAT>, 0.05, 1.32
-;msg10           Message <100.0, INSTR_HIHAT>, 0.05, 1.48
-;msg11           Message <100.0, INSTR_HIHAT>, 0.05, 1.66
-;msg12           Message <100.0, INSTR_HIHAT>, 0.05, 1.82
-;msg13           Message <100.0, INSTR_HIHAT>, 0.05, 2.0
-;msg14           Message <100.0, INSTR_HIHAT>, 0.05, 2.16
-;msg15           Message <100.0, INSTR_HIHAT>, 0.05, 2.32
-;msg16           Message <100.0, INSTR_HIHAT>, 0.05, 2.50
-;msg17           Message <100.0, INSTR_HIHAT>, 0.05, 2.66
-;msg18           Message <100.0, INSTR_HIHAT>, 0.05, 2.82
-;msg19           Message <100.0, INSTR_HIHAT>, 0.05, 3.0
-;msg20           Message <100.0, INSTR_HIHAT>, 0.05, 3.16
-;msg21           Message <100.0, INSTR_HIHAT>, 0.05, 3.32
-;msg22           Message <100.0, INSTR_HIHAT>, 0.05, 3.50
-;msg23           Message <100.0, INSTR_HIHAT>, 0.05, 3.66
-;msg24           Message <100.0, INSTR_HIHAT>, 0.05, 3.82
-;msg25           Message <100.0, INSTR_HIHAT>, 0.05, 4.0
-;msg26           Message <100.0, INSTR_HIHAT>, 0.05, 4.16
-;msg27           Message <100.0, INSTR_HIHAT>, 0.05, 4.32
-;msg28           Message <100.0, INSTR_HIHAT>, 0.05, 4.48
-;msg29           Message <100.0, INSTR_HIHAT>, 0.05, 4.66
-;msg30           Message <100.0, INSTR_HIHAT>, 0.05, 4.82
-;msg31           Message <100.0, INSTR_HIHAT>, 0.05, 5.0
-;msg32           Message <100.0, INSTR_HIHAT>, 0.05, 5.16
-;msg33           Message <100.0, INSTR_HIHAT>, 0.05, 5.32
-;msg34           Message <100.0, INSTR_HIHAT>, 0.05, 5.48
-;msg4            Message <200.0, INSTR_HIHAT>, 1.0, 0.2
 msgEnd:
 
 messagesPtr     dd      messages
@@ -102,7 +64,7 @@ timeValue       dd      0
 currTime        dd      0.0
 oneSec          dd      0.00002267573
 ten             dd      10
-maxValue        dd      8000  
+maxValue        dd      4000  
 randNoise       dd      2000
 two             dd      2
 three           dd      3
@@ -115,28 +77,6 @@ dsb             IDirectSoundBuffer8
 dsbd            DSBUFFERDESC sizeof.DSBUFFERDESC, DSBCAPS_GLOBALFOCUS or DSBCAPS_CTRLPOSITIONNOTIFY,\
                 BUFFERSIZE_BYTES, 0, mywaveformat, <0,0,0,0>      
 mywaveformat    WAVEFORMATEX 1, 2, 44100, 4*44100, 4, 16, 0
-
-
-proc Sound.PowXY,\  
-    x,y
-
-    fld     [y]     ; y
-    fld     [x]     ; x, y
-    fyl2x           ; y*log2(x)
-    fld     st0     ; y*log2(x), y*log2(x)
-    frndint         ; round, y*log2(x)
-    fsub    st1, st0    ; round, realPart
-    fxch    st1     ; realPart, round
-    f2xm1           ; e-1, round
-    fld1            ; 1, e-1, round
-    faddp           ; e, round
-    fscale          ; x^y, round   
-    fstp    st1     ; x^y
-    push_st0        
-    pop     eax
-
-    ret
-endp
 
 
 proc Sound.Hz2Angular,\
@@ -199,6 +139,7 @@ proc Sound.GenSample,\
     jmp .getResult
 .triangle:
     
+    ; try something else, like shifted triangle. The calculation will be easier
     fimul       [four]          ; 4*t
     fchs                        ; -4*t
     fld1                        ; 1, -4*t
@@ -209,39 +150,6 @@ proc Sound.GenSample,\
     fabs                        ; |2-|1-4*t||
     fld1                        ; 1, |2-|1-4*t||
     fsubp                       ; |2-|1-4*t||-1
-
-;;;    fimul    [four]          ; 4*t
-;;;    fld      st0             ; 4*t, 4*t
-;;;    fld1                     ; 1, 4*t, 4*t
-;;;    FPUCMP                   ; 4*t
-;;;    ja      .getResult
-;;;    fld      st0             ; 4*t, 4*t
-;;;    fild      [three]        ; 3, 4*t, 4*t
-;;;    FPUCMP                   ; 4*t
-;;;    jb      .finalCase
-;;;    fchs                     ; -4*t
-;;;    fiadd   [two]            ; 2-4*t
-;;;    jmp     .getResult
-;;;.finalCase:
-;;;    fisub    [four]          ; 4*t-4
-
-;    fstp    [phaseBuffer]
-;    stdcall Sound.Hz2Angular, [phaseBuffer]
-;    mov     [phaseBuffer], eax
-;    fld     [phaseBuffer]    ; 2*pi*phase
-;    fsin                     ; sin(2*pi*phase)
-;    fld     st0              ; sin, sin
-;    fmul    st0, st0         ; sin^2, sin
-;    fld1                     ; 1, sin^2, sin
-;    fsubrp                   ; 1-sin^2, sin
-;    fsqrt                    ; sqrt(1-sin^2), sin
-;    fpatan                   ; arctg == arcsin
-;    fld1                     ; 1, arcsin
-;    fld1                     ; 1, 1, arcsin
-;    faddp                    ; 2, arcsin
-;    fmulp                    ; 2*arcsin
-;    fldpi                    ; pi, 2*arcsin
-;    fdivp                    ; 2*arcsin/pi
     jmp .getResult
 .noise:
 
@@ -267,162 +175,8 @@ proc Sound.GenSample,\
     ret
 endp
 
-;proc Sound.GenSample,\
-;    soundMsg, time
-;
-;    mov     eax, [soundMsg]
-;    fld1                     ; 1 
-;    fld     [time]           ; t, 1
-;    fmul    [eax+Message.msgNote+Note.freq]           ; t*freq, 1
-;    fprem                    ; phase, 1
-;    fstp    st1              ; phase
-;
-;    movzx   eax, word[eax+Message.msgNote+Note.instrumentOffset]
-;    imul    eax, sizeof.Instrument
-;    add     eax, instruments
-;    movzx   eax, word[eax+Instrument.oscType]
-;
-;    JumpIf OSC_SINE, .sine
-;    JumpIf OSC_SQUARE, .square
-;    JumpIf OSC_SAW, .saw
-;    JumpIf OSC_TRIANGLE, .triangle
-;    JumpIf OSC_NOISE, .noise
-;    xor eax, eax
-;    jmp .Return
-;
-;.sine:  
-;    push_st0
-;    stdcall Sound.Hz2Angular
-;    FPU_LD eax               ; 2*pi*phase
-;    fsin                     ; sin(2*pi*phase)
-;    jmp .getResult
-;.square:
-;
-;    ; combine with sine??
-;    push_st0
-;    stdcall Sound.Hz2Angular
-;    FPU_LD eax
-;    fsin                     ; sin(2*pi*phase)
-;    fldz                     ; 0, sin    
-;    FPU_CMP                   ; 
-;    fld1                     ; 1
-;    ja   @F
-;    fchs
-;@@:
-;    jmp .getResult
-;.saw:
-;    fimul   [two]            ; 2*t
-;    fld1                     ; 1, 2*t
-;    fsubp                    ; 2*t-1
-;    jmp .getResult
-;.triangle:
-;    
-;    fimul       [four]          ; 4*t
-;    fchs                        ; -4*t
-;    fld1                        ; 1, -4*t
-;    faddp                       ; 1-4*t
-;    fabs                        ; |1-4*t|
-;    fchs                        ; -|1-4*t|
-;    fiadd       [two]           ; 2-|1-4*t|
-;    fabs                        ; |2-|1-4*t||
-;    fld1                        ; 1, |2-|1-4*t||
-;    fsubp                       ; |2-|1-4*t||-1
-;
-;;;;    fimul    [four]          ; 4*t
-;;;;    fld      st0             ; 4*t, 4*t
-;;;;    fld1                     ; 1, 4*t, 4*t
-;;;;    FPUCMP                   ; 4*t
-;;;;    ja      .getResult
-;;;;    fld      st0             ; 4*t, 4*t
-;;;;    fild      [three]        ; 3, 4*t, 4*t
-;;;;    FPUCMP                   ; 4*t
-;;;;    jb      .finalCase
-;;;;    fchs                     ; -4*t
-;;;;    fiadd   [two]            ; 2-4*t
-;;;;    jmp     .getResult
-;;;;.finalCase:
-;;;;    fisub    [four]          ; 4*t-4
-;
-;;    fstp    [phaseBuffer]
-;;    stdcall Sound.Hz2Angular, [phaseBuffer]
-;;    mov     [phaseBuffer], eax
-;;    fld     [phaseBuffer]    ; 2*pi*phase
-;;    fsin                     ; sin(2*pi*phase)
-;;    fld     st0              ; sin, sin
-;;    fmul    st0, st0         ; sin^2, sin
-;;    fld1                     ; 1, sin^2, sin
-;;    fsubrp                   ; 1-sin^2, sin
-;;    fsqrt                    ; sqrt(1-sin^2), sin
-;;    fpatan                   ; arctg == arcsin
-;;    fld1                     ; 1, arcsin
-;;    fld1                     ; 1, 1, arcsin
-;;    faddp                    ; 2, arcsin
-;;    fmulp                    ; 2*arcsin
-;;    fldpi                    ; pi, 2*arcsin
-;;    fdivp                    ; 2*arcsin/pi
-;    jmp .getResult
-;.noise:
-;
-;    ;stdcall     Rand.GetRandomNumber, 0, [randNoise]
-;    fstp        st0                   ; 
-;    stdcall     Rand.GetRandomInBetween, 0, [randNoise]
-;    push        eax
-;    fild        dword[esp]            ; x = [0,max]
-;    pop         eax
-;    fild        [randNoise]           ; max, x
-;    fidiv       [two]                 ; max/2, x
-;    fsubp                             ; x = [-max/2,max/2]
-;    fidiv       [randNoise]           ; x = [-1/2, 1/2]
-;    fimul       [two]                 ; x = [-1,1]
-;    
-;
-;
-;
-;.getResult:
-;
-;    push_st0
-;    pop     eax
-;
-;.Return:
-;    ret
-;endp
-
-;proc Sound.CreateOsc, type, freqHz
-;    invoke      HeapAlloc, [hHeap], 8, sizeof.Oscillator
-;    push        eax
-;
-;    stdcall     Sound.Hz2Angular, [freqHz]
-;    mov         ecx, eax
-;
-;    pop         eax
-;    mov         [eax+Oscillator.freq], ecx    
-;
-;    mov         cx, word[type]
-;    mov         [eax+Oscillator.oscType], cx
-;    ret
-;endp
-
 proc Sound.NewMessage,\
     unprocMsg
-
-;    invoke HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
-;    mov ecx, [soundMsg]
-;    mov [eax+DoublyLinkedList.data], ecx
-;
-;    mov ecx, [msgListHead]    
-;    mov [eax+DoublyLinkedList.next], ecx
-;
-;
-;    mov [eax+DoublyLinkedList.prev], LIST_NONE
-;    ;cmp ecx, LIST_NONE
-;    ;je  .return
-;    jecxz .return            
-;    mov [ecx+DoublyLinkedList.prev], eax
-;.return:
-;    mov [msgListHead], eax
-
-
-
 
     mov     eax, [unprocMsg]
     movzx   eax, byte[eax+UnprocessedMessage.instrNumber]
@@ -451,10 +205,6 @@ proc Sound.NewMessage,\
     pop     ecx
     mov     [ecx+Instrument.msgPollPtr], eax
 
-    
-    
-
-
     ret
 endp
 
@@ -479,60 +229,6 @@ proc Sound.RemoveInstrMessage,\
     mov edx, [eax+DoublyLinkedList.next]
     mov [ecx+Instrument.msgPollPtr], edx
     push edx
-.return:
-    invoke HeapFree, [hHeap], 0, eax
-    pop eax
-    ret
-endp
-
-;    mov eax, [soundMsg]
-;    cmp eax, [msgListHead]
-;    je .isHead
-;
-;    mov edx, [eax+DoublyLinkedList.prev]
-;    mov ecx, [eax+DoublyLinkedList.next]
-;    mov [edx+DoublyLinkedList.next], ecx
-;    push ecx
-;    ;cmp ecx, LIST_NONE
-;    ;je .return
-;    jecxz .return
-;    mov [ecx+DoublyLinkedList.prev], edx
-;    jmp .return
-;.isHead:
-;    mov edx, [eax+DoublyLinkedList.next]
-;    mov [msgListHead], edx
-;    push edx
-;
-;.return:
-;    invoke HeapFree, [hHeap], 0, eax
-;    pop eax
-;    ret
-;
-;    ret
-;endp
-
-; will be deprecated
-proc Sound.RemoveMessage,\
-    soundMsgNode
-    
-    mov eax, [soundMsgNode]
-    cmp eax, [msgListHead]
-    je .isHead
-
-    mov edx, [eax+DoublyLinkedList.prev]
-    mov ecx, [eax+DoublyLinkedList.next]
-    mov [edx+DoublyLinkedList.next], ecx
-    push ecx
-    ;cmp ecx, LIST_NONE
-    ;je .return
-    jecxz .return
-    mov [ecx+DoublyLinkedList.prev], edx
-    jmp .return
-.isHead:
-    mov edx, [eax+DoublyLinkedList.next]
-    mov [msgListHead], edx
-    push edx
-
 .return:
     invoke HeapFree, [hHeap], 0, eax
     pop eax
@@ -574,14 +270,8 @@ proc Sound.interpolatePhase,\
 
 .linear:
 .store:
-    ;fstp    [phase]
-    ;mov     eax, [phase]        ; 11 B
-
     push    eax                  ; 1 B
-    FPU_STP eax                  ; 4 B
-
-    
-
+    FPU_STP eax                  ; 4 B   
 .return:
     ret
 endp
@@ -726,153 +416,14 @@ proc Sound.AddOscillator,\
     ret
 endp
 
-proc Sound.GetOscSamples,\
-    osc, freq
-    locals 
-        step        dd      ?
-        two         dd      ?
-        twelve      dd      ?
-        left        dd      ?
-        right       dd      ?
-        leftMul     dd      ?
-        rightMul    dd      ?
-    endl
 
-    nop
-    ; hate it, but for now let it be this way
-    mov     ecx, [osc]
-    movzx   eax, byte[ecx+Oscillator.oscType]
-    mov     edx, [ecx+Oscillator.detune]
-
-    cmp     edx, 0
-    je      .noUnison
-
-
-    movzx   ecx, byte[ecx+Oscillator.voices]
-    mov     [two], 2.0
-    mov     [twelve], 12.0
-    mov     [left], 0.0
-    mov     [right], 0.0
-
-    push    edx
-    fld     dword[esp]      ; detune
-    fmul    [two]           ; 2*detune
-    push    ecx
-    fild    dword[esp]      ; voices, 2*detune
-    fld1                    ; 1, voices, 2*detune
-    fsubp                   ; voices-1, 2*detune
-    fdivp                   ; step
-    fstp    [step]
-
-    pop     ecx
-    fld     dword[esp]      ; detune 
-    fchs                    ; -detune
-    fstp    dword[esp]    
-    pop     eax
-    ; eax keeps track of the current detune
-
-.looper:
-    push    ecx
-    push    eax
-
-    push    eax
-    fld     dword[esp]      ; currDetune
-    fdiv    [twelve]        ; detune/12
-    fstp    dword[esp]
-    pop     eax
-    stdcall Sound.PowXY, 2.0, eax
-    push    eax
-    fld     dword[esp]      ; detunator
-    fmul    [freq]          ; tune
-    fstp    dword[esp]
-    pop     eax
-
-    mov     ecx, [osc]
-    movzx   ecx, [ecx+Oscillator.oscType]
-    stdcall Sound.GenSample, ecx, eax
-
-    fld1                    ; 1
-    fld     dword[esp]      ; currDetune, 1
-    fdiv    [two]           ; panPhase, 1
-    fld     st0             ; panPhase, panPhase, 1
-    fldz                    ; 0, panPhase, panPhase, 1
-    FPU_CMP                 ; panPhase, 1
-    ja      @F
-    ; positive
-    ; right = 1, left = 1 - panPhase
-    fsubp                   ; 1-panPhase
-    fstp    [leftMul]       ;
-    fld1                    ; 1
-    fstp    [rightMul]      ;
-    jmp     .saveSample
-
-@@:
-    ; negative
-    ; left = 1, right = 1 + panPhase
-    faddp                   ; 1+panPhase
-    fstp    [rightMul]      ;
-    fld1                    ; 1
-    fstp    [leftMul]
-
-.saveSample:
-    push    eax
-    fld     dword[esp]      ; sample
-    fld     st0             ; sample, sample
-    fmul    [leftMul]       ; leftSample, sample
-    fadd    [left]          ; leftNew, sample
-    fstp    [left]          ; sample
-    fmul    [rightMul]      ; rightSample
-    fadd    [right]         ; rightNew
-    fstp    [right]         ;   
-    pop     eax
-
-
-    fld     dword[esp]      ; currStep
-    fadd    [step]          ; newStep
-    fstp    dword[esp]      ;
-    pop     eax
-    pop     ecx
-    loop .looper
-
-    mov     ecx, [osc]
-    movzx   ecx, byte[ecx+Oscillator.voices]
-    push    ecx
-    fld     [left]      ; left
-    fidiv   dword[esp]  ; finalLeft
-    push    eax
-    fstp    dword[esp]  
-    pop     eax
-    fld     [right]     ; right
-    fidiv   dword[esp]  ; finalRight
-    fstp    dword[esp]
-    pop     edx
-
-
-
-    
-
-    
-    ; I need to go through [-detune; detune]
-    ; need to get a step for each iteration 
-    ; and modify pitch and the pan for each iteration
-
-
-
-    ;stdcall Sound.PowXY, 10.0, 2.5
-    jmp .return
-.noUnison:
-    stdcall Sound.GenSample, eax, [freq]
-    ; returns float
-    mov     edx, eax
-
-.return:
-
-    ret
-endp
-
-
-; returns an accurate two-channel sample: 
-; integer 2-byte stereo
+; returns the sample for current instrument,
+; that is: two float values representing the
+; sum of all oscillators for each message 
+; with the ADSR applied
+;
+; the float values are returned in 
+; eax (L) and edx (R) registers
 proc Sound.GetInstrumentSample,\
     instr
     locals
@@ -965,119 +516,104 @@ proc Sound.GetInstrumentSample,\
     pop     edx
     jmp     .loopMsgs
 .return:
+;    push    eax
+;    fld     [resLeft]       ; resLeft
+;    fimul   [maxValue]      ; intResLeft
+;    ; will have to think about it
+;    fistp   dword[esp]
+;    pop     eax 
+;
+;    shl     eax, 16
+;
+;    push    eax
+;    fld     [resRight]      ; resRight
+;    fimul   [maxValue]      ; intResRight
+;    fistp   dword[esp]
+;    pop     edx
+;    and     edx, 0xFFFF
+;    or      eax, edx
     push    eax
-    fld     [resLeft]       ; resLeft
-    fimul   [maxValue]      ; intResLeft
-    ; will have to think about it
-    fistp   dword[esp]
-    pop     eax 
-
-    shl     eax, 16
-
-    push    eax
-    fld     [resRight]      ; resRight
-    fimul   [maxValue]      ; intResRight
-    fistp   dword[esp]
+    fld     [resLeft]   ; resLeft
+    fstp    dword[esp]  ; 
+    pop     eax
+    push    edx         
+    fld     [resRight]  ; resRight
+    fstp    dword[esp]  ;
     pop     edx
-    and     edx, 0xFFFF
-    or      eax, edx
-
-
 
     ret
 endp
 
 proc Sound.PlayMsgList
 
-;    mov ecx, [msgListHead]
-;    xor eax, eax
-;
-;.looper:
-;    ;cmp ecx, LIST_NONE
-;    ;je .return
-;    jecxz .return
-;    push eax
-;    push ecx
-;
-;
-;    mov ecx, [ecx+DoublyLinkedList.data]
-;    ; ecx has the pointer to the message
-;    ;stdcall     Sound.GenSample, msg, [time]
-;    ;stdcall     Sound.GetADSRAmp, ecx, [time]
-;    ;multiply the acquired values and get the needed value
-;
-;    push ecx
-;    stdcall     Sound.GenSample, ecx, [currTime]
-;    pop         ecx
-;    push        eax
-;
-;
-;    movzx       eax, word[ecx+Message.msgNote+Note.instrumentOffset]
-;    imul        eax, sizeof.Instrument
-;    add         eax, instruments+Instrument.env
-;    stdcall     Sound.GetADSRAmp, eax, ecx, [currTime]
-;    cmp         eax, DELETE_FLAG
-;    je          .delete
-;
-;
-;
-;    fld         dword[esp]              ; sample
-;    push        eax
-;    fmul        dword[esp]              ; resAmp
-;    pop         eax
-;    fimul       [maxValue]              ; res
-;    ; bad
-;    fistp       word[esp]
-;    pop         eax
-;    and         eax, 0x0000FFFF
-;
-;
-;    pop ecx
-;    mov ecx, [ecx+DoublyLinkedList.next]
-;
-;    pop edx
-;    add eax, edx
-;
-;    jmp         .looper
-;.delete:
-;;    pop eax
-;;    pop eax
-;;    stdcall Sound.RemoveMessage, eax
-;    pop eax
-;    stdcall     Sound.RemoveMessage
-;    ; eax has the address of a next node
-;    mov ecx, eax
-;
-;    pop eax
-;    jmp .looper
-;.return:
-;    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov ecx, instruments
-    xor eax, eax
+    mov     ecx, instruments
+    xor     eax, eax
 .looper:
-    cmp ecx, instrumentsEnd
-    je .return
-    push ecx
-    push eax
+    cmp     ecx, instrumentsEnd
+    je      .return
+    push    ecx
+    push    eax
 
-    ; instruments must return a ready sample - that is, stereo accurate and int
+    push    ecx
+    ; instruments must return float values, so that the effects can be applied
     stdcall Sound.GetInstrumentSample, ecx
+    ; apply filter
+    pop     ecx
+    mov     ecx, [ecx+Instrument.filter]
+    jecxz   .noFilter
 
-    pop edx
-    add ax, dx
-    rol eax, 16
-    rol edx, 16
-    add ax, dx
-    rol eax, 16
-    pop ecx
-    add ecx, sizeof.Instrument
-    jmp .looper
+    nop
+    push    ecx
+    push    eax
+    ;stdcall Sound.FilterProcessChannel, edx, ecx+InstrFilter.coeffs, ecx+InstrFilter.rightSamples
+    add     ecx, InstrFilter.rightSamples
+    push    ecx
+    add     ecx, InstrFilter.coeffs-InstrFilter.rightSamples
+    push    ecx
+    push    edx
+    stdcall Sound.FilterProcessChannel
+    ;
+    
+    pop     edx
+    pop     ecx
+    
+    push    eax
+    
+    ;stdcall Sound.FilterProcessChannel, edx, ecx+InstrFilter.coeffs, ecx+InstrFilter.leftSamples
+    add     ecx, InstrFilter.leftSamples
+    push    ecx
+    add     ecx, InstrFilter.coeffs-InstrFilter.leftSamples
+    push    ecx
+    push    edx
+    stdcall Sound.FilterProcessChannel
+    ;
+    
+    pop     edx
+
+.noFilter:
+
+
+    push    eax
+    fld     dword[esp]      ; sample
+    fimul   [maxValue]      ; resSample
+    fistp   dword[esp]      ; 
+    pop     eax 
+    mov     edx, eax
+
+
+
+    pop     ecx 
+    add     ax, cx
+    rol     eax, 16
+    rol     ecx, 16
+    add     dx, cx
+    add     ax, dx 
+    rol     eax, 16
+    pop     ecx
+    add     ecx, sizeof.Instrument
+    jmp     .looper
 .return:
     ret
-
-
 endp
 
 
@@ -1241,12 +777,7 @@ proc Sound.UpdateSequencer
     mov      [eax+Message.msgTrigger], ecx
     stdcall  Sound.NewMessage, eax
 
-
-
-
-
 .notNewMessage:
-
 
     pop     edx
     pop     eax
@@ -1260,7 +791,6 @@ proc Sound.UpdateSequencer
     
 .return:
     fstp    [ecx+Sequencer.timeElapsed]     ;
-
     ret
 endp
 
@@ -1278,6 +808,9 @@ proc Sound.init uses edi ecx
 ; initialization of oscillators
     ;stdcall     Sound.AddOscillator, oscSine, instrSine
     stdcall     Sound.AddOscillator, oscSaw, instrSaw
+    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
+    mov         [instrSaw+Instrument.filter], eax
+    stdcall     Sound.CalcButterworthCoeffs, 150.0, eax
 ; initialization of sequencer
 ;    mov         ecx, seqMain
 ;    mov         edx, 60.0

@@ -19,6 +19,7 @@
         include 'D_structs\FILE_structs.inc'
         include 'D_structs\RANDOM_structs.inc'
         include 'D_structs\BUILD_structs.inc'
+        include 'D_structs\SOUNDFX_structs.inc'
         include 'D_STRUCTS\SOUND_structs.inc'
 
         include 'D_objects\Cube.inc'
