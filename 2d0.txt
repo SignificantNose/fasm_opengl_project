@@ -28,16 +28,28 @@ sound:
     make LFO
     separate the data into initialized and uninitialized
     think of adding multiple oscillators to one instrument (after implementing the filter) 
-    try making a reverb in matlab
 
     make new things work!!!! (currently: 
-    instruments
-    envelopes
-    lfos
-    fxs
-    oscillators)
+    lfos)
     unison reduce code
+    reverb do not yet, leave until later. implement if vital
     
     test filter, then implement 2-channel filter
+    look through the volumes: each oscillator(oscillator??) must be in range(1,0)
+        & think of the volume of unison
+    make interpolate byte?
+    for now the lfo for cutoff frequency will not logically use the trigger time, 
+        as it will require some logic for the instrument, meaning additional field
+        
+    make the pitch modulation
+    optimize the code where the comments are
+    the application of unison can become a separate routine tbh. but the time will tell us
+
+    the frequency is weirdly modified. think.
+    the experiments show that the current frequency is dependent on the previous
+    direction of the frequency modulation, meaning that in case of reverse linear
+    interpotaion the frequency goes down and down, but in case of linear it goes
+    up and up. but in case of triangle it goes up and down...
+
 unresolved:
     macro for transferring the pattern to the reverse bit sequence

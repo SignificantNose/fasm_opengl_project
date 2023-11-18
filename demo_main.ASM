@@ -138,6 +138,7 @@ VBO             GLuint          0
         include 'D_code\BUILD_code.asm'
         include 'D_code\SOUNDFX_code.asm'
         include 'D_code\SOUND_code.asm'
+        include 'D_code\MEMORY_code.asm'
 
 proc WinMain
      locals

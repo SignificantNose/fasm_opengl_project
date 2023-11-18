@@ -21,6 +21,7 @@
         include 'D_structs\BUILD_structs.inc'
         include 'D_structs\SOUNDFX_structs.inc'
         include 'D_STRUCTS\SOUND_structs.inc'
+        include 'D_STRUCTS\MEMORY_structs.inc'
 
         include 'D_objects\Cube.inc'
         include 'D_objects\Plane.inc'

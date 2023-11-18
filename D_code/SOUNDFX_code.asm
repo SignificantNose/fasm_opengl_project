@@ -20,7 +20,7 @@ proc Sound.PowXY,\
 endp
 
 proc Sound.GetOscSamples,\
-    osc, freq
+    pOsc, freq, triggerTime
     locals 
         step        dd      ?
         two         dd      ?
@@ -32,7 +32,28 @@ proc Sound.GetOscSamples,\
     endl
 
     ; hate it, but for now let it be this way
-    mov     ecx, [osc]
+    mov     ecx, [pOsc]
+    ; get cutofffreqlfo and cmp with 0 to make sure that it's present
+    ; eax = Sound.LFOGetValue
+    ; freq*=eax
+    mov     eax, [ecx+Oscillator.pitchLFO]
+    cmp     eax, 0
+    je      .noPitchLFO
+    push    ecx
+    stdcall Sound.LFOGetValue, eax, [triggerTime]
+    pop     ecx
+    fld     [freq]
+    push    eax 
+    fmul    dword[esp]
+    pop     eax 
+    fstp    [freq]
+    
+
+
+
+.noPitchLFO:
+    ; after cahnging the LFO, unison can be applied
+
     movzx   eax, byte[ecx+Oscillator.oscType]
     mov     edx, [ecx+Oscillator.detune]
 
@@ -79,7 +100,7 @@ proc Sound.GetOscSamples,\
     fstp    dword[esp]
     pop     eax
 
-    mov     ecx, [osc]
+    mov     ecx, [pOsc]
     movzx   ecx, [ecx+Oscillator.oscType]
     stdcall Sound.GenSample, ecx, eax
 
@@ -126,21 +147,22 @@ proc Sound.GetOscSamples,\
     pop     ecx
     loop .looper
 
-    mov     ecx, [osc]
+    mov     ecx, [pOsc]
     movzx   ecx, byte[ecx+Oscillator.voices]
     push    ecx
     fld     [left]      ; left
     fidiv   dword[esp]  ; finalLeft
-    push    eax
+    push    edx
     fstp    dword[esp]  
-    pop     eax
+    pop     edx
     fld     [right]     ; right
     fidiv   dword[esp]  ; finalRight
     fstp    dword[esp]
-    pop     edx
+    pop     eax
 
     jmp .return
 .noUnison:
+    
     stdcall Sound.GenSample, eax, [freq]
     ; returns float
     mov     edx, eax
@@ -152,7 +174,7 @@ endp
 
 ; the routine recalculates the coefficients 
 ; that are used in the convolution of the 
-; Butterworth filter
+; Butterworth filter. Returns the filter.
 proc Sound.CalcButterworthCoeffs,\
     cutoff, filter
     
@@ -203,18 +225,56 @@ proc Sound.FilterProcessChannel,\
     mov     ecx, [coeffs]
     mov     eax, [prevSamples]
 
-    mov     edx, [eax+SampleArray.x1]
-    mov     [eax+SampleArray.x2], edx
-    mov     edx, [eax+SampleArray.x0]
-    mov     [eax+SampleArray.x1], edx
+;    mov     edx, [eax+SampleArray.x4]
+;    mov     [eax+SampleArray.x5], edx
+;    mov     edx, [eax+SampleArray.x3]
+;    mov     [eax+SampleArray.x4], edx
+;    mov     edx, [eax+SampleArray.x2]
+;    mov     [eax+SampleArray.x3], edx
+;    mov     edx, [eax+SampleArray.x1]
+;    mov     [eax+SampleArray.x2], edx
+;    mov     edx, [eax+SampleArray.x0]
+;    mov     [eax+SampleArray.x1], edx
+    push    ecx
+    push    eax
+
+    push    COUNTSHIFT*4
+;    add     eax, SampleArray.x0     ; yikes
+    push    eax
+    add     eax, 4
+    push    eax
+    stdcall Memory.memcpy ;, eax+4, eax, COUNTSHIFT*4
+
+    pop     eax
+    pop     ecx
+
     mov     edx, [rawSample]
     mov     [eax+SampleArray.x0], edx
 
-    mov     edx, [eax+SampleArray.y1]
-    mov     [eax+SampleArray.y2], edx
-    mov     edx, [eax+SampleArray.y0]
-    mov     [eax+SampleArray.y1], edx
+;    mov     edx, [eax+SampleArray.y4]
+;    mov     [eax+SampleArray.y5], edx
+;    mov     edx, [eax+SampleArray.y3]
+;    mov     [eax+SampleArray.y4], edx
+;    mov     edx, [eax+SampleArray.y2]
+;    mov     [eax+SampleArray.y3], edx
+;    mov     edx, [eax+SampleArray.y1]
+;    mov     [eax+SampleArray.y2], edx
+;    mov     edx, [eax+SampleArray.y0]
+;    mov     [eax+SampleArray.y1], edx
+    push    ecx
+    push    eax
+
+    push COUNTSHIFT*4
+    add     eax, SampleArray.y0
+    push    eax
+    add     eax, 4
+    push    eax
+    stdcall Memory.memcpy ;, eax+SampleArray.y0+4, eax+SampleArray.y0, COUNTSHIFT*4
     
+
+    pop     eax
+    pop     ecx
+
     fld     [ecx+ButterworthCoeffs.b0]      ; b0
     fmul    [eax+SampleArray.x0]            ; b0*x0
     fld     [ecx+ButterworthCoeffs.b1]      ; b1, b0*x0
@@ -232,5 +292,119 @@ proc Sound.FilterProcessChannel,\
     fstp    [eax+SampleArray.y0]
 
     mov     eax, [eax+SampleArray.y0]
+    ret
+endp
+
+; routine purely for LFO to recalculate 
+; previous samples. Reasoning:
+; without recalculating the previous samples
+; the filter sounds rather dissapointing. 
+; I found it possible that the filter uses
+; new coefficients, but old sample values, so 
+; the result is not the expected one. That's why
+; when the cutoff frequency is changed, the 
+; coefficients are recalculated, and so are the 
+; previous sample values 
+;
+; for now: the difference in incomprehensible
+
+proc Sound.FilterRecalculatePrev,\
+    coeffs, prevSamples
+
+    mov     edx, [coeffs]
+    mov     eax, [prevSamples]
+
+
+    ; start from the earlier sample
+    fldz                            ; 0
+    fst     [eax+SampleArray.y079]    ; 0
+    fstp    [eax+SampleArray.y080]    ;
+    add     eax, SampleArray.x078
+    mov     ecx, COUNTSHIFT-1
+.looper:
+    fld     [edx+ButterworthCoeffs.b0]      ; b0
+    fmul    [eax+SampleArray.x0]            ; b0*x0
+    fld     [edx+ButterworthCoeffs.b1]      ; b1, b0*x0
+    fmul    [eax+SampleArray.x1]            ; b1*x1, b0*x0
+    fld     [edx+ButterworthCoeffs.b2]      ; b2, b1*x2, b0*x0
+    fmul    [eax+SampleArray.x2]            ; b2*x2, b1*x1, b0*x0
+    faddp                                   ; advanceSum, b0*x0
+    faddp                                   ; advanceSum
+    fld     [edx+ButterworthCoeffs.a1]      ; a1, advanceSum
+    fmul    [eax+SampleArray.y1]            ; a1*y1, advanceSum
+    fld     [edx+ButterworthCoeffs.a2]      ; a2, a1*y1, advanceSum
+    fmul    [eax+SampleArray.y2]            ; a2*y2, a1*y1, advanceSum
+    faddp                                   ; a2*y2+a1*y1, advanceSum
+    fsubp                                   ; procSample
+    fstp    [eax+SampleArray.y0]
+
+    sub     eax, 4
+    loop    .looper
+
+    ret
+endp
+
+proc Sound.LFOGetValue,\
+    pLFO, triggerTime
+
+    mov     edx, [pLFO]
+    push    edx
+    fld1                        ; 1
+    fdiv    dword[edx+LFO.rhythm]   ; LFOCycleTime
+    fld     [currTime]          ; currTime, LFOCycleTime
+    fsub    [triggerTime]       ; dt, LFOCycleTime
+    movzx   ecx, byte[edx+LFO.mode]
+    jecxz   .loopMode
+    fdiv    st0, st1            ; dt/LFOCycleTime = stage
+    push    eax                 ; stage
+    fst     dword[esp]          ; stage
+    fld1                        ; 1, stage
+    FPU_CMP                     ; 
+    jbe      .interpValue
+
+    pop     eax
+    xor     eax, eax
+
+    jmp     .calcValue
+.loopMode:
+
+
+    fprem                       ; stage, LFOCycleTime
+    fxch                        ; LFOCycleTime, stage
+    fdivp                       ; phase
+    ; get interpolation value 
+    ;stdcall Sound.interpolatePhase, [edx+LFO.interpType], st0
+    push    eax
+    fstp    dword[esp]          ; 
+.interpValue:
+    movzx   eax, byte[edx+LFO.interpType]
+    push    eax
+
+
+    fld     [currTime]
+    mov     eax, 1.99
+    push    eax 
+    fld     dword[esp]
+    pop     eax 
+    FPU_CMP             ; 1.99, time
+    ja @F
+    nop
+@@:
+    
+
+    
+    
+    stdcall Sound.interpolatePhase
+    
+.calcValue:
+    pop     edx
+
+    push    eax   ; the result of interp
+    fld     dword[edx+LFO.deltaValue]       ; dValue
+    fmul    dword[esp]                      ; incrementValue
+    fadd    dword[edx+LFO.startValue]       ; resultValue
+    fstp    dword[esp]                      ; 
+    pop     eax
+
     ret
 endp
