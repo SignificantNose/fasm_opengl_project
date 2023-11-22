@@ -45,9 +45,7 @@ cubeMesh        PackedMesh    cubeVertices, cubeColors, cubeIndices, CUBE_TRIANG
 cube            Mesh          0,0,0,0
 plane           Mesh          planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
 PackedTower     PackedMesh    0,0,0,0
-myPrimitiveMesh Mesh          myPrimitiveVertices, myPrimitiveColors, 0, myPrimitiveCount
-
-
+myPrimitiveMesh Mesh          myPrimitiveVertices, 0, 0, myPrimitiveVertices.count
 
 Tower           Mesh          0,0,0,0
 MyTown          Town
@@ -109,11 +107,14 @@ fragmentShaderText:
                         db              0
         fragmentShader  dd              fragmentShaderText
 
-program         GLint           0
+shaderProgram   GLint           0
 timeLocation    GLint           0
 sizeLocation    GLint           0
 VAO             GLuint          0
 VBO             GLuint          0
+EBO             GLuint          0
+textureNeonPath db              'myTexture.bmp',0
+textureNeonID   GLuint          0
 
 ; legacy
 ;fragmentShader  GLuint          0
@@ -139,6 +140,7 @@ VBO             GLuint          0
         include 'D_code\SOUNDFX_code.asm'
         include 'D_code\SOUND_code.asm'
         include 'D_code\MEMORY_code.asm'
+        include 'D_code\TEXTURE_code.asm'
 
 proc WinMain
      locals

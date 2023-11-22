@@ -19,17 +19,19 @@ endp
 
 proc Glext.InitShaders
         invoke  glCreateProgram
-        mov     [program], eax
+        mov     [shaderProgram], eax
 
         stdcall CreateShader, vertexShader, GL_VERTEX_SHADER
-        invoke  glAttachShader, [program], eax
+        invoke  glAttachShader, [shaderProgram], eax
         stdcall CreateShader, fragmentShader, GL_FRAGMENT_SHADER
-        invoke  glAttachShader, [program], eax
+        invoke  glAttachShader, [shaderProgram], eax
         ;stdcall CreateShader, computeShader, GL_COMPUTE_SHADER
         ;invoke  glAttachShader, [program], eax
 
-        invoke  glLinkProgram, [program]
-        invoke  glUseProgram, [program]
+        invoke  glLinkProgram, [shaderProgram]
+        invoke  glUseProgram, [shaderProgram]
+        invoke  glDeleteShader, [vertexShader]
+        invoke  glDeleteShader, [fragmentShader]
 endp
 
 
@@ -176,13 +178,11 @@ proc Glext.LoadShader,\
 
         cmp     [compiled], ebx
         je      @F
-
         mov     eax, [shader]
         jmp     .Return
 
 @@:
         mov     eax, ebx
-
 .Return:
         ret
 endp
@@ -198,7 +198,17 @@ proc CreateShader\
         mov     [shader], eax
         invoke  glShaderSource, [shader], 1, [shaderTextPtr], ebx
         invoke  glCompileShader, [shader]
+        
 
+        lea     eax, [shaderCompiled]
+        invoke  glGetShaderiv, [shader], GL_COMPILE_STATUS, eax 
+        cmp     [shaderCompiled], ebx
+        jne     @F
+
+        ; can be removed later on
+        ;invoke  MessageBox, 0, txtError, txtShaderNotCompiled, 64
+        invoke  ExitProcess, ebx
+@@:
         mov     eax, [shader]
 
         ret

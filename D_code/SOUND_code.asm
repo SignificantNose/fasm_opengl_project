@@ -33,8 +33,8 @@ msgListHead     dd      LIST_NONE
 ; Message poll
 messages:
 
-msg1            UnprocessedMessage      <165.0, 6.0, 0.0>, INSTR_SINE
-msg2            UnprocessedMessage      <450.0,3.0,0.0>, INSTR_SINE
+;msg1            UnprocessedMessage      <165.0, 6.0, 0.0>, INSTR_SINE
+;msg2            UnprocessedMessage      <450.0,3.0,0.0>, INSTR_SINE
 msg3            UnprocessedMessage      <165.0,6.0,0.0>, INSTR_SAW
 
 msgEnd:
@@ -612,6 +612,17 @@ proc Sound.PlayMsgList
     push    eax
 
     push    ecx
+
+    fld     [currTime]  ; t
+    mov     eax, 3.999  
+    push    eax  
+    fld     dword[esp]  ; 3.99, t
+    pop     eax  
+    FPU_CMP
+    ja      @F
+    nop
+@@:
+    
     ; instruments must return float values, so that the effects can be applied
     stdcall Sound.GetInstrumentSample, ecx
     ; return values:

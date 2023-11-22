@@ -22,6 +22,7 @@
         include 'D_structs\SOUNDFX_structs.inc'
         include 'D_STRUCTS\SOUND_structs.inc'
         include 'D_STRUCTS\MEMORY_structs.inc'
+        include 'D_STRUCTS\TEXTURE_structs.inc'
 
         include 'D_objects\Cube.inc'
         include 'D_objects\Plane.inc'
@@ -35,7 +36,9 @@ PFD_FLAGS       =       PFD_SUPPORT_OPENGL or PFD_DOUBLEBUFFER or PFD_DRAW_TO_WI
 WINDOW_STYLE    =       WS_VISIBLE or WS_MAXIMIZE or WS_POPUP
 GL_VERTEX_SHADER=       0x8B31
 GL_ARRAY_BUFFER =       0x8892
+GL_ELEMENT_ARRAY_BUFFER = 0x8893
 GL_STATIC_DRAW  =       0x88E4
+GL_TEXTURE0     =       0x84C0
 
 
 wndClass        WNDCLASS                0, WindowProc, 0, 0, 0, 0, 0, 0, 0, className

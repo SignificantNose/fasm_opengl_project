@@ -5,6 +5,10 @@ struct PackedMesh
        trianglesCount   dd      ?
 ends
 
+
+; mesh struct must be modified
+; after building up the architecture 
+; of the mesh in the shader
 struct Mesh
        vertices         dd      ?
        colors           dd      ?

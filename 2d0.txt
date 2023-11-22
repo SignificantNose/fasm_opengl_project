@@ -50,6 +50,8 @@ sound:
     direction of the frequency modulation, meaning that in case of reverse linear
     interpotaion the frequency goes down and down, but in case of linear it goes
     up and up. but in case of triangle it goes up and down...
+    rewrite pitch modulation
+    sound is now resting... (seek by 3.999 in sound_code.asm)
 
 unresolved:
     macro for transferring the pattern to the reverse bit sequence

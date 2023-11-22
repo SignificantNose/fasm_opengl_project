@@ -23,8 +23,8 @@ proc Sound.GetOscSamples,\
     pOsc, freq, triggerTime
     locals 
         step        dd      ?
-        two         dd      ?
-        twelve      dd      ?
+        NumTwo      dd      ?
+        NumTwelve   dd      ?
         left        dd      ?
         right       dd      ?
         leftMul     dd      ?
@@ -40,7 +40,8 @@ proc Sound.GetOscSamples,\
     cmp     eax, 0
     je      .noPitchLFO
     push    ecx
-    stdcall Sound.LFOGetValue, eax, [triggerTime]
+    ;stdcall Sound.LFOGetValue, eax, [triggerTime]
+    mov     eax, 1.1
     pop     ecx
     fld     [freq]
     push    eax 
@@ -62,14 +63,14 @@ proc Sound.GetOscSamples,\
 
 
     movzx   ecx, byte[ecx+Oscillator.voices]
-    mov     [two], 2.0
-    mov     [twelve], 12.0
+    mov     [NumTwo], 2.0
+    mov     [NumTwelve], 12.0
     mov     [left], 0.0
     mov     [right], 0.0
 
     push    edx
     fld     dword[esp]      ; detune
-    fmul    [two]           ; 2*detune
+    fmul    [NumTwo]           ; 2*detune
     push    ecx
     fild    dword[esp]      ; voices, 2*detune
     fld1                    ; 1, voices, 2*detune
@@ -90,7 +91,7 @@ proc Sound.GetOscSamples,\
 
     push    eax
     fld     dword[esp]      ; currDetune
-    fdiv    [twelve]        ; detune/12
+    fdiv    [NumTwelve]     ; detune/12
     fstp    dword[esp]
     pop     eax
     stdcall Sound.PowXY, 2.0, eax
@@ -106,7 +107,7 @@ proc Sound.GetOscSamples,\
 
     fld1                    ; 1
     fld     dword[esp]      ; currDetune, 1
-    fdiv    [two]           ; panPhase, 1
+    fdiv    [NumTwo]        ; panPhase, 1
     fld     st0             ; panPhase, panPhase, 1
     fldz                    ; 0, panPhase, panPhase, 1
     FPU_CMP                 ; panPhase, 1
@@ -162,7 +163,7 @@ proc Sound.GetOscSamples,\
 
     jmp .return
 .noUnison:
-    
+
     stdcall Sound.GenSample, eax, [freq]
     ; returns float
     mov     edx, eax
@@ -354,7 +355,7 @@ proc Sound.LFOGetValue,\
     fld     [currTime]          ; currTime, LFOCycleTime
     fsub    [triggerTime]       ; dt, LFOCycleTime
     movzx   ecx, byte[edx+LFO.mode]
-    jecxz   .loopMode
+    jecxz   .loopMode   
     fdiv    st0, st1            ; dt/LFOCycleTime = stage
     push    eax                 ; stage
     fst     dword[esp]          ; stage
@@ -379,18 +380,7 @@ proc Sound.LFOGetValue,\
 .interpValue:
     movzx   eax, byte[edx+LFO.interpType]
     push    eax
-
-
-    fld     [currTime]
-    mov     eax, 1.99
-    push    eax 
-    fld     dword[esp]
-    pop     eax 
-    FPU_CMP             ; 1.99, time
-    ja @F
-    nop
-@@:
-    
+  
 
     
     
