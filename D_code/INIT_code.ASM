@@ -120,6 +120,8 @@ proc Init uses esi
      invoke     glBindBuffer, GL_ARRAY_BUFFER, 0
      invoke     glBindVertexArray, 0
 
+     stdcall   Debug.OutputValueDec, 62
+
      ;stdcall Sound.init
 
 ;     ;stdcall     Subdivide, mesh, mesh

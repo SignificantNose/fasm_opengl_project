@@ -141,6 +141,7 @@ textureNeonID   GLuint          0
         include 'D_code\SOUND_code.asm'
         include 'D_code\MEMORY_code.asm'
         include 'D_code\TEXTURE_code.asm'
+        include 'D_code\DEBUG_code.asm'
 
 proc WinMain
      locals
