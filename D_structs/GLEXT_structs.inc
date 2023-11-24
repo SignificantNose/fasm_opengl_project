@@ -1,3 +1,7 @@
+shaderCompiled                  dd      ?
+txtError                        db      'Error',0
+txtShaderNotCompiled            db      'Shader not compiled',0
+uniformName                     db      'outColor', 0
 extensionAddresses:
         glUseProgram            dd      ?
         glDetachShader          dd      ?
@@ -21,6 +25,10 @@ extensionAddresses:
         glBufferData            dd      ?
         glVertexAttribPointer   dd      ?
         glEnableVertexAttribArray       dd      ?
+        glUniform4f             dd      ?
+        glGenerateMipmap        dd      ?
+        glActiveTexture         dd      ?
+        glUniformMatrix4fv      dd      ?
 
 extensionNames:
         db      "glUseProgram", 0
@@ -45,6 +53,10 @@ extensionNames:
         db      "glBufferData", 0
         db      "glVertexAttribPointer", 0
         db      "glEnableVertexAttribArray", 0
+        db      "glUniform4f", 0
+        db      "glGenerateMipmap", 0
+        db      "glActiveTexture", 0
+        db      "glUniformMatrix4fv", 0
         db      0
 
 define GL_FRAGMENT_SHADER                0x8B30

@@ -19,7 +19,11 @@
         include 'D_structs\FILE_structs.inc'
         include 'D_structs\RANDOM_structs.inc'
         include 'D_structs\BUILD_structs.inc'
+        include 'D_structs\SOUNDFX_structs.inc'
         include 'D_STRUCTS\SOUND_structs.inc'
+        include 'D_STRUCTS\MEMORY_structs.inc'
+        include 'D_STRUCTS\TEXTURE_structs.inc'
+        include 'D_STRUCTS\DEBUG_structs.inc'
 
         include 'D_objects\Cube.inc'
         include 'D_objects\Plane.inc'
@@ -31,10 +35,6 @@ false           =       0
 COLOR_DEPTH     =       24
 PFD_FLAGS       =       PFD_SUPPORT_OPENGL or PFD_DOUBLEBUFFER or PFD_DRAW_TO_WINDOW
 WINDOW_STYLE    =       WS_VISIBLE or WS_MAXIMIZE or WS_POPUP
-GL_VERTEX_SHADER=       0x8B31
-GL_ARRAY_BUFFER =       0x8892
-GL_STATIC_DRAW  =       0x88E4
-
 
 wndClass        WNDCLASS                0, WindowProc, 0, 0, 0, 0, 0, 0, 0, className
 pfd             PIXELFORMATDESCRIPTOR   sizeof.PIXELFORMATDESCRIPTOR, 1, PFD_FLAGS,\
@@ -70,9 +70,21 @@ macro FPU_LD reg                ; 4 B          #REMEMBER: IT AFFECTS STACK
         fld  dword[esp]
 }
 
+macro FPU_ILD reg
+{
+        push reg
+        fild dword[esp]
+}
+
 macro FPU_STP reg               ; 4 B          #REMEMBER: IT AFFECTS STACK
 {
         fstp dword[esp]
+        pop reg
+}
+
+macro FPU_ISTP reg
+{
+        fistp dword[esp]
         pop reg
 }
 
@@ -84,5 +96,80 @@ data import
                 user32,   'user32.dll',\
                 opengl32, 'opengl32.dll',\
                 dsound, 'dsound.dll'
+        
+        import dsound,\
+               DirectSoundCaptureCreate,'DirectSoundCaptureCreate',\
+               DirectSoundCaptureCreate8,'DirectSoundCaptureCreate8',\
+               DirectSoundCaptureEnumerate ,'DirectSoundCaptureEnumerateA',\
+               DirectSoundCreate,'DirectSoundCreate',\
+               DirectSoundCreate8,'DirectSoundCreate8',\
+               DirectSoundEnumerate ,'DirectSoundEnumerateA',\
+               DirectSoundFullDuplexCreate,'DirectSoundFullDuplexCreate',\
+               DllCanUnloadNow,'DllCanUnloadNow',\
+               DllGetClassObject,'DllGetClassObject',\
+               GetDeviceID,'GetDeviceID'       
+
+        interface IDirectSound8,\
+                  QueryInterface,\
+                  AddRef,\
+                  Release,\
+                  CreateSoundBuffer,\
+                  GetCaps,\
+                  DuplicateSoundBuffer,\
+                  SetCooperativeLevel,\
+                  Compact,\
+                  GetSpeakerConfig,\
+                  SetSpeakerConfig,\
+                  Initialize,\
+                  VerifyCertification
+
+        interface IDirectSoundBuffer,\
+                  QueryInterface,\
+                  AddRef,\
+                  Release,\
+                  GetCaps,\
+                  GetCurrentPosition,\
+                  GetFormat,\
+                  GetVolume,\
+                  GetPan,\
+                  GetFrequency,\
+                  GetStatus,\
+                  Initialize,\
+                  Lock,\
+                  Play,\
+                  SetCurrentPosition,\
+                  SetFormat,\
+                  SetVolume,\
+                  SetPan,\
+                  SetFrequency,\
+                  Stop,\
+                  Unlock,\
+                  Restore
+
+        interface IDirectSoundBuffer8,\
+                  QueryInterface,\
+                  AddRef,\
+                  Release,\
+                  GetCaps,\
+                  GetCurrentPosition,\
+                  GetFormat,\
+                  GetVolume,\
+                  GetPan,\
+                  GetFrequency,\
+                  GetStatus,\
+                  Initialize,\
+                  Lock,\
+                  Play,\
+                  SetCurrentPosition,\
+                  SetFormat,\
+                  SetVolume,\
+                  SetPan,\
+                  SetFrequency,\
+                  Stop,\
+                  Unlock,\
+                  Restore,\
+                  SetFX,\
+                  AcquireResources,\
+                  GetObjectInPath
 end data
 

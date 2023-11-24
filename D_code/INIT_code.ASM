@@ -77,21 +77,75 @@ proc Init uses esi
 ;     ;stdcall     Mesh.CalculateNormals, cube
 
 
-
+     
      stdcall Glext.LoadFunctions
      stdcall Glext.InitShaders
 
-     invoke     glGenVertexArrays, 1, VAO
-     invoke     glGenBuffers, 1, VBO
+     ;invoke     glEnable, GL_TEXTURE_2D
+
+                              ;    how many       pointer
+     invoke     glGenVertexArrays, 1,             VAO
+     invoke     glGenBuffers,      1,             VBO
+     invoke     glGenBuffers,      1,             EBO
+
+     ; SET the vertex array
      invoke     glBindVertexArray, [VAO]
+
+     ; bind the buffer so that the bufferdata call can be made to the currently bound VBO
      invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
-     invoke     glBufferData, GL_ARRAY_BUFFER, myPrimitiveCount*3*4, myPrimitiveVertices, GL_STATIC_DRAW
-     invoke     glVertexAttribPointer, 0, 3, GL_FLOAT, GL_FALSE, 3*4, 0
+     ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                         ;    target array obj    size in bytes of the data     
+     invoke     glBufferData, GL_ARRAY_BUFFER,    sizeofPrimitiveVertices,\
+                        \;    ptr to data          usage pattern
+                              myPrimitiveVertices, GL_STATIC_DRAW
+     
+     invoke     glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, [EBO]
+     ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     invoke     glBufferData, GL_ELEMENT_ARRAY_BUFFER, sizeofPrimitiveIndices, myPrimitiveIndices, GL_STATIC_DRAW
+
+
+     ; binding the attribute for a vertex
+
+                                   ;   layout location      №of values               type of data
+     invoke     glVertexAttribPointer, 0,                   3,                       GL_FLOAT,\
+                                   \;  normalize?           stride(sizeof values)    offset
+                                       GL_FALSE,            8*4,                     0
+     
+     ; enabling the bound attribute
      invoke     glEnableVertexAttribArray, 0
+     
+     invoke     glVertexAttribPointer, 1, 3, GL_FLOAT, GL_FALSE, 8*4, 3*4
+     invoke     glEnableVertexAttribArray, 1
+
+     invoke     glVertexAttribPointer, 2, 2, GL_FLOAT, GL_FALSE, 8*4, 6*4
+     invoke     glEnableVertexAttribArray, 2
+
+
+     ;lea        eax, [textureNeonID]
+     ;stdcall    Texture.LoadTexture, textureNeonPath, eax
+     stdcall    Texture.LoadTexture, textureNeonPath, textureNeonID
+
+     ; reset the currently bound buffers
      invoke     glBindBuffer, GL_ARRAY_BUFFER, 0
      invoke     glBindVertexArray, 0
 
-     stdcall Sound.init
+                                   ;  program object   uniform name string
+     invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
+     mov        [shaderTransformID], eax
+
+     mov       [testTransform+Matrix4x4.m11], 1.0
+     mov       [testTransform+Matrix4x4.m22], 1.0
+     mov       [testTransform+Matrix4x4.m33], 1.0
+     mov       [testTransform+Matrix4x4.m44], 1.0
+     
+                                   ; loc of the uniform     how many matrices to pass
+     invoke    glUniformMatrix4fv, [shaderTransformID],     1,\ 
+                                  \; transpose the matrix?  the matrix itself
+                                   GL_FALSE,                testTransform
+
+     stdcall   Debug.OutputValueDec, 62
+
+     ;stdcall Sound.init
 
 ;     ;stdcall     Subdivide, mesh, mesh
 ;     invoke  glEnable, GL_LIGHTING

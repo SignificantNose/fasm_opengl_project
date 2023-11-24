@@ -109,13 +109,44 @@ proc Draw
      ;invoke     glPushMatrix
      ;invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, BuildDiffuse
      ;invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, BuildAmbient
-     ;;stdcall    DrawMesh, Tower, cubeTransform
+     ;;stdcall    DrawMesh, TowerGLfloat, cubeTransform
      ;stdcall    DrawTown, MyTown, cubeTransform
      ;invoke     glPopMatrix
+
+
+     ; ! uniforms must be after the useprogram function call
+
+     ;fld       [programTime]       ; t
+     ;mov       eax, 15.0
+     ;push      eax 
+     ;fmul      dword[esp]          
+     ;pop       eax
+     ;fsin                          ; sin(t)
+     ;fld1                          ; 1, sin(t)
+     ;fld1                          ; 1, 1, sin(t)
+     ;faddp                         ; 2, sin(t)
+     ;fdiv      st1, st0            ; 2, sin(t)/2
+     ;fld1                          ; 1, 2, sin(t)/2
+     ;fxch                          ; 2, 1, sin(t)/2
+     ;fdivp                         ; 0.5, sin(t)/2
+     ;faddp                         ; greenValue
+     ;push      eax 
+     ;fstp      dword[esp]          ; 
+     ;invoke    glGetUniformLocation, [shaderProgram], uniformName
+     ;pop       edx 
+     ;invoke    glUniform4f, eax, 0.0, edx, 0.0, 0.0
+     invoke     glActiveTexture, GL_TEXTURE0
+     invoke     glBindTexture, GL_TEXTURE_2D, [textureNeonID]
+     invoke     glUseProgram, [shaderProgram]
      invoke     glBindVertexArray, [VAO]
-     invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
-     invoke     glUseProgram, [program]
-     invoke     glDrawArrays, GL_TRIANGLES, ebx, [myPrimitiveMesh.verticesCount]
+
+     ; needs to be called once - during the 
+     ;invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
+
+     ;invoke     glDrawArrays, GL_TRIANGLES, ebx, [myPrimitiveMesh.verticesCount]
+     ;invoke     glPolygonMode, GL_FRONT_AND_BACK, GL_LINE
+     ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     invoke     glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0
      invoke     glUseProgram, ebx
 
      invoke     SwapBuffers, [hdc]
