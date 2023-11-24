@@ -19,7 +19,8 @@ proc Texture.LoadTexture uses edi esi,\
 
     ; edx will store the offset of the data
     add         edi, dword[eax+10]
-    invoke      glTexImage2D, GL_TEXTURE_2D, ebx, GL_RGB, dword[eax+18], dword[eax+22], ebx, GL_BGR, GL_UNSIGNED_BYTE, edi
+    ;invoke      glTexImage2D, GL_TEXTURE_2D, ebx, GL_RGB, dword[eax+18], dword[eax+22], ebx, GL_BGR, GL_UNSIGNED_BYTE, edi
+    invoke      glTexImage2D, GL_TEXTURE_2D, ebx, GL_RGB, dword[eax+18], dword[eax+22], ebx, GL_BGRA, GL_UNSIGNED_BYTE, edi
     invoke      glGenerateMipmap, GL_TEXTURE_2D
 
 

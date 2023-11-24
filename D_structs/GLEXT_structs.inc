@@ -28,6 +28,7 @@ extensionAddresses:
         glUniform4f             dd      ?
         glGenerateMipmap        dd      ?
         glActiveTexture         dd      ?
+        glUniformMatrix4fv      dd      ?
 
 extensionNames:
         db      "glUseProgram", 0
@@ -55,6 +56,7 @@ extensionNames:
         db      "glUniform4f", 0
         db      "glGenerateMipmap", 0
         db      "glActiveTexture", 0
+        db      "glUniformMatrix4fv", 0
         db      0
 
 define GL_FRAGMENT_SHADER                0x8B30

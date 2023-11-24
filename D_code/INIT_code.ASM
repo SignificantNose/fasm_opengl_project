@@ -82,9 +82,11 @@ proc Init uses esi
      stdcall Glext.InitShaders
 
      ;invoke     glEnable, GL_TEXTURE_2D
-     invoke     glGenVertexArrays, 1, VAO
-     invoke     glGenBuffers, 1, VBO
-     invoke     glGenBuffers, 1, EBO
+
+                              ;    how many       pointer
+     invoke     glGenVertexArrays, 1,             VAO
+     invoke     glGenBuffers,      1,             VBO
+     invoke     glGenBuffers,      1,             EBO
 
      ; SET the vertex array
      invoke     glBindVertexArray, [VAO]
@@ -92,7 +94,10 @@ proc Init uses esi
      ; bind the buffer so that the bufferdata call can be made to the currently bound VBO
      invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
      ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     invoke     glBufferData, GL_ARRAY_BUFFER, sizeofPrimitiveVertices, myPrimitiveVertices, GL_STATIC_DRAW
+                         ;    target array obj    size in bytes of the data     
+     invoke     glBufferData, GL_ARRAY_BUFFER,    sizeofPrimitiveVertices,\
+                        \;    ptr to data          usage pattern
+                              myPrimitiveVertices, GL_STATIC_DRAW
      
      invoke     glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, [EBO]
      ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -100,7 +105,11 @@ proc Init uses esi
 
 
      ; binding the attribute for a vertex
-     invoke     glVertexAttribPointer, 0, 3, GL_FLOAT, GL_FALSE, 8*4, 0
+
+                                   ;   layout location      №of values               type of data
+     invoke     glVertexAttribPointer, 0,                   3,                       GL_FLOAT,\
+                                   \;  normalize?           stride(sizeof values)    offset
+                                       GL_FALSE,            8*4,                     0
      
      ; enabling the bound attribute
      invoke     glEnableVertexAttribArray, 0
@@ -119,6 +128,20 @@ proc Init uses esi
      ; reset the currently bound buffers
      invoke     glBindBuffer, GL_ARRAY_BUFFER, 0
      invoke     glBindVertexArray, 0
+
+                                   ;  program object   uniform name string
+     invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
+     mov        [shaderTransformID], eax
+
+     mov       [testTransform+Matrix4x4.m11], 1.0
+     mov       [testTransform+Matrix4x4.m22], 1.0
+     mov       [testTransform+Matrix4x4.m33], 1.0
+     mov       [testTransform+Matrix4x4.m44], 1.0
+     
+                                   ; loc of the uniform     how many matrices to pass
+     invoke    glUniformMatrix4fv, [shaderTransformID],     1,\ 
+                                  \; transpose the matrix?  the matrix itself
+                                   GL_FALSE,                testTransform
 
      stdcall   Debug.OutputValueDec, 62
 

@@ -115,6 +115,13 @@ VBO             GLuint          0
 EBO             GLuint          0
 textureNeonPath db              'myTexture.bmp',0
 textureNeonID   GLuint          0
+shaderTransformName      db     'transform',0
+shaderTransformID GLuint        0
+testTransform   Matrix4x4       1.0, 0.0, 0.0, 0.0,\
+                                0.0, 1.0, 0.0, 0.0,\ 
+                                0.0, 0.0, 1.0, 0.0,\ 
+                                0.0, 0.0, 0.0, 1.0
+
 
 ; legacy
 ;fragmentShader  GLuint          0
