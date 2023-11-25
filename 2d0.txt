@@ -52,6 +52,10 @@ sound:
     up and up. but in case of triangle it goes up and down...
     rewrite pitch modulation
     sound is now resting... (seek by 3.999 in sound_code.asm)
+    optimize the procedures (whenever there's pushing, try using other registers)
+    
+graphics:
+    rewrite the build
 
 unresolved:
     macro for transferring the pattern to the reverse bit sequence

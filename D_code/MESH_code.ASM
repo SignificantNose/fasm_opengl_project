@@ -1,50 +1,63 @@
-proc Mesh.Generate uses ebx esi edi,\
-     sourceMesh, resultMesh, copyColors
+; routine to generate a Mesh struct (resultMesh)
+; out of a PackedMesh struct (sourceMesh)
+proc Mesh.PackedMesh2Mesh uses ebx esi edi,\
+     sourceMesh, resultMesh
 
         locals
+                vertices        dd      ?
+                indices         dd      ?
+                resultVertices  dd      ?
                 verticesCount   dd      ?
                 resultIndex     dd      ?
-                vertices        dd      ?
-                resultVertices  dd      ?
-                colors          dd      ?
-                resultColors    dd      ?
-                resultNormals   dd      ?
-                indices         dd      ?
         endl
 
-        ;xor ebx, ebx
-        mov     esi, [sourceMesh]                       ; esi has the address of the source mesh
-        mov     edi, [resultMesh]
+        xor     ebx, ebx
+        mov     esi, [sourceMesh]                       ; esi has the address of the source (packed) mesh 
+        mov     edi, [resultMesh]                       ; edi has the address of the result (unhinged) mesh
 
-        mov     eax, [esi + PackedMesh.vertices]        ; initializing variables for proc
+        mov     eax, [esi + PackedVerticesMesh.pVertices]        ; initializing variables for proc
         mov     [vertices], eax
-        mov     eax, [esi + PackedMesh.colors]
-        mov     [colors], eax
-        mov     eax, [esi + PackedMesh.indices]
+        mov     eax, [esi + PackedVerticesMesh.pIndices]
         mov     [indices], eax
 
         mov     [resultIndex], ebx
 
-        mov     eax, [esi + PackedMesh.trianglesCount]    ;   acquiring the amount of the triangles of the source mesh
-        ; mov     [edi + Mesh.trianglesCount], eax        ;   rewriting the amount of triangles in the resulting mesh
-        xor     edx, edx                            ; why?
+        mov     eax, [esi + PackedVerticesMesh.trianglesCount]    ;   acquiring the amount of the triangles of the source mesh
+        xor     edx, edx                            
         mov     ecx, 3
-        mul     ecx                                 ; saving the amount of vertices
+        mul     ecx                     ; saving the amount of vertices
         mov     [verticesCount], eax    ; verticesCount = trianglesCount * 3
+        mov     [edi + Mesh.VerticesCount], eax
 
+
+        ; initializing vertices and normals in the mesh
         xor     edx, edx
         mov     ecx, sizeof.Vertex
-        mul     ecx                             ; eax = size of memory needed to keep the source mesh
+        mul     ecx                             ; eax = amnt of bytes needed to keep all the vertices/normals
+        mov     [edi + Mesh.szVertices], eax 
+        mov     [edi + Mesh.szNormals], eax
 
         push    eax
         push    eax
+        invoke  HeapAlloc, [hHeap], 8   ; eax
+        mov     [edi + Mesh.pVertices], eax
+        mov     [resultVertices], eax              
+
+        invoke  HeapAlloc, [hHeap], 8   ; eax
+        mov     [edi + Mesh.pNormals], eax
+
+; push...
+
+        ; initializing texture coords in the mesh
+        mov     eax, [verticesCount]
+        xor     edx, edx
+        mov     ecx, sizeof.TexVertex
+        mul     ecx                             ; eax = amnt of bytes needed to keep all the texture coords 
+        mov     [edi + Mesh.szTexCoords], eax
+
         push    eax
         invoke  HeapAlloc, [hHeap], 8   ; eax
-        mov     [resultVertices], eax              ; resultVertices = handle to the allocated dynamic memory (for  vertices)
-        invoke  HeapAlloc, [hHeap], 8   ; eax
-        mov     [resultColors], eax                ; resultColors = handle to the allocated dynamic memory   (for colors)          ; it's the same
-        invoke  HeapAlloc, [hHeap], 8   ; eax
-        mov     [resultNormals], eax               ; resultNormals = handle to the allocated dynamic memory   (for normals)          ; it's the same
+        mov     [edi + Mesh.pTexCoords], eax
 
 
         mov     ecx, [verticesCount]
@@ -76,51 +89,11 @@ proc Mesh.Generate uses ebx esi edi,\
         mov     [edi + Vertex.y], ecx   ; resultVertices[resultIndex].y = y
         mov     [edi + Vertex.z], edx   ; resultVertices[resultIndex].z = z
 
-        cmp     [copyColors], false
-        je      .DoNotCopyColors
-
-        xor     edx, edx
-        mov     esi, [indices]
-        movzx   eax, byte[esi + ebx]    ; index
-        mov     edi, sizeof.Color
-        mul     edi                     ; index * sizeof.Color
-
-        mov     esi, [colors]
-        add     esi, eax                ; colors + index * sizeof.Color = colors[index]
-
-        xor     edx, edx
-        mov     eax, [resultIndex]      ; resultIndex
-        mov     edi, sizeof.Color
-        mul     edi                     ; resultIndex * sizeof.Color
-
-        mov     edi, [resultColors]
-        add     edi, eax                ; resultColors + resultIndex * sizeof.Color = resultColors[resultIndex]
-
-        mov     eax, [esi + Color.r]    ; r = colors[index].r
-        mov     ecx, [esi + Color.g]    ; g = colors[index].g
-        mov     edx, [esi + Color.b]    ; b = colors[index].b
-        mov     [edi + Color.r], eax    ; resultColors[resultIndex].r = r
-        mov     [edi + Color.g], ecx    ; resultColors[resultIndex].g = g
-        mov     [edi + Color.b], edx    ; resultColors[resultIndex].b = b
-
-.DoNotCopyColors:
-
         inc     ebx
         inc     [resultIndex]
 
         pop     ecx
         loop    .CopyCycle
-
-        mov     edi, [resultMesh]
-
-        mov     eax, [resultVertices]
-        mov     [edi + Mesh.vertices], eax
-        mov     eax, [resultColors]
-        mov     [edi + Mesh.colors], eax
-        mov     eax, [resultNormals]
-        mov     [edi + Mesh.normals], eax
-        mov     eax, [verticesCount]
-        mov     [edi + Mesh.verticesCount], eax
 
         ret
 endp
@@ -193,6 +166,76 @@ proc Mesh.CalculateNormals uses esi edi ebx,\
 
         pop     ecx
         loop    .CalculateNormalsLoop
+
+        ret
+endp
+
+; routine to generate a ShaderMesh struct (pShaderMesh)
+; out of a Mesh struct (pInitialMesh). Basically puts the
+; data that is stored separately sequentially
+proc Mesh.Mesh2ShaderMesh uses esi edi,\
+        pInitialMesh, pShaderMesh
+
+        locals
+                pInitVertices            dd      ?
+                pInitTexCoords           dd      ? 
+                pInitNormals             dd      ?
+        endl
+
+        mov     esi, [pInitialMesh]
+        mov     edi, [pShaderMesh]
+
+        mov     eax, [esi + Mesh.pVertices]
+        mov     [pInitVertices], eax 
+        mov     eax, [esi + Mesh.pTexCoords]
+        mov     [pInitTexCoords], eax
+        mov     eax, [esi + Mesh.pNormals]
+        mov     [pInitNormals], eax
+
+        mov     eax, [esi + Mesh.VerticesCount]
+        mov     [edi + ShaderMesh.VerticesCount], eax
+
+        ; calculating the total size of the buffer
+        mov     eax, [esi + Mesh.szVertices]
+        add     eax, [esi + Mesh.szTexCoords]
+        add     eax, [esi + Mesh.szNormals]
+        mov     [edi + ShaderMesh.szBufferData], eax
+
+        invoke  HeapAlloc, [hHeap], 8, eax
+        mov     [edi + ShaderMesh.pBufferData], eax
+        mov     edi, eax 
+
+        mov     ecx, [esi + Mesh.VerticesCount]
+
+; task:
+; for current vertice transfer the data to the buffer.
+; edi must change correctly
+; esi must switch from one element to the other
+.looper: 
+        push    ecx
+
+
+; transferring position coordinates
+        mov     esi, [pInitVertices]
+        mov     ecx, sizeof.Vertex/4
+        rep movsd
+        mov     [pInitVertices], esi 
+
+; transferring texture coordinates
+        mov     esi, [pInitTexCoords]
+        mov     ecx, sizeof.TexVertex/4
+        rep movsd
+        mov     [pInitTexCoords], esi
+        
+; transferring normals
+        mov     esi, [pInitNormals]
+        mov     ecx, sizeof.Vector3/4
+        rep movsd
+        mov     [pInitNormals], esi
+
+
+        pop     ecx
+        loop    .looper
 
         ret
 endp

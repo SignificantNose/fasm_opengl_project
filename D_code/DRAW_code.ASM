@@ -2,6 +2,7 @@ proc Draw
      locals
         f               dd      ?
         tempFloat       dd      ?
+        tempModulateTime      dd   ?
      endl
 
      invoke     GetTickCount
@@ -140,13 +141,28 @@ proc Draw
      invoke     glUseProgram, [shaderProgram]
      invoke     glBindVertexArray, [VAO]
 
+     invoke      glMatrixMode, GL_MODELVIEW
+     invoke      glLoadIdentity
+     fld         [programTime]
+     mov         eax, 10.0
+     push        eax
+     fmul        dword[esp]
+     pop         eax 
+     fstp        [tempModulateTime]
+     invoke      glRotatef, [tempModulateTime], 1.0, 0.0, 0.0     
+     invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
+
+     invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
+
+
      ; needs to be called once - during the 
      ;invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
 
      ;invoke     glDrawArrays, GL_TRIANGLES, ebx, [myPrimitiveMesh.verticesCount]
      ;invoke     glPolygonMode, GL_FRONT_AND_BACK, GL_LINE
      ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     invoke     glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0
+;     invoke     glDrawElements, GL_TRIANGLES, [towerVerticesCount], GL_UNSIGNED_INT, 0
+     invoke     glDrawArrays, GL_TRIANGLES, ebx, [testShaderTower.VerticesCount]
      invoke     glUseProgram, ebx
 
      invoke     SwapBuffers, [hdc]

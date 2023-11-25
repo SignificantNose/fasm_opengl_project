@@ -41,14 +41,19 @@ length          GLfloat      6.0
 oneSecond       GLfloat      1000.0
 
 
-cubeMesh        PackedMesh    cubeVertices, cubeColors, cubeIndices, CUBE_TRIANGLES_COUNT
-cube            Mesh          0,0,0,0
-plane           Mesh          planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
-PackedTower     PackedMesh    0,0,0,0
-myPrimitiveMesh Mesh          myPrimitiveVertices, 0, 0, myPrimitiveVertices.count
+; cubeMesh        PackedMesh    cubeVertices, cubeColors, cubeIndices, CUBE_TRIANGLES_COUNT
+; cube            Mesh          0,0,0,0
+; plane           Mesh          planeVertices, planeColors, 0, PLANE_VERTICES_COUNT
+; myPrimitiveMesh Mesh          myPrimitiveVertices, 0, 0, myPrimitiveVertices.count
 
-Tower           Mesh          0,0,0,0
+
+testPackedTower PackedVerticesMesh
+testTower       Mesh
+testShaderTower ShaderMesh         
 MyTown          Town
+
+
+
 seed            dd            ?
 RandomValue     dd            0
 
@@ -115,12 +120,19 @@ VBO             GLuint          0
 EBO             GLuint          0
 textureNeonPath db              'myTexture.bmp',0
 textureNeonID   GLuint          0
-shaderTransformName      db     'transform',0
-shaderTransformID GLuint        0
-testTransform   Matrix4x4       1.0, 0.0, 0.0, 0.0,\
-                                0.0, 1.0, 0.0, 0.0,\ 
-                                0.0, 0.0, 1.0, 0.0,\ 
-                                0.0, 0.0, 0.0, 1.0
+
+modelMxName     db              'model',0
+modelMxID       GLuint          0
+modelMx         Matrix4x4
+
+viewMxName      db              'view',0
+viewMxID        GLuint          0 
+viewMx          Matrix4x4
+
+
+projectionMxName    db          'projection',0
+projectionMxID  GLuint          0
+projectionMx    Matrix4x4
 
 
 ; legacy

@@ -77,9 +77,18 @@ proc Init uses esi
 ;     ;stdcall     Mesh.CalculateNormals, cube
 
 
+     ; generating the tower
+     stdcall    Build.GeneratePackedTower, testPackedTower, 0.1
+     stdcall    Mesh.PackedMesh2Mesh, testPackedTower, testTower
+     stdcall    Build.DesignTower, testTower
+     stdcall    Mesh.Mesh2ShaderMesh, testTower, testShaderTower
+
+     invoke     glEnable, GL_DEPTH_TEST
+     invoke     glShadeModel, GL_SMOOTH
+     invoke     glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
      
-     stdcall Glext.LoadFunctions
-     stdcall Glext.InitShaders
+     stdcall    Glext.LoadFunctions
+     stdcall    Glext.InitShaders
 
      ;invoke     glEnable, GL_TEXTURE_2D
 
@@ -93,32 +102,30 @@ proc Init uses esi
 
      ; bind the buffer so that the bufferdata call can be made to the currently bound VBO
      invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
-     ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                         ;    target array obj    size in bytes of the data     
-     invoke     glBufferData, GL_ARRAY_BUFFER,    sizeofPrimitiveVertices,\
-                        \;    ptr to data          usage pattern
-                              myPrimitiveVertices, GL_STATIC_DRAW
+                         ;    target array obj                   size in bytes of the data     
+     invoke     glBufferData, GL_ARRAY_BUFFER,                   [testShaderTower.szBufferData],\
+                        \;    ptr to data                        usage pattern
+                              [testShaderTower.pBufferData],     GL_STATIC_DRAW
      
-     invoke     glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, [EBO]
-     ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     invoke     glBufferData, GL_ELEMENT_ARRAY_BUFFER, sizeofPrimitiveIndices, myPrimitiveIndices, GL_STATIC_DRAW
+;     invoke     glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, [EBO]
+;     invoke     glBufferData, GL_ELEMENT_ARRAY_BUFFER, [towerSizeIndices], [towerIndices], GL_STATIC_DRAW
+
 
 
      ; binding the attribute for a vertex
-
-                                   ;   layout location      №of values               type of data
-     invoke     glVertexAttribPointer, 0,                   3,                       GL_FLOAT,\
-                                   \;  normalize?           stride(sizeof values)    offset
-                                       GL_FALSE,            8*4,                     0
-     
-     ; enabling the bound attribute
+                                   ;   layout location      №of values                    type of data
+     invoke     glVertexAttribPointer, 0,                   3,                            GL_FLOAT,\
+                                   \;  normalize?           stride(sizeof all values)     offset
+                                       GL_FALSE,            8*4,                          0     
      invoke     glEnableVertexAttribArray, 0
      
-     invoke     glVertexAttribPointer, 1, 3, GL_FLOAT, GL_FALSE, 8*4, 3*4
+
+     invoke     glVertexAttribPointer, 1, 2, GL_FLOAT, GL_FALSE, 8*4, 3*4
      invoke     glEnableVertexAttribArray, 1
 
-     invoke     glVertexAttribPointer, 2, 2, GL_FLOAT, GL_FALSE, 8*4, 6*4
+     invoke     glVertexAttribPointer, 2, 3, GL_FLOAT, GL_FALSE, 8*4, 5*4
      invoke     glEnableVertexAttribArray, 2
+
 
 
      ;lea        eax, [textureNeonID]
@@ -130,20 +137,45 @@ proc Init uses esi
      invoke     glBindVertexArray, 0
 
                                    ;  program object   uniform name string
-     invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
-     mov        [shaderTransformID], eax
+     ;invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
+     ;mov        [shaderTransformID], eax
+;
+     ;mov       [testTransform+Matrix4x4.m11], 1.0
+     ;mov       [testTransform+Matrix4x4.m22], 1.0
+     ;mov       [testTransform+Matrix4x4.m33], 1.0
+     ;mov       [testTransform+Matrix4x4.m44], 1.0
+     ;
+     ;                              ; loc of the uniform     how many matrices to pass
+     ;invoke    glUniformMatrix4fv, [shaderTransformID],     1,\ 
+     ;                             \; transpose the matrix?  the matrix itself
+     ;                              GL_FALSE,                testTransform
+     invoke      glGetUniformLocation, [shaderProgram], modelMxName
+     mov         [modelMxID], eax
+     invoke      glGetUniformLocation, [shaderProgram], viewMxName
+     mov         [viewMxID], eax
+     invoke      glGetUniformLocation, [shaderProgram], projectionMxName
+     mov         [projectionMxID], eax
 
-     mov       [testTransform+Matrix4x4.m11], 1.0
-     mov       [testTransform+Matrix4x4.m22], 1.0
-     mov       [testTransform+Matrix4x4.m33], 1.0
-     mov       [testTransform+Matrix4x4.m44], 1.0
+     invoke      glMatrixMode, GL_PROJECTION
+     invoke      glLoadIdentity
+     stdcall     Matrix.Projection, 1.33333, 45.0, 0.1, 100.0
+     invoke      glGetFloatv, GL_PROJECTION_MATRIX, projectionMx
      
-                                   ; loc of the uniform     how many matrices to pass
-     invoke    glUniformMatrix4fv, [shaderTransformID],     1,\ 
-                                  \; transpose the matrix?  the matrix itself
-                                   GL_FALSE,                testTransform
+     invoke      glMatrixMode, GL_MODELVIEW
+     invoke      glLoadIdentity
+     invoke      glRotatef, -55.0, 1.0, 0.0, 0.0     
+     invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
+ 
+     invoke      glLoadIdentity
+     invoke      glTranslatef, 0.0, 0.0, -3.0
+     invoke      glGetFloatv, GL_MODELVIEW_MATRIX, viewMx
 
-     stdcall   Debug.OutputValueDec, 62
+     invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
+     invoke      glUniformMatrix4fv, [viewMxID], 1, GL_FALSE, viewMx
+     invoke      glUniformMatrix4fv, [projectionMxID], 1, GL_FALSE, projectionMx
+
+
+     stdcall     Debug.OutputValueDec, 62
 
      ;stdcall Sound.init
 
