@@ -17,3 +17,6 @@ struct  Transform
         rotation        Vector3
         scale           Vector3
 ends
+
+SPLINE_NOT_LOOPED       = 0
+SPLINE_LOOPED           = 1

@@ -4,7 +4,7 @@ aNine     dw    9
 aRadian   dd    57.3
 aThousand dw    1000
 anEleven  dw    11
-aNinety   dw    90
+anEighty  dw    80
 
 
 ; routine that generates a PackedMesh struct of
@@ -59,12 +59,12 @@ proc    Build.GeneratePackedTower uses ebx edi, pPackedMesh, scale
 
 ;gen sin, cos
         stdcall Rand.GetRandomNumber, ebx, 10000
-        fild    [aNinety]               ; 90
-        fild    [RandomValue]           ; [0;10000], 90
-        fidiv   [aThousand]             ; [0;10], 90
-        fchs                            ; -x, 90
-        fiadd   [anEleven]              ; -x+11, 90
-        fdivp                           ; 90/(-x+11)
+        fild    [anEighty]              ; 80
+        fild    [RandomValue]           ; [0;10000], 80
+        fidiv   [aThousand]             ; [0;10], 80
+        fchs                            ; -x, 80
+        fiadd   [anEleven]              ; -x+11, 80
+        fdivp                           ; 80/(-x+11)
         fdiv    [aRadian]               ; angleRad
 
         fsincos                         ; sin, cos

@@ -78,7 +78,7 @@ proc Init uses esi
 
 
      ; generating the tower
-     stdcall    Build.GeneratePackedTower, testPackedTower, 0.1
+     stdcall    Build.GeneratePackedTower, testPackedTower, 1.0
      stdcall    Mesh.PackedMesh2Mesh, testPackedTower, testTower
      stdcall    Build.DesignTower, testTower
      stdcall    Mesh.Mesh2ShaderMesh, testTower, testShaderTower
@@ -163,7 +163,7 @@ proc Init uses esi
      
      invoke      glMatrixMode, GL_MODELVIEW
      invoke      glLoadIdentity
-     invoke      glRotatef, -55.0, 1.0, 0.0, 0.0     
+     ;invoke      glRotatef, 30.0, 1.0, 0.0, 0.0     
      invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
  
      invoke      glLoadIdentity

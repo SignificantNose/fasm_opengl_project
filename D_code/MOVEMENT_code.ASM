@@ -1,3 +1,7 @@
+; routine that finds the linear interpolation
+; between vectors v1 and v2 and stores the
+; interpolation value in result (f is the 
+; interpolation phase)
 proc Movement.Interpolate uses esi edi ebx,\
      v1, v2, result, f
 
@@ -37,6 +41,10 @@ proc Movement.Interpolate uses esi edi ebx,\
         ret
 endp
 
+; routine that performs cubic interpolation
+; between 4 vectors: v1, d1, d2 and v2 and
+; stores the interpolation value in result
+; (f is the interpolation phase)
 proc Movement.CubicInterpolate uses esi edi ebx,\
      v1, d1, d2, v2, result, f
 
@@ -62,7 +70,10 @@ endp
 
 
 
-
+; routine that takes a spline and interpolates 
+; the value for the current time moment and 
+; stores the interpolation value in result
+; vector
 proc Spline.GetPoint uses esi edi ebx,\
      spline, result, time
 
@@ -76,7 +87,7 @@ proc Spline.GetPoint uses esi edi ebx,\
 
         mov     esi, [spline]
 
-        cmp     [esi + Spline.cycle], 1
+        cmp     [esi + Spline.cycle], SPLINE_LOOPED
         je      .DoNotCheck
 
         fld     [esi + Spline.time]                     ; tc

@@ -50,6 +50,7 @@ oneSecond       GLfloat      1000.0
 testPackedTower PackedVerticesMesh
 testTower       Mesh
 testShaderTower ShaderMesh         
+
 MyTown          Town
 
 
@@ -58,45 +59,45 @@ seed            dd            ?
 RandomValue     dd            0
 
 
-planeTransform  Transform       <0.0, -1.0, 0.0>,\
-                                <0.0, 0.0, 0.0>,\
-                                <1.0, 1.0, 1.0>
+; planeTransform  Transform       <0.0, -1.0, 0.0>,\
+;                                 <0.0, 0.0, 0.0>,\
+;                                 <1.0, 1.0, 1.0>
 
-cubeTransform   Transform       <0.0, 0.0, 0.0>,\
-                                <0.0, 0.0, 0.0>,\
-                                <1.0, 1.0, 1.0>
+; cubeTransform   Transform       <0.0, 0.0, 0.0>,\
+;                                 <0.0, 0.0, 0.0>,\
+;                                 <1.0, 1.0, 1.0>
 
-cubePosition1   Vector3         0.0, 0.0, 1.0
-cubeDirection1  Vector3         3.0, 0.0, 1.0
-cubeDirection2  Vector3         -3.0, 0.0, -1.0
-cubePosition2   Vector3         0.0, 0.0, -1.0
+; cubePosition1   Vector3         0.0, 0.0, 1.0
+; cubeDirection1  Vector3         3.0, 0.0, 1.0
+; cubeDirection2  Vector3         -3.0, 0.0, -1.0
+; cubePosition2   Vector3         0.0, 0.0, -1.0
 
-cubePrev1  Vector3               -3.0, 0.0, 1.0
-cubePrev2  Vector3               3.0, 0.0, -1.0
+; cubePrev1  Vector3               -3.0, 0.0, 1.0
+; cubePrev2  Vector3               3.0, 0.0, -1.0
 
-cameraPosition1 Vector3         5.0, 5.0, 0.0
-cameraDirPrev1  Vector3         5.0, 5.0, 6.66
-cameraDirNext1  Vector3         5.0, 5.0, -6.66
+; cameraPosition1 Vector3         5.0, 5.0, 0.0
+; cameraDirPrev1  Vector3         5.0, 5.0, 6.66
+; cameraDirNext1  Vector3         5.0, 5.0, -6.66
 
-cameraPosition2 Vector3         -5.0, 5.0, 0.0
-cameraDirPrev2  Vector3         -5.0, 5.0, -6.66
-cameraDirNext2  Vector3         -5.0, 5.0, 6.66
+; cameraPosition2 Vector3         -5.0, 5.0, 0.0
+; cameraDirPrev2  Vector3         -5.0, 5.0, -6.66
+; cameraDirNext2  Vector3         -5.0, 5.0, 6.66
 
-cameraPosition  Vector3         20.0, 20.0, 20.0
-targetPosition  Vector3         0.0, 0.0, 0.0
-upVector        Vector3         0.0, 1.0, 0.0
+; cameraPosition  Vector3         20.0, 20.0, 20.0
+; targetPosition  Vector3         0.0, 0.0, 0.0
+; upVector        Vector3         0.0, 1.0, 0.0
 
-nullVector      Vector3         0.0, 0.0, 0.0
+; nullVector      Vector3         0.0, 0.0, 0.0
 
-cubePoints:     Spline.Point    cubePosition1, cubePrev1, cubeDirection1, 1.0
-                Spline.Point    cubePosition2, cubePrev2, cubeDirection2, 2.0
+; cubePoints:     Spline.Point    cubePosition1, cubePrev1, cubeDirection1, 1.0
+;                 Spline.Point    cubePosition2, cubePrev2, cubeDirection2, 2.0
 
-cubeSpline      Spline          2, cubePoints, false, 3.0
+; cubeSpline      Spline          2, cubePoints, false, 3.0
 
-cameraPoints:   Spline.Point    cameraPosition1, cameraDirPrev1, cameraDirNext1, 5.0
-                Spline.Point    cameraPosition2, cameraDirPrev2, cameraDirNext2, 5.0
+; cameraPoints:   Spline.Point    cameraPosition1, cameraDirPrev1, cameraDirNext1, 5.0
+;                 Spline.Point    cameraPosition2, cameraDirPrev2, cameraDirNext2, 5.0
 
-cameraSpline    Spline          2, cameraPoints, true, 10.0
+; cameraSpline    Spline          2, cameraPoints, true, 10.0
 
 
 
@@ -118,6 +119,7 @@ sizeLocation    GLint           0
 VAO             GLuint          0
 VBO             GLuint          0
 EBO             GLuint          0
+
 textureNeonPath db              'myTexture.bmp',0
 textureNeonID   GLuint          0
 
@@ -131,8 +133,26 @@ viewMx          Matrix4x4
 
 
 projectionMxName    db          'projection',0
-projectionMxID  GLuint          0
-projectionMx    Matrix4x4
+projectionMxID      GLuint          0
+projectionMx        Matrix4x4
+
+cameraPos           Vector3         0.1, 0.1, 0.1
+cameraTarget        Vector3         0.0, 0.0, 0.0
+cameraUp            Vector3         0.0, 1.0, 0.0             
+
+
+
+cameraPos1          Vector3         10.0, 10.0, 0.0
+cameraDirPrev1      Vector3         10.0, 10.0, 10.0
+cameraDirNext1      Vector3         10.0, 10.0, -10.0
+
+cameraPos2          Vector3         -10.0, 10.0, 0.0
+cameraDirPrev2      Vector3         -10.0, 10.0, -10.0
+cameraDirNext2      Vector3         -10.0, 10.0, 10.0
+
+cameraPosPoints:    Spline.Point    cameraPos1, cameraDirPrev1, cameraDirNext1, 1.0
+                    Spline.Point    cameraPos2, cameraDirPrev2, cameraDirNext2, 1.0
+cameraSpline        Spline          2, cameraPosPoints, SPLINE_LOOPED, 2.0 
 
 
 ; legacy

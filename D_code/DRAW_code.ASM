@@ -141,19 +141,40 @@ proc Draw
      invoke     glUseProgram, [shaderProgram]
      invoke     glBindVertexArray, [VAO]
 
-     invoke      glMatrixMode, GL_MODELVIEW
-     invoke      glLoadIdentity
-     fld         [programTime]
-     mov         eax, 10.0
-     push        eax
-     fmul        dword[esp]
-     pop         eax 
-     fstp        [tempModulateTime]
-     invoke      glRotatef, [tempModulateTime], 1.0, 0.0, 0.0     
-     invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
 
-     invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
+; rotating the tower
+     ;invoke      glMatrixMode, GL_MODELVIEW
+     ;invoke      glLoadIdentity
+     ;fld         [programTime]
+     ;mov         eax, 10.0
+     ;push        eax
+     ;fmul        dword[esp]
+     ;pop         eax 
+     ;fstp        [tempModulateTime]
+     ;invoke      glRotatef, [tempModulateTime], 1.0, 0.0, 0.0     
+     ;invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
+     ;
+     ;invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
 
+; rotating the camera
+     invoke       glMatrixMode, GL_MODELVIEW
+     invoke       glLoadIdentity
+
+     ;fld          [programTime]
+     ;mov          eax, 10.0
+     ;push         eax
+     ;;fmul         dword[esp]
+     ;fsincos
+     ;fmul         dword[esp]       ; sin, cos
+     ;fstp         [cameraPos.x]
+     ;fmul         dword[esp]
+     ;fstp         [cameraPos.z]
+     ;pop          eax 
+     stdcall      Spline.GetPoint, cameraSpline, cameraPos, [programTime]
+
+     stdcall      Matrix.LookAt, cameraPos, cameraTarget, cameraUp
+     invoke       glGetFloatv, GL_MODELVIEW_MATRIX, viewMx
+     invoke       glUniformMatrix4fv, [viewMxID], 1, GL_FALSE, viewMx
 
      ; needs to be called once - during the 
      ;invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
