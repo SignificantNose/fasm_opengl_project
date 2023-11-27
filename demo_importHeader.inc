@@ -24,6 +24,7 @@
         include 'D_STRUCTS\MEMORY_structs.inc'
         include 'D_STRUCTS\TEXTURE_structs.inc'
         include 'D_STRUCTS\DEBUG_structs.inc'
+        include 'D_STRUCTS\CAMERA_structs.inc'
 
         include 'D_objects\Cube.inc'
         include 'D_objects\Plane.inc'

@@ -1,8 +1,8 @@
-proc Draw
+proc Draw uses edi
      locals
         f               dd      ?
         tempFloat       dd      ?
-        tempModulateTime      dd   ?
+        deltaTime       dd      ?
      endl
 
      invoke     GetTickCount
@@ -14,10 +14,19 @@ proc Draw
      fdiv    [oneSecond]
      fstp    [programTime]
 
+
+     fldz 
+     fstp    [deltaTime]
+
      mov     eax, [currentTime]
      sub     eax, [lastTime]
      cmp     eax, 10
      jle     .Skip
+
+     fild       [currentTime]
+     fisub      [lastTime]
+     fdiv       [oneSecond]
+     fstp       [deltaTime]
 
      mov        eax, [currentTime]
      mov        [lastTime], eax
@@ -157,24 +166,9 @@ proc Draw
      ;invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
 
 ; rotating the camera
-     invoke       glMatrixMode, GL_MODELVIEW
-     invoke       glLoadIdentity
 
-     ;fld          [programTime]
-     ;mov          eax, 10.0
-     ;push         eax
-     ;;fmul         dword[esp]
-     ;fsincos
-     ;fmul         dword[esp]       ; sin, cos
-     ;fstp         [cameraPos.x]
-     ;fmul         dword[esp]
-     ;fstp         [cameraPos.z]
-     ;pop          eax 
-     stdcall      Spline.GetPoint, cameraSpline, cameraPos, [programTime]
-
-     stdcall      Matrix.LookAt, cameraPos, cameraTarget, cameraUp
-     invoke       glGetFloatv, GL_MODELVIEW_MATRIX, viewMx
-     invoke       glUniformMatrix4fv, [viewMxID], 1, GL_FALSE, viewMx
+     ;stdcall      Spline.GetPoint, cameraSpline, cameraPos, [programTime]
+     stdcall      Draw.SetUpViewMx, [deltaTime]
 
      ; needs to be called once - during the 
      ;invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
@@ -200,6 +194,28 @@ proc Tick
      ret
 endp
 
+
+proc Draw.SetUpViewMx,\
+     dTime
+     locals
+          cameraCurrTarget         Vector3
+     endl
+     
+     invoke       glMatrixMode, GL_MODELVIEW
+     invoke       glLoadIdentity
+
+     lea          edi, [cameraCurrTarget]
+     stdcall      Vector3.Copy, edi, cameraPos
+     stdcall      Vector3.Add, edi, cameraFront
+
+     stdcall      Camera.Move, [dTime]
+     stdcall      Camera.LookAt, cameraPos, edi, cameraUp
+
+     invoke       glGetFloatv, GL_MODELVIEW_MATRIX, viewMx
+     invoke       glUniformMatrix4fv, [viewMxID], 1, GL_FALSE, viewMx
+     
+     ret 
+endp
 
 
 proc DrawMesh uses esi,\

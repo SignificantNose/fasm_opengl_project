@@ -17,7 +17,8 @@ proc Init uses esi
 
 ; initializing important data
      invoke      GetClientRect, eax, clientRect
-     invoke      ShowCursor, ebx
+     ;invoke      ShowCursor, ebx
+     invoke      ShowCursor, true
 
      invoke      GetTickCount
      mov         [lastTime], eax
@@ -33,6 +34,7 @@ proc Init uses esi
      invoke      wglCreateContext, [hdc]
      invoke      wglMakeCurrent, [hdc], eax
      invoke      glViewport, 0, 0, [clientRect.right], [clientRect.bottom]              ; setting the render field from (0;0) to (width;height)
+     
 
 
 ;; initializing the matrices
@@ -76,6 +78,20 @@ proc Init uses esi
 ;
 ;     ;stdcall     Mesh.CalculateNormals, cube
 
+     ;mov        eax, 2.0
+     ;push       eax 
+     fild       [clientRect.right]      ; width
+     ;fdiv       dword[esp]              ; w/2
+     ;fist       word[wCenterCoordsX]
+     fild       [clientRect.bottom]     ; height, w
+     ;fdiv       dword[esp]              ; h/2, w/2
+     ;fist       word[wCenterCoordsY]
+     fdivp                              ; w/h
+     fstp       [aspect]
+
+     ;movzx      eax, word[wCenterCoordsX]
+     ;movzx      edx, word[wCenterCoordsY]      
+     ;invoke     SetCursorPos, eax, edx
 
      ; generating the tower
      stdcall    Build.GeneratePackedTower, testPackedTower, 1.0
@@ -158,24 +174,26 @@ proc Init uses esi
 
      invoke      glMatrixMode, GL_PROJECTION
      invoke      glLoadIdentity
-     stdcall     Matrix.Projection, 1.33333, 45.0, 0.1, 100.0
+     stdcall     Matrix.Projection, [aspect], 45.0, 0.1, 100.0
      invoke      glGetFloatv, GL_PROJECTION_MATRIX, projectionMx
      
      invoke      glMatrixMode, GL_MODELVIEW
      invoke      glLoadIdentity
-     ;invoke      glRotatef, 30.0, 1.0, 0.0, 0.0     
      invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
  
-     invoke      glLoadIdentity
-     invoke      glTranslatef, 0.0, 0.0, -3.0
-     invoke      glGetFloatv, GL_MODELVIEW_MATRIX, viewMx
+     ; invoke      glLoadIdentity
+     ; invoke      glTranslatef, 0.0, 0.0, -3.0
+     ; invoke      glGetFloatv, GL_MODELVIEW_MATRIX, viewMx
 
      invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
-     invoke      glUniformMatrix4fv, [viewMxID], 1, GL_FALSE, viewMx
+     ; invoke      glUniformMatrix4fv, [viewMxID], 1, GL_FALSE, viewMx
      invoke      glUniformMatrix4fv, [projectionMxID], 1, GL_FALSE, projectionMx
 
 
-     stdcall     Debug.OutputValueDec, 62
+     ;stdcall     Debug.OutputValueDec, 62
+     ;stdcall     Debug.OutputValueFloat, 1532.72351362
+     ;stdcall     Debug.OutputValueDec, -62 
+     ;stdcall     Debug.OutputValueFloat, -1516.3125
 
      ;stdcall Sound.init
 

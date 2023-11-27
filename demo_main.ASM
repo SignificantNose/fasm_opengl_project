@@ -136,24 +136,6 @@ projectionMxName    db          'projection',0
 projectionMxID      GLuint          0
 projectionMx        Matrix4x4
 
-cameraPos           Vector3         0.1, 0.1, 0.1
-cameraTarget        Vector3         0.0, 0.0, 0.0
-cameraUp            Vector3         0.0, 1.0, 0.0             
-
-
-
-cameraPos1          Vector3         10.0, 10.0, 0.0
-cameraDirPrev1      Vector3         10.0, 10.0, 10.0
-cameraDirNext1      Vector3         10.0, 10.0, -10.0
-
-cameraPos2          Vector3         -10.0, 10.0, 0.0
-cameraDirPrev2      Vector3         -10.0, 10.0, -10.0
-cameraDirNext2      Vector3         -10.0, 10.0, 10.0
-
-cameraPosPoints:    Spline.Point    cameraPos1, cameraDirPrev1, cameraDirNext1, 1.0
-                    Spline.Point    cameraPos2, cameraDirPrev2, cameraDirNext2, 1.0
-cameraSpline        Spline          2, cameraPosPoints, SPLINE_LOOPED, 2.0 
-
 
 ; legacy
 ;fragmentShader  GLuint          0
@@ -181,6 +163,7 @@ cameraSpline        Spline          2, cameraPosPoints, SPLINE_LOOPED, 2.0
         include 'D_code\MEMORY_code.asm'
         include 'D_code\TEXTURE_code.asm'
         include 'D_code\DEBUG_code.asm'
+        include 'D_code\CAMERA_code.asm'
 
 proc WinMain
      locals
@@ -208,6 +191,8 @@ proc WindowProc uses ebx,\
      JumpIf     WM_PAINT,       .Paint
      JumpIf     WM_DESTROY,     .Destroy
      JumpIf     WM_KEYDOWN,     .KeyDown
+     JumpIf     WM_KEYUP,       .KeyUp
+     JumpIf     WM_MOUSEMOVE,   .MouseMove
 
      invoke     DefWindowProc, [hWnd], [uMsg], [wParam], [lParam]
      jmp        .Return
@@ -217,7 +202,16 @@ proc WindowProc uses ebx,\
      jmp        .ReturnZero
 .KeyDown:
      cmp        [wParam], VK_ESCAPE
-     jne        .ReturnZero
+     je        .Destroy
+     
+     stdcall    Camera.SetMovement, [wParam]
+     jmp        .ReturnZero
+.KeyUp:
+     stdcall    Camera.ClearMovement, [wParam]
+     jmp        .ReturnZero
+.MouseMove:
+     stdcall    Camera.LookAroundUpdate, [lParam]
+     jmp        .ReturnZero
 .Destroy:
      invoke     ExitProcess, ebx
 .ReturnZero:

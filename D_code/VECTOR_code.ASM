@@ -30,6 +30,47 @@ proc Vector3.Sub uses esi edi,\
         ret
 endp
 
+proc Vector3.Add uses esi edi,\
+     dest, src 
+
+        mov     esi, [src]
+        mov     edi, [dest]
+
+        fld     [edi + Vector3.x]
+        fadd    [esi + Vector3.x]
+        fstp    [edi + Vector3.x]
+
+        fld     [edi + Vector3.y]
+        fadd    [esi + Vector3.y]
+        fstp    [edi + Vector3.y]
+
+        fld     [edi + Vector3.z]
+        fadd    [esi + Vector3.z]
+        fstp    [edi + Vector3.z]
+
+        ret
+endp
+
+proc Vector3.Scale uses edi,\
+        vector, multiplier
+
+        mov     edi, [vector]
+
+        fld     [edi + Vector3.x]
+        fmul    [multiplier]
+        fstp    [edi + Vector3.x]
+
+        fld     [edi + Vector3.y]        
+        fmul    [multiplier]
+        fstp    [edi + Vector3.y]
+
+        fld     [edi + Vector3.z]
+        fmul    [multiplier]
+        fstp    [edi + Vector3.z]        
+
+        ret 
+endp
+
 proc Vector3.Length uses esi,\
      vector
 
