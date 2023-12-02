@@ -70,10 +70,30 @@ struct ShaderMesh
 ends
 
 
-testPackedPlane PackedVerticesMesh      planeVertices, planeIndices, planeTexCoords,  PLANE_TRIANGLES_COUNT
-testPlane       Mesh
-testShaderPlane ShaderMesh
 
-testPackedTower PackedVerticesMesh
-testTower       Mesh
-testShaderTower ShaderMesh         
+struct Transform
+       position        Vector3
+       rotation        Vector3
+       scale           Vector3
+ends
+
+struct Model
+       meshData             ShaderMesh
+       positionData         Transform
+ends
+
+testPackedPlane PackedVerticesMesh      planeVertices, planeIndices, planeTexCoords,  PLANE_TRIANGLES_COUNT
+testPlane     Mesh
+planeMesh     Model         <0,0,0,0,0,0>,\
+                            <\
+                                   <0.0, 0.0, 0.0>,\
+                                   <0.0, 0.0, -30.0>,\
+                                   <1.0, 1.0, 1.0>\
+                            >
+
+towerMesh     Model         <0,0,0,0,0,0>,\
+                            <\
+                                   <0.0, 0.0, 0.0>,\
+                                   <0.0, 0.0, 0.0>,\
+                                   <0.3, 0.3, 0.3>\
+                            >

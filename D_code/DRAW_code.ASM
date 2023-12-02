@@ -40,8 +40,8 @@ proc Draw uses edi
      invoke     glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
      ; ! uniforms must be after the useprogram function call
-     stdcall    Draw.MeshDraw, testShaderTower
-     stdcall    Draw.MeshDraw, testShaderPlane
+     stdcall    Draw.ModelDraw, towerMesh
+     stdcall    Draw.ModelDraw, planeMesh
 
      stdcall    Draw.SetUpViewMx, [deltaTime]
 
@@ -85,15 +85,35 @@ proc Draw.SetUpViewMx,\
      ret 
 endp
 
-proc Draw.MeshDraw uses esi,\
-     pShaderMesh
+proc Draw.ModelDraw uses esi edi,\
+     pPositionedMesh
 
-     mov       esi, [pShaderMesh]
+     mov       esi, [pPositionedMesh]
+     mov       edi, esi
+     add       esi, Model.meshData
+     add       edi, Model.positionData
+; esi = mesh data, edi = position data
 
      invoke    glActiveTexture, GL_TEXTURE0
      invoke    glBindTexture, GL_TEXTURE_2D, [esi + ShaderMesh.textureID]
      invoke    glUseProgram, [shaderProgram]
      invoke    glBindVertexArray, [esi + ShaderMesh.VAO]
+
+     invoke    glMatrixMode, GL_MODELVIEW
+     invoke    glPushMatrix
+     invoke    glLoadIdentity
+     
+     invoke    glTranslatef, [edi + Transform.position.x], [edi + Transform.position.y], [edi + Transform.position.z]
+     invoke    glRotatef, [edi + Transform.rotation.x], 1.0, 0.0, 0.0
+     invoke    glRotatef, [edi + Transform.rotation.y], 0.0, 1.0, 0.0
+     invoke    glRotatef, [edi + Transform.rotation.z], 0.0, 0.0, 1.0
+     invoke    glScalef, [edi + Transform.scale.x], [edi + Transform.scale.y], [edi + Transform.scale.z]
+     
+     invoke    glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
+     invoke    glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
+
+     invoke    glPopMatrix
+
      invoke    glDrawArrays, GL_TRIANGLES, ebx, [esi + ShaderMesh.VerticesCount]
      invoke    glBindVertexArray, 0
 

@@ -120,11 +120,11 @@ EBO             GLuint          0
 ;timeName        db              "time", 0
 ;sizeName        db              "size", 0
 
-        include 'D_code\MESH_code.asm'
         include 'D_code\VECTOR_code.asm'
         include 'D_code\MATRIX_code.asm'
         include 'D_code\INIT_code.asm'
         include 'D_code\SMOOTH_code.asm'
+        include 'D_code\MESH_code.asm'
         include 'D_code\MOVEMENT_code.asm'
         include 'D_code\DRAW_code.asm'
         include 'D_code\GLEXT_code.asm'

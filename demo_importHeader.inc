@@ -8,11 +8,11 @@
         include '..\INCLUDE\api\gdi32.inc'
         include '..\INCLUDE\api\opengl.inc'
 
-        include 'D_structs\MESH_structs.inc'
         include 'D_structs\VECTOR_structs.inc'
         include 'D_structs\MATRIX_structs.inc'
         include 'D_structs\INIT_structs.inc'
         include 'D_structs\SMOOTH_structs.inc'
+        include 'D_structs\MESH_structs.inc'
         include 'D_structs\MOVEMENT_structs.inc'
         include 'D_structs\DRAW_structs.inc'
         include 'D_structs\GLEXT_structs.inc'

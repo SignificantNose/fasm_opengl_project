@@ -1,4 +1,4 @@
-proc Init uses esi
+proc Init uses esi edi
      locals
         hMainWindow dd ?
         aspect      dd ?
@@ -66,13 +66,26 @@ proc Init uses esi
      stdcall    Texture.LoadTexture, textureRoadPath, textureRoadID, GL_BGR
 
 ; generating meshes
-     stdcall    Build.GeneratePackedTower, testPackedTower, 1.0
-     stdcall    Mesh.PackedMesh2Mesh, testPackedTower, testTower, false
-     stdcall    Build.DesignTower, testTower
-     stdcall    Mesh.Mesh2ShaderMesh, testTower, testShaderTower, [textureNeonID]
+
+     invoke     HeapAlloc, [hHeap], 8, sizeof.PackedVerticesMesh
+     mov        esi, eax
+     invoke     HeapAlloc, [hHeap], 8, sizeof.Mesh
+     mov        edi, eax                   
+
+     stdcall    Build.GeneratePackedTower, esi, 1.0
+     stdcall    Mesh.PackedMesh2Mesh, esi, edi, false
+     stdcall    Build.DesignTower, edi
+     lea        eax, [towerMesh+Model.meshData]
+     stdcall    Mesh.Mesh2ShaderMesh, edi, eax, [textureNeonID]
+
+     invoke     HeapFree, [hHeap], 0, edi 
+     invoke     HeapFree, [hHeap], 0, esi
+
+     
 
      stdcall    Mesh.PackedMesh2Mesh, testPackedPlane, testPlane, true
-     stdcall    Mesh.Mesh2ShaderMesh, testPlane, testShaderPlane, [textureRoadID]
+     lea        eax, [planeMesh+Model.meshData]
+     stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureRoadID]
 
                                    ;  program object   uniform name string
      ;invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
@@ -100,12 +113,6 @@ proc Init uses esi
      invoke      glLoadIdentity
      stdcall     Matrix.Projection, [aspect], 45.0, 0.1, 100.0
      invoke      glGetFloatv, GL_PROJECTION_MATRIX, projectionMx
-     
-     invoke      glMatrixMode, GL_MODELVIEW
-     invoke      glLoadIdentity
-     invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
- 
-     invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
      invoke      glUniformMatrix4fv, [projectionMxID], 1, GL_FALSE, projectionMx
 
      ;stdcall     Camera.NormalizeCursor, lastCursorPos

@@ -12,11 +12,5 @@ struct  Spline
         time            dd      ?
 ends
 
-struct  Transform
-        position        Vector3
-        rotation        Vector3
-        scale           Vector3
-ends
-
 SPLINE_NOT_LOOPED       = 0
 SPLINE_LOOPED           = 1
