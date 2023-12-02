@@ -53,10 +53,23 @@ sound:
     rewrite pitch modulation
     sound is now resting... (seek by 3.999 in sound_code.asm)
     optimize the procedures (whenever there's pushing, try using other registers)
-    
+    try to implement a reverb that sounded okay-ish on sine
+
+
 graphics:
     rewrite the build
-    make transform inside the ShaderMesh and rewrite the routine to draw a mesh
+    make transform inside the ShaderMesh and rewrite the routine to draw a mesh(
+        about this:
+            according to learnopengl the mesh must contain its own:
+                position/vertex data: position, normal, texCoords
+                VAO, VBO, EBO  ; excessive
+            and that is purely logical.
+            about textures: the texture must contain the ID and its type(for lighting)
+            there must be a routine made for each mesh
+            ! the mesh must not contain its transform matrix: an individual mesh object must
+    )
+    just a thought: maybe add another type of building where the texture 
+    is reversed: edges are dark, but the inside is bright?
 
 unresolved:
     macro for transferring the pattern to the reverse bit sequence

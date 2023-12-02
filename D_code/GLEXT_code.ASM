@@ -206,8 +206,7 @@ proc CreateShader\
         jne     @F
 
         ; can be removed later on
-        ;invoke  MessageBox, 0, txtError, txtShaderNotCompiled, 64
-        invoke  ExitProcess, ebx
+        invoke  OutputDebugString, debugOutShaderNotComp
 @@:
         mov     eax, [shader]
 

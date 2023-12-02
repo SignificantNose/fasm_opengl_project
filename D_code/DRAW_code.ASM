@@ -39,145 +39,13 @@ proc Draw uses edi
      invoke     glClearColor, 0.3,0.3,0.3,1.0           ; basically bgColor characteristics
      invoke     glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
-
-; placing the camera
-     ;invoke     glRotatef, [angle], 0.0,1.0,0.0
-     ;fld        [angle]
-     ;fdiv       [radian]
-     ;fsincos
-     ;fmul       [length]
-     ;fst        [light0Position.x]
-     ;fchs
-     ;fstp       [light1Position.x]
-     ;fmul       [length]
-     ;fst        [light0Position.z]
-     ;fchs
-     ;fstp       [light1Position.z]
-
-     ;invoke     glLightfv, GL_LIGHT0, GL_POSITION, light0Position
-     ;invoke     glLightfv, GL_LIGHT0, GL_SPOT_CUTOFF, myCutout
-      ;invoke     glLightfv, GL_LIGHT0, GL_SPOT_DIRECTION, spotdir
-;     invoke     glLightfv, GL_LIGHT1, GL_POSITION, light1Position
-
-     ;fld        [angle]
-     ;fdiv       [radian]
-     ;fsin
-     ;fabs
-     ;fstp       [f]
-     ;stdcall    DrawMesh, plane, planeTransform
-     ;stdcall    DrawMesh, cube, cubeTransform
-
-     ;stdcall    Movement.Interpolate, cubePosition1, cubePosition2, cubePosition, [f]
-     ;invoke     glTranslatef, [cubePosition.x], [cubePosition.y], [cubePosition.z]
-     ;stdcall    DrawMesh, cube
-
-; draw
-     ;stdcall    Spline.GetPoint, cubeSpline, cubeTransform.position, [programTime]
-     ;stdcall    Spline.GetPoint, cameraSpline, cameraPosition, [programTime]
-
-
-     ;invoke     glMatrixMode, GL_MODELVIEW
-     ;invoke     glLoadIdentity
-     ;stdcall    Matrix.LookAt, cameraPosition, targetPosition, upVector
-
-
-;        cmp     [program], ebx
-;        je      @F
-;
-;        invoke  glUseProgram, [program]
-;
-;        fild    [programTime]
-;        fdiv    [oneSecond]
-;        fstp    [tempFloat]
-;        push    [tempFloat]
-;
-;        invoke  glUniform1f, [timeLocation] ; , (float)(programTime)
-;
-;        fild    [clientRect.bottom]
-;        fstp    [tempFloat]
-;        push    [tempFloat]
-;
-;        fild    [clientRect.right]
-;        fstp    [tempFloat]
-;        push    [tempFloat]
-;
-;        invoke  glUniform2f, [sizeLocation] ; , (float)(width), (float)(height)
-;
-;@@:
-
-     ;stdcall    DrawMesh, cube, cubeTransform
-
-;     invoke     glUseProgram, ebx
-
-     ;invoke     glPushMatrix
-     ;invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, PlaneDiffuse
-     ;invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, PlaneAmbient
-     ;stdcall    DrawMesh, plane, planeTransform
-     ;invoke     glPopMatrix
-     ;
-     ;
-     ;invoke     glPushMatrix
-     ;invoke     glMaterialfv, GL_FRONT, GL_DIFFUSE, BuildDiffuse
-     ;invoke     glMaterialfv, GL_FRONT, GL_AMBIENT, BuildAmbient
-     ;;stdcall    DrawMesh, TowerGLfloat, cubeTransform
-     ;stdcall    DrawTown, MyTown, cubeTransform
-     ;invoke     glPopMatrix
-
-
      ; ! uniforms must be after the useprogram function call
+     stdcall    Draw.MeshDraw, testShaderTower
+     stdcall    Draw.MeshDraw, testShaderPlane
 
-     ;fld       [programTime]       ; t
-     ;mov       eax, 15.0
-     ;push      eax 
-     ;fmul      dword[esp]          
-     ;pop       eax
-     ;fsin                          ; sin(t)
-     ;fld1                          ; 1, sin(t)
-     ;fld1                          ; 1, 1, sin(t)
-     ;faddp                         ; 2, sin(t)
-     ;fdiv      st1, st0            ; 2, sin(t)/2
-     ;fld1                          ; 1, 2, sin(t)/2
-     ;fxch                          ; 2, 1, sin(t)/2
-     ;fdivp                         ; 0.5, sin(t)/2
-     ;faddp                         ; greenValue
-     ;push      eax 
-     ;fstp      dword[esp]          ; 
-     ;invoke    glGetUniformLocation, [shaderProgram], uniformName
-     ;pop       edx 
-     ;invoke    glUniform4f, eax, 0.0, edx, 0.0, 0.0
-     invoke     glActiveTexture, GL_TEXTURE0
-     invoke     glBindTexture, GL_TEXTURE_2D, [textureNeonID]
-     invoke     glUseProgram, [shaderProgram]
-     invoke     glBindVertexArray, [VAO]
+     stdcall    Draw.SetUpViewMx, [deltaTime]
 
-
-; rotating the tower
-     ;invoke      glMatrixMode, GL_MODELVIEW
-     ;invoke      glLoadIdentity
-     ;fld         [programTime]
-     ;mov         eax, 10.0
-     ;push        eax
-     ;fmul        dword[esp]
-     ;pop         eax 
-     ;fstp        [tempModulateTime]
-     ;invoke      glRotatef, [tempModulateTime], 1.0, 0.0, 0.0     
-     ;invoke      glGetFloatv, GL_MODELVIEW_MATRIX, modelMx
-     ;
-     ;invoke      glUniformMatrix4fv, [modelMxID], 1, GL_FALSE, modelMx
-
-; rotating the camera
-
-     ;stdcall      Spline.GetPoint, cameraSpline, cameraPos, [programTime]
-     stdcall      Draw.SetUpViewMx, [deltaTime]
-
-     ; needs to be called once - during the 
-     ;invoke     glBindBuffer, GL_ARRAY_BUFFER, [VBO]
-
-     ;invoke     glDrawArrays, GL_TRIANGLES, ebx, [myPrimitiveMesh.verticesCount]
      ;invoke     glPolygonMode, GL_FRONT_AND_BACK, GL_LINE
-     ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;     invoke     glDrawElements, GL_TRIANGLES, [towerVerticesCount], GL_UNSIGNED_INT, 0
-     invoke     glDrawArrays, GL_TRIANGLES, ebx, [testShaderTower.VerticesCount]
      invoke     glUseProgram, ebx
 
      invoke     SwapBuffers, [hdc]
@@ -216,6 +84,21 @@ proc Draw.SetUpViewMx,\
      
      ret 
 endp
+
+proc Draw.MeshDraw uses esi,\
+     pShaderMesh
+
+     mov       esi, [pShaderMesh]
+
+     invoke    glActiveTexture, GL_TEXTURE0
+     invoke    glBindTexture, GL_TEXTURE_2D, [esi + ShaderMesh.textureID]
+     invoke    glUseProgram, [shaderProgram]
+     invoke    glBindVertexArray, [esi + ShaderMesh.VAO]
+     invoke    glDrawArrays, GL_TRIANGLES, ebx, [esi + ShaderMesh.VerticesCount]
+     invoke    glBindVertexArray, 0
+
+     ret 
+endp 
 
 
 proc DrawMesh uses esi,\

@@ -24,8 +24,9 @@ ends
 ; consisting only of vertices
 struct PackedVerticesMesh
        pVertices         dd      ?
-       pIndices          dd      ?
-       trianglesCount   dd      ?
+       pIndices          dd      ?               ; WARNING! Indices are bytes!!
+       pTexCoords        dd      ?               ; optional to fill 
+       trianglesCount    dd      ?
 ends
 
 
@@ -49,10 +50,30 @@ ends
 
 ; ShaderMesh is a struct that must be the most
 ; compatible with the shader (in terms of buffers:
-; the VBO data must be filled easily with the help 
-; of this struct)
+; the data must be ready for this type of struct)
+;
+; EBO: I don't think that in my case it's relevant
+; to use EBO as, for example, towers have a distinct
+; structure that requires for one vertice to have 
+; different texture coords. I might be wrong, but
+; anyway if some time it becomes mandatory to use 
+; EBO, welp, okay then.
 struct ShaderMesh
-       pBufferData      dd      ?
-       szBufferData     dd      ?
-       VerticesCount    dd      ?
+       pBufferData      dd         ?
+       szBufferData     dd         ?
+       VerticesCount    dd         ?
+       
+       textureID        GLuint     ?
+       VAO              GLuint     ? 
+       VBO              GLuint     ?      
+       ; EBO              GLuint          
 ends
+
+
+testPackedPlane PackedVerticesMesh      planeVertices, planeIndices, planeTexCoords,  PLANE_TRIANGLES_COUNT
+testPlane       Mesh
+testShaderPlane ShaderMesh
+
+testPackedTower PackedVerticesMesh
+testTower       Mesh
+testShaderTower ShaderMesh         

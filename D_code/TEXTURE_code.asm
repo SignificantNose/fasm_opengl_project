@@ -1,7 +1,7 @@
 proc Texture.LoadTexture uses edi esi,\
-    textPath, textArrayOffs
+    pTextPath, pTextID, texFormat
 
-    mov         esi, [textArrayOffs]
+    mov         esi, [pTextID]
 
     invoke      glGenTextures, 1, esi
 
@@ -14,15 +14,13 @@ proc Texture.LoadTexture uses edi esi,\
     invoke      glTexParameteri, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
 
 
-    stdcall     File.LoadContent, [textPath]
+    stdcall     File.LoadContent, [pTextPath]
     mov         edi, eax 
 
-    ; edx will store the offset of the data
+; edx will store the offset of the data
     add         edi, dword[eax+10]
-    ;invoke      glTexImage2D, GL_TEXTURE_2D, ebx, GL_RGB, dword[eax+18], dword[eax+22], ebx, GL_BGR, GL_UNSIGNED_BYTE, edi
-    invoke      glTexImage2D, GL_TEXTURE_2D, ebx, GL_RGB, dword[eax+18], dword[eax+22], ebx, GL_BGRA, GL_UNSIGNED_BYTE, edi
+    invoke      glTexImage2D, GL_TEXTURE_2D, ebx, GL_RGB8, dword[eax+18], dword[eax+22], ebx, [texFormat], GL_UNSIGNED_BYTE, edi
     invoke      glGenerateMipmap, GL_TEXTURE_2D
-
 
     invoke      HeapFree, [hHeap], ebx, eax
     invoke      glBindTexture, GL_TEXTURE_2D, ebx

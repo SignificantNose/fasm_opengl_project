@@ -1,12 +1,14 @@
 ; routine to generate a Mesh struct (resultMesh)
 ; out of a PackedMesh struct (sourceMesh)
 proc Mesh.PackedMesh2Mesh uses ebx esi edi,\
-     sourceMesh, resultMesh
+     sourceMesh, resultMesh, copyTexCoords
 
         locals
                 vertices        dd      ?
                 indices         dd      ?
+                texCoords       dd      ?
                 resultVertices  dd      ?
+                resultTexCoords dd      ?
                 verticesCount   dd      ?
                 resultIndex     dd      ?
         endl
@@ -19,6 +21,8 @@ proc Mesh.PackedMesh2Mesh uses ebx esi edi,\
         mov     [vertices], eax
         mov     eax, [esi + PackedVerticesMesh.pIndices]
         mov     [indices], eax
+        mov     eax, [esi + PackedVerticesMesh.pTexCoords]
+        mov     [texCoords], eax
 
         mov     [resultIndex], ebx
 
@@ -58,6 +62,7 @@ proc Mesh.PackedMesh2Mesh uses ebx esi edi,\
         push    eax
         invoke  HeapAlloc, [hHeap], 8   ; eax
         mov     [edi + Mesh.pTexCoords], eax
+        mov     [resultTexCoords], eax
 
 
         mov     ecx, [verticesCount]
@@ -89,6 +94,33 @@ proc Mesh.PackedMesh2Mesh uses ebx esi edi,\
         mov     [edi + Vertex.y], ecx   ; resultVertices[resultIndex].y = y
         mov     [edi + Vertex.z], edx   ; resultVertices[resultIndex].z = z
 
+        mov     ecx, [copyTexCoords]
+        jecxz   .noCopyTexCoords
+
+        xor     edx, edx 
+        mov     esi, [indices]
+        movzx   eax, byte[esi + ebx]    ; index 
+        mov     edi, sizeof.TexVertex 
+        mul     edi                     ; index * sizeof.TexVertex
+
+        mov     esi, [texCoords]
+        add     esi, eax               
+
+        xor     ecx, edx 
+        mov     eax, [resultIndex]      ; resultIndex
+        mov     edi, sizeof.TexVertex   
+        mul     edi                     ; resultIndex * sizeof.TexVertex
+
+        mov     edi, [resultTexCoords] 
+        add     edi, eax                ; resultTexCoords + resultIndex * sizeof.TexVertex = 
+                                        ; resultTexCoords[resultIndex]
+
+        mov     eax, [esi + TexVertex.s]
+        mov     ecx, [esi + TexVertex.t]
+        mov     [edi + TexVertex.s], eax 
+        mov     [edi + TexVertex.t], ecx
+
+.noCopyTexCoords:
         inc     ebx
         inc     [resultIndex]
 
@@ -174,7 +206,7 @@ endp
 ; out of a Mesh struct (pInitialMesh). Basically puts the
 ; data that is stored separately sequentially
 proc Mesh.Mesh2ShaderMesh uses esi edi,\
-        pInitialMesh, pShaderMesh
+        pInitialMesh, pShaderMesh, txtrID
 
         locals
                 pInitVertices            dd      ?
@@ -184,6 +216,11 @@ proc Mesh.Mesh2ShaderMesh uses esi edi,\
 
         mov     esi, [pInitialMesh]
         mov     edi, [pShaderMesh]
+
+        lea     eax, [edi+ShaderMesh.VAO]
+        invoke  glGenVertexArrays, 1, eax 
+        lea     eax, [edi+ShaderMesh.VBO]
+        invoke  glGenBuffers, 1, eax 
 
         mov     eax, [esi + Mesh.pVertices]
         mov     [pInitVertices], eax 
@@ -236,6 +273,26 @@ proc Mesh.Mesh2ShaderMesh uses esi edi,\
 
         pop     ecx
         loop    .looper
+
+        mov     edi, [pShaderMesh]
+        invoke  glBindVertexArray, [edi+ShaderMesh.VAO]
+        invoke  glBindBuffer, GL_ARRAY_BUFFER, [edi+ShaderMesh.VBO]
+        invoke  glBufferData, GL_ARRAY_BUFFER, [edi+ShaderMesh.szBufferData],\
+                               [edi+ShaderMesh.pBufferData], GL_STATIC_DRAW
+        invoke  glVertexAttribPointer, 0, 3, GL_FLOAT, GL_FALSE, 8*4, 0
+        invoke  glEnableVertexAttribArray, 0
+
+        invoke     glVertexAttribPointer, 1, 2, GL_FLOAT, GL_FALSE, 8*4, 3*4
+        invoke     glEnableVertexAttribArray, 1
+
+        invoke     glVertexAttribPointer, 2, 3, GL_FLOAT, GL_FALSE, 8*4, 5*4
+        invoke     glEnableVertexAttribArray, 2
+
+        invoke     glBindBuffer, GL_ARRAY_BUFFER, 0
+        invoke     glBindVertexArray, 0
+
+        mov     eax, [txtrID]
+        mov     [edi+ShaderMesh.textureID], eax
 
         ret
 endp

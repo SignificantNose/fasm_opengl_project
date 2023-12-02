@@ -1,7 +1,19 @@
-shaderCompiled                  dd      ?
-txtError                        db      'Error',0
-txtShaderNotCompiled            db      'Shader not compiled',0
-uniformName                     db      'outColor', 0
+define GL_FRAGMENT_SHADER                0x8B30
+define GL_COMPILE_STATUS                 0x8B81
+define GL_LINK_STATUS                    0x8B82
+
+modelMxName     db              'model',0
+modelMxID       GLuint          0
+modelMx         Matrix4x4
+
+viewMxName      db              'view',0
+viewMxID        GLuint          0 
+viewMx          Matrix4x4
+
+projectionMxName    db          'projection',0
+projectionMxID      GLuint          0
+projectionMx        Matrix4x4
+
 extensionAddresses:
         glUseProgram            dd      ?
         glDetachShader          dd      ?
@@ -58,7 +70,3 @@ extensionNames:
         db      "glActiveTexture", 0
         db      "glUniformMatrix4fv", 0
         db      0
-
-define GL_FRAGMENT_SHADER                0x8B30
-define GL_COMPILE_STATUS                 0x8B81
-define GL_LINK_STATUS                    0x8B82
