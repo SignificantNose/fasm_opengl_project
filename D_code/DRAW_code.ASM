@@ -40,8 +40,16 @@ proc Draw uses edi
      invoke     glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
      ; ! uniforms must be after the useprogram function call
-     stdcall    Draw.ModelDraw, towerMesh
-     stdcall    Draw.ModelDraw, planeMesh
+     stdcall    Draw.ModelDraw, planeModel
+     stdcall    Draw.TownDraw, testTown
+     stdcall    Draw.ModelDraw, towerModel
+
+     ; nop  
+     ; lea        eax, [testTown]
+     ; add        eax, Town.pTowerModels
+     ; mov        eax, [eax]
+     ; push       eax 
+     ; stdcall    Draw.ModelDraw
 
      stdcall    Draw.SetUpViewMx, [deltaTime]
 
@@ -102,7 +110,7 @@ proc Draw.ModelDraw uses esi edi,\
      invoke    glMatrixMode, GL_MODELVIEW
      invoke    glPushMatrix
      invoke    glLoadIdentity
-     
+
      invoke    glTranslatef, [edi + Transform.position.x], [edi + Transform.position.y], [edi + Transform.position.z]
      invoke    glRotatef, [edi + Transform.rotation.x], 1.0, 0.0, 0.0
      invoke    glRotatef, [edi + Transform.rotation.y], 0.0, 1.0, 0.0
@@ -120,43 +128,23 @@ proc Draw.ModelDraw uses esi edi,\
      ret 
 endp 
 
+proc Draw.TownDraw uses esi edi,\
+     pTown
 
-proc DrawMesh uses esi,\
-     mesh, transform
+     nop 
+     mov       esi, [pTown]
+     mov       ecx, [esi + Town.total]
+     mov       edi, [esi + Town.pTowerModels]
 
-     mov        esi, [mesh]
-     mov        edi, [transform]
-
-; pushing the matrix, so that the changes do not affect anything but the current mesh
-     invoke     glPushMatrix
-
-
-; you spin me right round baby right round like a record baby right round round round           ('You Spin Me Round (Like a Record)' by Dead or Alive, 1985)
-     invoke     glTranslatef, [edi+Transform.position.x], [edi+Transform.position.y], [edi+Transform.position.z]
-     invoke     glRotatef, [edi+Transform.rotation.x], 1.0, 0.0, 0.0
-     invoke     glRotatef, [edi+Transform.rotation.y], 0.0, 1.0, 0.0
-     invoke     glRotatef, [edi+Transform.rotation.z], 0.0, 0.0, 1.0
-     invoke     glScalef, [edi+Transform.scale.x], [edi+Transform.scale.y], [edi+Transform.scale.z]
-
-; allowing to import the arrays of data
-     invoke     glEnableClientState, GL_VERTEX_ARRAY
-     invoke     glEnableClientState, GL_COLOR_ARRAY
-     invoke     glEnableClientState, GL_NORMAL_ARRAY
-
-     invoke     glVertexPointer, 3, GL_FLOAT, ebx, [esi+Mesh.vertices]
-     invoke     glColorPointer, 3, GL_FLOAT, ebx, [esi+Mesh.colors]
-     invoke     glNormalPointer, GL_FLOAT, ebx, [esi+Mesh.normals]
-     invoke     glDrawArrays, GL_TRIANGLES, ebx, [esi+Mesh.verticesCount]
-
-     invoke     glDisableClientState, GL_VERTEX_ARRAY
-     invoke     glDisableClientState, GL_COLOR_ARRAY
-     invoke     glDisableClientState, GL_NORMAL_ARRAY
-
-     invoke     glPopMatrix
+.looper:
+     push      ecx 
+     stdcall   Draw.ModelDraw, edi 
+     add       edi, sizeof.Model
+     pop       ecx 
+     loop      .looper 
 
      ret
 endp
-
 
 proc DrawTown uses esi,\
      town, transform

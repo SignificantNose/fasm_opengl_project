@@ -7,6 +7,31 @@ anEleven  dw    11
 anEighty  dw    80
 
 
+; routine for generating a Model struct that is
+; ready to use (meaning, can be passed onto the
+; Draw.ModelDraw routine and be processed). the 
+; struct is stored at pTowerModel
+proc    Build.GenerateTowerModel uses esi edi,\
+        pTowerModel
+
+        invoke     HeapAlloc, [hHeap], 8, sizeof.PackedVerticesMesh
+        mov        esi, eax
+        invoke     HeapAlloc, [hHeap], 8, sizeof.Mesh
+        mov        edi, eax                   
+
+        stdcall    Build.GeneratePackedTower, esi, 1.0
+        stdcall    Mesh.PackedMesh2Mesh, esi, edi, false
+        stdcall    Build.DesignTower, edi
+        mov        edx, [pTowerModel]
+        lea        eax, [edx+Model.meshData]
+        stdcall    Mesh.Mesh2ShaderMesh, edi, eax, [textureNeonID]
+
+        invoke     HeapFree, [hHeap], 0, edi 
+        invoke     HeapFree, [hHeap], 0, esi
+
+        ret 
+endp
+
 ; routine that generates a PackedMesh struct of
 ; a tower with the radius of the basis of the 
 ; building equal to scale.
@@ -326,71 +351,82 @@ endp
 
 
 
-proc Build.GenerateTown uses ebx edi, width, height, scale, resultTown
-        ;locals
-                ;TempMesh        PackedMesh
-                ;TempCoords      Vector3
-                ;StartHeight     Vector3         <?, 0.0, ?>
-        ;endl
-        mov ebx, [resultTown]
-        mov edx, [scale]
-        mov [StartHeight.x], edx
-        mov [StartHeight.z], edx
-        xor edx, edx
-        mov eax, [width]
-        mov [ebx+Town.width], eax
-        mov ecx, [height]
-        mov [ebx+Town.height], ecx
-        mul ecx
-        mov [ebx+Town.total], eax
+proc Build.GenerateTown uses esi edi,\
+        width, height, scale, resultTown
+
+        locals
+                currPos         Transform
+        endl    
+
+; initializing the currPos structure
+        mov     ecx, sizeof.Transform 
+        lea     edi, [currPos]
+        xor     al, al 
+        rep     stosb
+
+        lea     esi, [currPos]
+        mov     eax, [scale]
+        mov     [esi + Transform.position + Vector3.x], eax 
+        mov     [esi + Transform.position + Vector3.z], eax
+        mov     [esi + Transform.scale + Vector3.x], eax
+        mov     [esi + Transform.scale + Vector3.y], eax
+        mov     [esi + Transform.scale + Vector3.z], eax
+
+; filling in the result town data
+        mov     edi, [resultTown]
+        xor     edx, edx
+        mov     eax, [width]
+        mov     [edi + Town.width], eax
+        mov     ecx, [height]
+        mov     [edi + Town.height], ecx
+        mul     ecx
+        mov     [edi + Town.total], eax
 
 
-        ;push eax                ; saving eax for the loop
+        xor     edx, edx                    
+        mov     ecx, sizeof.Model
+        mul     ecx
+; ecx has the amount of data needed to store all the towers
 
-        xor edx, edx                    ; do i need to?
-        mov ecx, sizeof.Mesh
-        mul ecx
+        invoke  HeapAlloc, [hHeap], 8, eax
+        mov     [edi + Town.pTowerModels], eax
+        mov     edi, eax
 
-
-        push eax
-        invoke  HeapAlloc, [hHeap], 8
-        mov [ebx+Town.towers], eax
-        mov edi, eax
-
-        ;pop ecx
-        mov ecx, [height]
-        xor ebx, ebx
+        mov     ecx, [height]
 .looperHeight:
-        push ecx
+        push    ecx
 
-        mov ecx, [width]
+        mov     ecx, [width]
 .looperWidth:
-        push ecx
-        stdcall Build.GeneratePackedTower, TempMesh, StartHeight, [scale]
-        push false
-        push edi
-        stdcall Mesh.Generate, TempMesh
-        push edi
-        stdcall Mesh.CalculateNormals
-        add edi, sizeof.Mesh
+        push    ecx
 
-        fld [StartHeight.x]
-        fadd [scale]
-        fadd [scale]
-        fstp [StartHeight.x]
+
+        stdcall   Build.GenerateTowerModel, edi 
+        mov       eax, edi
+        add       eax, Model.positionData 
+
+        lea       ecx, [currPos]
+        stdcall   Memory.memcpy, eax, ecx, sizeof.Transform 
+        
+        add       edi, sizeof.Model
+
+
+
+        fld       dword[esi + Transform.position + Vector3.x]
+        fadd      [scale]
+        fadd      [scale]
+        fstp      dword[esi + Transform.position + Vector3.x]
 
         pop ecx
         loop .looperWidth
 
 
-        mov eax, [scale]
-        mov [StartHeight.x], eax
-        fld [StartHeight.z]
-        fadd [scale]
-        fadd [scale]
-        fstp [StartHeight.z]
 
-
+        fld       [scale]             
+        fst       dword[esi + Transform.position + Vector3.x]
+        fadd      [scale]
+        fadd      dword[esi + Transform.position + Vector3.z]
+        fstp      dword[esi + Transform.position + Vector3.z]
 
         pop ecx
         loop .looperHeight

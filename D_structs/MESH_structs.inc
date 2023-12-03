@@ -84,16 +84,9 @@ ends
 
 testPackedPlane PackedVerticesMesh      planeVertices, planeIndices, planeTexCoords,  PLANE_TRIANGLES_COUNT
 testPlane     Mesh
-planeMesh     Model         <0,0,0,0,0,0>,\
+planeModel    Model         <0,0,0,0,0,0>,\
                             <\
                                    <0.0, 0.0, 0.0>,\
-                                   <0.0, 0.0, -30.0>,\
+                                   <0.0, 0.0, 0.0>,\
                                    <1.0, 1.0, 1.0>\
-                            >
-
-towerMesh     Model         <0,0,0,0,0,0>,\
-                            <\
-                                   <0.0, 0.0, 0.0>,\
-                                   <0.0, 0.0, 0.0>,\
-                                   <0.3, 0.3, 0.3>\
                             >

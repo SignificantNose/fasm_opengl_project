@@ -21,7 +21,7 @@ ends
 
 
 
-cameraPos           Vector3         3.0, 3.0, 3.0
+cameraPos           Vector3         -3.0, 3.0, -3.0
 
 ; for now the target will be deprecated. and it's 
 ; more likely that it'll stay deprecated, as the 
@@ -35,7 +35,7 @@ cameraFront         Vector3         -1.0, 0.0, 0.0
 ; wCenterCoordsX      dw              ?
 ; wCenterCoordsY      dw              ?
 lastCursorPos       Point           cursorPosX, cursorPosY
-fYaw                dd              225.0
+fYaw                dd              45.0
 fPitch              dd              -30.0
 
 

@@ -3,5 +3,15 @@ struct Town
        height           dd      ?
        total            dd      ?
        ;scale            dd      ?
-       towers           dd      ?
+       pTowerModels     dd      ?
 ends
+
+towerModel    Model         <0,0,0,0,0,0>,\
+                            <\
+                                   <0.0, 0.0, 0.0>,\
+                                   <0.0, 0.0, 0.0>,\
+                                   <0.3, 0.3, 0.3>\
+                            >
+
+
+testTown      Town 

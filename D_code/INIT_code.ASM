@@ -62,30 +62,18 @@ proc Init uses esi edi
 
 
 ; initializing textures
-     stdcall    Texture.LoadTexture, textureNeonPath, textureNeonID, GL_BGRA
+     stdcall    Texture.LoadTexture, textureNeonPath, textureNeonID, GL_BGR
      stdcall    Texture.LoadTexture, textureRoadPath, textureRoadID, GL_BGR
 
 ; generating meshes
 
-     invoke     HeapAlloc, [hHeap], 8, sizeof.PackedVerticesMesh
-     mov        esi, eax
-     invoke     HeapAlloc, [hHeap], 8, sizeof.Mesh
-     mov        edi, eax                   
-
-     stdcall    Build.GeneratePackedTower, esi, 1.0
-     stdcall    Mesh.PackedMesh2Mesh, esi, edi, false
-     stdcall    Build.DesignTower, edi
-     lea        eax, [towerMesh+Model.meshData]
-     stdcall    Mesh.Mesh2ShaderMesh, edi, eax, [textureNeonID]
-
-     invoke     HeapFree, [hHeap], 0, edi 
-     invoke     HeapFree, [hHeap], 0, esi
-
-     
+     stdcall    Build.GenerateTowerModel, towerModel
 
      stdcall    Mesh.PackedMesh2Mesh, testPackedPlane, testPlane, true
-     lea        eax, [planeMesh+Model.meshData]
+     lea        eax, [planeModel+Model.meshData]
      stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureRoadID]
+
+     stdcall   Build.GenerateTown, 3, 3, 1.0, testTown
 
                                    ;  program object   uniform name string
      ;invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
