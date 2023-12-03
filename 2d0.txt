@@ -70,7 +70,8 @@ graphics:
     )
     just a thought: maybe add another type of building where the texture 
     is reversed: edges are dark, but the inside is bright?
-    the routine for generating a town is ready. make a routine for drawing a town
+    try nulling the depth buffer before drawing the road
+    make time calculations for generating music and graphics 
 
 unresolved:
     macro for transferring the pattern to the reverse bit sequence

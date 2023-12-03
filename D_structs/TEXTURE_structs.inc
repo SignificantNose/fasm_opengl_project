@@ -11,5 +11,8 @@ GL_CLAMP_TO_BORDER      = 0x812D
 textureNeonPath db              'D_textures\txtrTriangle.bmp',0
 textureNeonID   GLuint          0
 
-textureRoadPath db              'D_textures\hiResRoadPurple.bmp',0
-textureRoadID   GLuint          0
+textureGroundPath db            'D_textures\hiResGroundPurple.bmp',0
+textureGroundID   GLuint        0
+
+textureRoadPath  db             'D_textures\txtrRoadway.bmp',0
+textureRoadID     GLuint        0

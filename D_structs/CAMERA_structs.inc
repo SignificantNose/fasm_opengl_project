@@ -22,7 +22,7 @@ ends
 
 
 cameraSpeed         dd              7.0
-cameraPos           Vector3         3.0, 3.0, 3.0
+cameraPos           Vector3         0.0, 3.0, 0.0
 
 ; for now the target will be deprecated. and it's 
 ; more likely that it'll stay deprecated, as the 

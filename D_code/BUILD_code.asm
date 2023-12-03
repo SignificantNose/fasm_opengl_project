@@ -7,10 +7,24 @@ anEleven  dw    11
 anEighty  dw    80
 
 
-; routine for generating a Model struct that is
-; ready to use (meaning, can be passed onto the
-; Draw.ModelDraw routine and be processed). the 
-; struct is stored at pTowerModel
+; routine for generating a Model struct of a road 
+; fragment that is ready to use (meaning, can be 
+; passed onto the Draw.ModelDraw routine and be 
+; processed). the struct is stored at pRoadModel
+proc    Build.GenerateRoadModel,\
+        pRoadModel
+
+        stdcall    Mesh.PackedMesh2Mesh, testPackedRoad, testPlane, true
+        mov        eax, [pRoadModel] 
+        lea        eax, [eax+Model.meshData]
+        stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureRoadID]
+
+        ret 
+endp
+
+; routine for generating a Model struct of a 
+; building that is ready to use. the struct is 
+; stored at pTowerModel
 proc    Build.GenerateTowerModel uses esi edi,\
         pTowerModel
 

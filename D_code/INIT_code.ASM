@@ -63,6 +63,7 @@ proc Init uses esi edi
 
 ; initializing textures
      stdcall    Texture.LoadTexture, textureNeonPath, textureNeonID, GL_BGR
+     stdcall    Texture.LoadTexture, textureGroundPath, textureGroundID, GL_BGR
      stdcall    Texture.LoadTexture, textureRoadPath, textureRoadID, GL_BGR
 
 ; generating meshes
@@ -71,9 +72,31 @@ proc Init uses esi edi
 
      stdcall    Mesh.PackedMesh2Mesh, testPackedPlane, testPlane, true
      lea        eax, [planeModel+Model.meshData]
-     stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureRoadID]
+     stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureGroundID]
 
-     stdcall   Build.GenerateTown, 3, 3, 1.0, testTown
+     stdcall    Build.GenerateRoadModel, road11
+     stdcall    Build.GenerateRoadModel, road12
+     stdcall    Build.GenerateRoadModel, road13
+     stdcall    Build.GenerateRoadModel, road14
+
+     stdcall    Build.GenerateRoadModel, road21
+     stdcall    Build.GenerateRoadModel, road22
+     stdcall    Build.GenerateRoadModel, road23
+     stdcall    Build.GenerateRoadModel, road24
+
+
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town11
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town12
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town13
+ 
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town21
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town22
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town23
+ 
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town31
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town32
+     stdcall    Build.GenerateTown, 3, 3, 1.0, town33
+
 
                                    ;  program object   uniform name string
      ;invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
