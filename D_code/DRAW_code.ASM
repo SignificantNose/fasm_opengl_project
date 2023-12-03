@@ -40,18 +40,12 @@ proc Draw uses edi
      invoke     glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
      ; ! uniforms must be after the useprogram function call
-     stdcall    Draw.ModelDraw, planeModel
-     stdcall    Draw.TownDraw, testTown
-     stdcall    Draw.ModelDraw, towerModel
-
-     ; nop  
-     ; lea        eax, [testTown]
-     ; add        eax, Town.pTowerModels
-     ; mov        eax, [eax]
-     ; push       eax 
-     ; stdcall    Draw.ModelDraw
-
+     invoke    glUseProgram, [shaderProgram]
      stdcall    Draw.SetUpViewMx, [deltaTime]
+
+     stdcall    Draw.ModelDraw, planeModel, true 
+     stdcall    Draw.ModelDraw, towerModel, true 
+     stdcall    Draw.TownDraw, testTown
 
      ;invoke     glPolygonMode, GL_FRONT_AND_BACK, GL_LINE
      invoke     glUseProgram, ebx
@@ -78,6 +72,7 @@ proc Draw.SetUpViewMx,\
      endl
      
      invoke       glMatrixMode, GL_MODELVIEW
+     invoke       glPushMatrix
      invoke       glLoadIdentity
 
      lea          edi, [cameraCurrTarget]
@@ -89,12 +84,13 @@ proc Draw.SetUpViewMx,\
 
      invoke       glGetFloatv, GL_MODELVIEW_MATRIX, viewMx
      invoke       glUniformMatrix4fv, [viewMxID], 1, GL_FALSE, viewMx
+     invoke       glPopMatrix
      
      ret 
 endp
 
 proc Draw.ModelDraw uses esi edi,\
-     pPositionedMesh
+     pPositionedMesh, selfTransform
 
      mov       esi, [pPositionedMesh]
      mov       edi, esi
@@ -104,12 +100,17 @@ proc Draw.ModelDraw uses esi edi,\
 
      invoke    glActiveTexture, GL_TEXTURE0
      invoke    glBindTexture, GL_TEXTURE_2D, [esi + ShaderMesh.textureID]
-     invoke    glUseProgram, [shaderProgram]
      invoke    glBindVertexArray, [esi + ShaderMesh.VAO]
 
      invoke    glMatrixMode, GL_MODELVIEW
      invoke    glPushMatrix
+
+; currently I have no brighter ideas on how to make it more optimal
+; besides code duplication
+     mov       ecx, [selfTransform]
+     jecxz     @F
      invoke    glLoadIdentity
+@@:
 
      invoke    glTranslatef, [edi + Transform.position.x], [edi + Transform.position.y], [edi + Transform.position.z]
      invoke    glRotatef, [edi + Transform.rotation.x], 1.0, 0.0, 0.0
@@ -138,7 +139,19 @@ proc Draw.TownDraw uses esi edi,\
 
 .looper:
      push      ecx 
-     stdcall   Draw.ModelDraw, edi 
+
+     invoke    glMatrixMode, GL_MODELVIEW
+     invoke    glPushMatrix 
+     invoke    glLoadIdentity
+
+     invoke    glTranslatef, [esi + Town.townPos + Vector3.x], [esi + Town.townPos + Vector3.y], [esi + Town.townPos + Vector3.z]
+     invoke    glRotatef, [esi + Town.townRot + Vector3.x], 1.0, 0.0, 0.0
+     invoke    glRotatef, [esi + Town.townRot + Vector3.y], 0.0, 1.0, 0.0
+     invoke    glRotatef, [esi + Town.townRot + Vector3.z], 0.0, 0.0, 1.0
+
+     stdcall   Draw.ModelDraw, edi, false 
+     invoke    glPopMatrix
+
      add       edi, sizeof.Model
      pop       ecx 
      loop      .looper 

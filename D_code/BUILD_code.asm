@@ -374,6 +374,7 @@ proc Build.GenerateTown uses esi edi,\
 
 ; filling in the result town data
         mov     edi, [resultTown]
+        mov     [edi + Town.scale], eax 
         xor     edx, edx
         mov     eax, [width]
         mov     [edi + Town.width], eax

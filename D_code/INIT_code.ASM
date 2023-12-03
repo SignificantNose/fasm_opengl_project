@@ -17,8 +17,8 @@ proc Init uses esi edi
 
 ; initializing important data
      invoke      GetClientRect, eax, clientRect
-     ;invoke      ShowCursor, ebx
-     invoke      ShowCursor, true
+     invoke      ShowCursor, ebx
+     ;invoke      ShowCursor, true
 
      invoke      GetTickCount
      mov         [lastTime], eax

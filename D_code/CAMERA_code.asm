@@ -203,10 +203,7 @@ proc Camera.Move uses edi,\
 
         stdcall Vector3.Copy, edi, cameraFront        
         fld     [dTime]
-        mov     eax, 2.5
-        push    eax 
-        fmul    dword[esp]
-        pop     eax 
+        fmul    [cameraSpeed]
         fstp    [scale]
         stdcall Vector3.Scale, edi, [scale]
 
@@ -232,10 +229,7 @@ proc Camera.Move uses edi,\
         lea     edi, [tempVector]
         stdcall Vector3.Normalize, edi 
         fld     [dTime]
-        mov     eax, 2.5
-        push    eax 
-        fmul    dword[esp]
-        pop     eax 
+        fmul    [cameraSpeed]
         fstp    [scale]
         stdcall Vector3.Scale, edi, [scale]
 
