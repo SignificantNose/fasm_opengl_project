@@ -69,9 +69,13 @@ graphics:
             ! the mesh must not contain its transform matrix: an individual mesh object must
     )
     just a thought: maybe add another type of building where the texture 
-    is reversed: edges are dark, but the inside is bright?
-    try nulling the depth buffer before drawing the road
+        is reversed: edges are dark, but the inside is bright?
+    maybe make the road white? but definitely make the buildings blue
+
+
+general:
     make time calculations for generating music and graphics 
+
 
 unresolved:
     macro for transferring the pattern to the reverse bit sequence
