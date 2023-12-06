@@ -26,23 +26,7 @@ hDskWnd         dd      ?
 
 STATE_OFF = 0
 STATE_ON = 1
-LIST_NONE       equ     0
-msgListHead     dd      LIST_NONE
-
-
-; Message poll
-messages:
-
-;msg1            UnprocessedMessage      <165.0, 6.0, 0.0>, INSTR_SINE
-;msg2            UnprocessedMessage      <450.0,3.0,0.0>, INSTR_SINE
-msg3            UnprocessedMessage      <165.0,6.0,0.0>, INSTR_SAW
-
-msgEnd:
-
-messagesPtr     dd      messages
-
-seqMain         Sequencer       <LIST_NONE,LIST_NONE,0>, <LIST_NONE,LIST_NONE,0>, 60.0, 0.0, 0.0, 16, 4, 4, 0
-;testMsg         Message <660.0,INSTR_HIHAT>, 0.1, 0.1
+LIST_NONE       =       0
 
 
 frDisc          dd      44100
@@ -169,65 +153,6 @@ proc Sound.GenSample,\
     ret
 endp
 
-proc Sound.NewMessage,\
-    unprocMsg
-
-    mov     eax, [unprocMsg]
-    movzx   eax, byte[eax+UnprocessedMessage.instrNumber]
-    imul    eax, sizeof.Instrument
-    add     eax, instruments
-    push    eax
-    push    eax
-    invoke HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
-    pop     ecx
-    ; ecx = instrument
-    ; eax = msg node
-
-    mov     edx, [unprocMsg]
-    add     edx, UnprocessedMessage.msgData
-    mov     [eax+DoublyLinkedList.data], edx
-
-    mov     ecx, [ecx+Instrument.msgPollPtr]
-    mov     [eax+DoublyLinkedList.next], ecx
-
-    ; CAN BE REMOVED: THE ALLOCATED MEMORY IS INITIALIZED WITH ZERO
-    mov     [eax+DoublyLinkedList.prev], LIST_NONE
-    jecxz   .return
-    mov     [ecx+DoublyLinkedList.prev], eax
-
-.return:
-    pop     ecx
-    mov     [ecx+Instrument.msgPollPtr], eax
-
-    ret
-endp
-
-proc Sound.RemoveInstrMessage,\
-    instr,soundMsg
-
-    mov ecx, [instr]
-    mov eax, [soundMsg]
-    cmp eax, [ecx+Instrument.msgPollPtr]
-    je .isHead
-    mov edx, [eax+DoublyLinkedList.prev]
-    mov ecx, [eax+DoublyLinkedList.next]
-    mov [edx+DoublyLinkedList.next], ecx
-    push ecx
-    ;cmp ecx, LIST_NONE
-    ;je .return
-    jcxz .return 
-    mov  [ecx+DoublyLinkedList.prev], edx
-    jmp .return
-
-.isHead:
-    mov edx, [eax+DoublyLinkedList.next]
-    mov [ecx+Instrument.msgPollPtr], edx
-    push edx
-.return:
-    invoke HeapFree, [hHeap], 0, eax
-    pop eax
-    ret
-endp
 
 proc Sound.interpolatePhase,\
     interpType, phase
@@ -297,7 +222,7 @@ proc Sound.interpolatePhase,\
 endp
 
 proc Sound.ADSAmp,\
-    env, soundMsg, dt
+    env, dt
 
     mov     eax, [env]
     fld     [dt]            ; dt
@@ -364,9 +289,9 @@ proc Sound.GetADSRAmp,\
 
     mov         eax, [soundMsg]
     fld         [currTime]                      ; t
-    fsub        [eax+Message.msgTrigger]    ; dt
+    fsub        [eax+InstrumentMessage.msgData+MessageData.msgTrigger]    ; dt
     fld         st0                         ; dt, dt
-    fsub        [eax+Message.msgDuration]   ; dt-tDur, dt
+    fsub        [eax+InstrumentMessage.msgData+MessageData.msgDuration]   ; dt-tDur, dt
     fld         st0                         ; dt-tDur, dt-tDur, dt
     fldz                                    ; 0, dt-tDur, dt-tDur, dt
     mov         eax, [env]
@@ -391,7 +316,7 @@ proc Sound.GetADSRAmp,\
     push        eax
 
     mov         eax, [soundMsg]
-    stdcall     Sound.ADSAmp, [env], [soundMsg], [eax+Message.msgDuration]
+    stdcall     Sound.ADSAmp, [env], [eax+InstrumentMessage.msgData+MessageData.msgDuration]
     FPU_LD      eax                 ; lastADSvalue
     pop         eax
     fmul        dword[esp]          ; resValue
@@ -407,7 +332,7 @@ proc Sound.GetADSRAmp,\
     push        eax
     FPU_STP     edx                         ; edx has dt
     
-    stdcall     Sound.ADSAmp, [env], [soundMsg], edx     
+    stdcall     Sound.ADSAmp, [env], edx     
 
 .return:
     ret
@@ -437,25 +362,30 @@ proc Sound.AddOscillator,\
 endp
 
 
-proc Sound.GenMessageSamples,\
+; routine for generating sound for current
+; sound message (the instrument has an oscillator
+; list, which allows for multiple oscillators
+; to be present in the instrument; the 
+; routine generates sound that is the sum of
+; the effect of each of the messages separately)
+proc Sound.GenMessageSamples uses esi,\
     soundMsg, oscList
     locals 
         smplRight       dd      0.0
         smplLeft        dd      0.0
     endl
 
-    mov     ecx, [soundMsg]
+    mov     esi, [soundMsg]
+    mov     esi, [esi+DoublyLinkedList.data]
     mov     eax, [oscList]
 .loopOscs:    
     cmp     eax, LIST_NONE
     je      .return
 
     push    eax
-    push    ecx
     ; probably will use 2 registers to return: eax and edx
-    mov     ecx, [ecx+DoublyLinkedList.data]
-    stdcall Sound.GetOscSamples, [eax+DoublyLinkedList.data], [ecx+Message.msgFreq], [ecx+Message.msgTrigger]
-    
+
+    stdcall Sound.GetOscSamples, [eax+DoublyLinkedList.data], esi
     
     FPU_LD  eax         ; sampleRight
     fadd    [smplRight] ; newSampleRight
@@ -466,8 +396,6 @@ proc Sound.GenMessageSamples,\
     fstp    [smplLeft] 
     pop     edx
 
-
-    pop     ecx
     pop     eax
     mov     eax, [eax+DoublyLinkedList.next]
     jmp .loopOscs
@@ -566,7 +494,7 @@ proc Sound.GetInstrumentSample,\
 .delete:
     pop     eax
     pop     edx
-    stdcall Sound.RemoveInstrMessage, [instr], ecx
+    stdcall SoundMsg.RemoveInstrMessage, [instr], ecx
     ;mov     ecx, eax
     xchg    ecx, eax
 
@@ -613,15 +541,15 @@ proc Sound.PlayMsgList
 
     push    ecx
 
-    fld     [currTime]  ; t
-    mov     eax, 3.999  
-    push    eax  
-    fld     dword[esp]  ; 3.99, t
-    pop     eax  
-    FPU_CMP
-    ja      @F
-    nop
-@@:
+;    fld     [currTime]  ; t
+;    mov     eax, 3.999  
+;    push    eax  
+;    fld     dword[esp]  ; 3.99, t
+;    pop     eax  
+;    FPU_CMP
+;    ja      @F
+;    nop
+;@@:
     
     ; instruments must return float values, so that the effects can be applied
     stdcall Sound.GetInstrumentSample, ecx
@@ -647,7 +575,7 @@ proc Sound.PlayMsgList
 
 
     push    edx
-    stdcall Sound.LFOGetValue, ecx, 0.0
+    stdcall LFO.GetValue, ecx, 0.0
     stdcall Sound.CalcButterworthCoeffs, eax    ;, filter
     ;push    eax
     ;add     eax, InstrFilter.leftSamples
@@ -732,183 +660,6 @@ proc Sound.PlayMsgList
 endp
 
 
-proc Sound.MessagePollAdd
-
-    mov         ecx, [messagesPtr]
-.addMsgs:
-    cmp         ecx, msgEnd
-    je          .msgsAdded
-
-
-    fld         [currTime]                                               ; t
-    fld         [ecx+UnprocessedMessage.msgData+Message.msgTrigger]         ; triggerTime, t
-    FPU_CMP
-    jae         .msgsAdded
-    push        ecx
-    stdcall     Sound.NewMessage, ecx
-    pop         ecx
-    add         ecx, sizeof.UnprocessedMessage
-    mov         [messagesPtr], ecx
-
-    jmp         .addMsgs
-.msgsAdded:
-
-    ret
-endp
-
-
-
-; routine for defining starting time of sequencer
-; (relatively to the current time):
-; calculates the elapsed time, so that the 
-; sequencer starts playing [startTime] seconds
-; after the current time
-proc Sound.StartTimeSequencer,\
-    startTime
-
-    mov     eax, seqMain
-    fld     [startTime]                     ; startTime
-    fstp    [eax+Sequencer.timeElapsed]     ; 
-    mov     word[eax+Sequencer.currentBeat], -1
-
-    ret
-endp
-
-
-; routine for adding another instrument to the sequencer.
-; Takes the message values for the sequencer and the 
-; pattern of the message. Adds the sequencer instrument
-; to the main sequencer
-proc Sound.AddSequencer,\
-    soundMsg, pattern
-
-    
-; creating new message node
-    invoke  HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
-    mov     ecx, [soundMsg]
-    mov     [eax+DoublyLinkedList.data], ecx
-
-    mov     ecx, [seqMain+Sequencer.msgListHead]
-    mov     [eax+DoublyLinkedList.next], ecx
-    ;cmp     ecx, LIST_NONE
-    ;je      .finishMessage
-    jcxz    .finishMessage
-    mov     [ecx+DoublyLinkedList.prev], eax
-.finishMessage:
-    mov     [seqMain+Sequencer.msgListHead], eax
-
-; creating new pattern node
-    invoke  HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
-    mov     ecx, [pattern]
-    mov     [eax+DoublyLinkedList.data], ecx
-
-    mov     ecx, [seqMain+Sequencer.patternListHead]
-    mov     [eax+DoublyLinkedList.next], ecx
-
-    ;cmp     ecx, LIST_NONE
-    ;je      .finishPattern
-    jcxz    .finishPattern
-    mov     [ecx+DoublyLinkedList.prev], eax
-.finishPattern:
-    mov     [seqMain+Sequencer.patternListHead], eax
-
-    ret
-endp
-
-
-proc Sound.CreateMsgCopy uses edi esi,\
-    soundMsg
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Message
-    ;push    eax
-    mov     edi, eax
-    mov     esi, [soundMsg]
-    mov     ecx, sizeof.Message
-;.looper:
-    ;movsb   
-    ;loop .looper
-    rep movsb   
-    ;pop     eax
-
-    ret
-endp
-
-
-
-; probably will not work: new message logic
-proc Sound.UpdateSequencer
-
-    ; RESOLVE ONE SEC
-
-    mov     ecx, seqMain
-    fld     [ecx+Sequencer.timeElapsed]     ; tElapsed
-    fsub    [oneSec]                        ; newTime
-
-    fld     st0                             ; newTime, newTime
-    ;fld     [ecx+Sequencer.timeOneBeat]     ; dt, newTime, newTime
-    fldz                                    ; 0, newTime, newTime
-    FPU_CMP                                 ; newTime
-    ;jmp     .return
-    jbe      .return
-; adding another sequence of notes instead
-
-
-    ;fsub    [ecx+Sequencer.timeOneBeat]     ; finishTime
-    fadd    [ecx+Sequencer.timeOneBeat]      ; finishTime
-
-    mov     ax, word[ecx+Sequencer.currentBeat]
-    inc     ax
-    xor     edx, edx
-    div     word[ecx+Sequencer.totalBeats] 
-    ; now (e)dx has the current beat
-    mov     word[ecx+Sequencer.currentBeat], dx
-
-
-
-
-;goal: to copy a message in case it corresponds to the pattern and poll it
-
-    push    ecx
-
-    mov     eax, [ecx+Sequencer.patternListHead]
-    mov     ecx, [ecx+Sequencer.msgListHead]
-
-.looper:
-    ;cmp     ecx, LIST_NONE
-    ;je      .msgsEnded
-    jcxz    .msgsEnded
-    push    ecx
-    push    eax
-    push    edx
-
-    mov     eax, [eax+DoublyLinkedList.data]
-    bt      eax, edx
-    jnc     .notNewMessage
-    ;mov     eax, [eax+DoublyLinkedList.data]
-    ;stdcall Sound.CreateMsgCopy, eax
-    stdcall  Sound.CreateMsgCopy, [ecx+DoublyLinkedList.data]
-
-    mov      ecx, [currTime]
-    mov      [eax+Message.msgTrigger], ecx
-    stdcall  Sound.NewMessage, eax
-
-.notNewMessage:
-
-    pop     edx
-    pop     eax
-    pop     ecx
-    mov     eax, [eax+DoublyLinkedList.next]
-    mov     ecx, [ecx+DoublyLinkedList.next]
-    jmp     .looper
-
-.msgsEnded:
-    pop     ecx
-    
-.return:
-    fstp    [ecx+Sequencer.timeElapsed]     ;
-    ret
-endp
-
 
 proc Sound.init uses edi ecx
     invoke      GetDesktopWindow
@@ -973,7 +724,7 @@ proc Sound.init uses edi ecx
 
 
     
-    stdcall     Sound.MessagePollAdd
+    stdcall     SoundMsg.MessagePollAdd
 
 ;    stdcall     Sound.UpdateSequencer
     

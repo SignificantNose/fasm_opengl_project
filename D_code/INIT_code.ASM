@@ -145,7 +145,7 @@ proc Init uses esi
 
      stdcall   Debug.OutputValueDec, 62
 
-     ;stdcall Sound.init
+     stdcall Sound.init
 
 ;     ;stdcall     Subdivide, mesh, mesh
 ;     invoke  glEnable, GL_LIGHTING

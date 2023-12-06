@@ -52,6 +52,10 @@ sound:
     up and up. but in case of triangle it goes up and down...
     rewrite pitch modulation
     sound is now resting... (seek by 3.999 in sound_code.asm)
+    rewrite messagePollAdd to make it more optimal
+    the argument for making a new message for an instrument by copying is sequencer! :)
+    keep in mind with sequencers: the message structure has been modified
+    resolve problem with envelope lfo
 
 unresolved:
     macro for transferring the pattern to the reverse bit sequence

@@ -33,32 +33,6 @@ struct Instrument
 ends
 
 
-
-struct Message
-       msgFreq           dd     ?
-       msgDuration       dd     ?
-       msgTrigger        dd     ?
-ends
-
-struct UnprocessedMessage
-       msgData           Message
-       instrNumber       db     ?
-ends
-
-struct Sequencer
-       msgListHead       DoublyLinkedList
-       patternListHead   DoublyLinkedList
-       tempo             dd     ?
-       timeElapsed       dd     ?
-       timeOneBeat       dd     ?
-
-       totalBeats        dw     ?
-       beats             db     ?
-       subBeats          db     ?
-       currentBeat       dw     ?
-
-ends
-
 struct GUID
        Data1             dd     ?
        Data2             dw     ?
