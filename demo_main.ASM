@@ -180,7 +180,23 @@ proc WindowProc uses ebx,\
 .KeyDown:
      cmp        [wParam], VK_ESCAPE
      je        .Destroy
-     
+
+
+; horrible
+     cmp        [wParam], '2'
+     je         @F
+
+     cominvk     track1Buffer, Play, 0, 0, 0
+@@:
+
+     cmp        [wParam], '1'
+     je         @F
+
+     cominvk     track1Buffer, Stop
+@@:
+
+
+
      stdcall    Camera.SetMovement, [wParam]
      jmp        .ReturnZero
 .KeyUp:

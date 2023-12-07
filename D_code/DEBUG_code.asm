@@ -7,7 +7,7 @@ proc Debug.OutputValueDec uses edi,\
     rep stosb 
 
     stdcall    Debug.IntToDecString, debugOutValue, [value]
-    invoke     OutputDebugString, debugOutStartStr
+    invoke     OutputDebugString, dbgStartDefault
     
     ret
 endp
@@ -21,7 +21,7 @@ proc Debug.OutputValueHex uses edi,\
     rep stosb 
 
     stdcall    Debug.IntToHexString, debugOutValue, [value]
-    invoke     OutputDebugString, debugOutStartStr
+    invoke     OutputDebugString, dbgStartDefault
     
     ret
 endp
@@ -68,7 +68,21 @@ proc Debug.OutputValueFloat,\
     pop     eax 
     
     stdcall Debug.IntToDecStringZeroExtended, edi, eax, 6
-    invoke  OutputDebugString, debugFloatStartStr
+    invoke  OutputDebugString, dbgStartFloat
+
+    ret 
+endp
+
+proc    Debug.OutputTickCount,\
+    valueTicks
+
+    mov     edi, dbgOutValueCount
+    mov     ecx, 8
+    xor     eax, eax
+    rep stosb 
+
+    stdcall    Debug.IntToDecString, dbgOutValueCount, [valueTicks]
+    invoke     OutputDebugString, dbgStartCountTicks
 
     ret 
 endp

@@ -67,6 +67,8 @@ proc Init uses esi edi
      stdcall    Texture.LoadTexture, textureRoadPath, textureRoadID, GL_BGR
 
 ; generating meshes
+     invoke     GetTickCount
+     push       eax 
 
      stdcall    Build.GenerateTowerModel, towerModel
 
@@ -98,6 +100,11 @@ proc Init uses esi edi
      stdcall    Build.GenerateTown, 3, 3, 1.0, town33
 
 
+     invoke     GetTickCount 
+     pop        edx 
+     sub        eax, edx
+     stdcall    Debug.OutputTickCount, eax
+     
                                    ;  program object   uniform name string
      ;invoke     glGetUniformLocation, [shaderProgram], shaderTransformName
      ;mov        [shaderTransformID], eax
@@ -129,7 +136,16 @@ proc Init uses esi edi
      ;stdcall     Camera.NormalizeCursor, lastCursorPos
      invoke      SetCursorPos, cursorPosX, cursorPosY
      
-     ;stdcall Sound.init
+     ; stdcall Debug.OutputValueDec, 160
+     ; stdcall Debug.OutputValueHex, 160
+     ; stdcall Debug.OutputValueFloat, 160.0
+     invoke    GetTickCount
+     push      eax 
+     stdcall Sound.init  
+     invoke    GetTickCount
+     pop       edx
+     sub       eax, edx  
+     stdcall   Debug.OutputTickCount, eax
 
      ret
 endp

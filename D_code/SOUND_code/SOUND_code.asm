@@ -713,7 +713,7 @@ proc Sound.init uses edi ecx
 
     stdcall     Sound.GenerateTrack, track1
     mov         [track1Buffer], eax 
-    cominvk     track1Buffer, Play, 0, 0, 0
+    ;cominvk     track1Buffer, Play, 0, 0, 0
 
     ret
 endp
