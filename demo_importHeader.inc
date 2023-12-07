@@ -19,12 +19,16 @@
         include 'D_structs\FILE_structs.inc'
         include 'D_structs\RANDOM_structs.inc'
         include 'D_structs\BUILD_structs.inc'
-        include 'D_structs\SOUNDFX_structs.inc'
-        include 'D_STRUCTS\SOUND_structs.inc'
         include 'D_STRUCTS\MEMORY_structs.inc'
         include 'D_STRUCTS\TEXTURE_structs.inc'
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_STRUCTS\CAMERA_structs.inc'
+
+        include 'D_structs\SOUND_structs\SOUNDFX_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\SOUND_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\LFO_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\SOUNDMSG_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\SEQUENCER_structs.inc'
 
         include 'D_objects\Cube.inc'
         include 'D_objects\Plane.inc'

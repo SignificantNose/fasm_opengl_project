@@ -54,6 +54,12 @@ sound:
     sound is now resting... (seek by 3.999 in sound_code.asm)
     optimize the procedures (whenever there's pushing, try using other registers)
     try to implement a reverb that sounded okay-ish on sine
+    rewrite messagePollAdd to make it more optimal
+    the argument for making a new message for an instrument by copying is sequencer! :)
+    keep in mind with sequencers: the message structure has been modified
+    resolve problem with envelope lfo
+    make routine for attaching the filter to the instrument 
+    resolve the problem with transferring unkind message!!
 
 
 graphics:
@@ -75,6 +81,7 @@ graphics:
 
 general:
     make time calculations for generating music and graphics 
+
 
 
 unresolved:

@@ -131,12 +131,16 @@ EBO             GLuint          0
         include 'D_code\FILE_code.asm'
         include 'D_code\RANDOM_code.asm'
         include 'D_code\BUILD_code.asm'
-        include 'D_code\SOUNDFX_code.asm'
-        include 'D_code\SOUND_code.asm'
         include 'D_code\MEMORY_code.asm'
         include 'D_code\TEXTURE_code.asm'
         include 'D_code\DEBUG_code.asm'
         include 'D_code\CAMERA_code.asm'
+
+        include 'D_code\SOUND_code\SOUNDFX_code.asm'
+        include 'D_code\SOUND_code\SOUND_code.asm'
+        include 'D_code\SOUND_code\LFO_code.asm'
+        include 'D_code\SOUND_code\SOUNDMSG_code.asm'
+        include 'D_code\SOUND_code\SEQUENCER_code.asm'
 
 proc WinMain
      locals

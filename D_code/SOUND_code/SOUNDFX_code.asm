@@ -19,8 +19,10 @@ proc Sound.PowXY,\
     ret
 endp
 
-proc Sound.GetOscSamples,\
-    pOsc, freq, triggerTime
+
+; think of transferring a whole message here
+proc Sound.GetOscSamples uses esi edi,\
+    pOsc, instrMsg
     locals 
         step        dd      ?
         NumTwo      dd      ?
@@ -29,40 +31,80 @@ proc Sound.GetOscSamples,\
         right       dd      ?
         leftMul     dd      ?
         rightMul    dd      ?
+        freq        dd      ?
     endl
 
     ; hate it, but for now let it be this way
-    mov     ecx, [pOsc]
+    mov     esi, [pOsc]
+    mov     edi, [instrMsg]
+    mov     eax, [edi + InstrumentMessage.msgData + MessageData.msgFreq]
+    mov     [freq], eax
     ; get cutofffreqlfo and cmp with 0 to make sure that it's present
     ; eax = Sound.LFOGetValue
     ; freq*=eax
-    mov     eax, [ecx+Oscillator.pitchLFO]
+    mov     eax, [esi+Oscillator.pitchLFO]
     cmp     eax, 0
     je      .noPitchLFO
-    push    ecx
     ;stdcall Sound.LFOGetValue, eax, [triggerTime]
-    mov     eax, 1.1
-    pop     ecx
-    fld     [freq]
+
+
     push    eax 
-    fmul    dword[esp]
-    pop     eax 
+    stdcall LFO.GetValue, eax, [edi + InstrumentMessage.msgData + MessageData.msgTrigger]
+    ; push    eax 
+    ; fld     dword[esp]
+    ; fmul    [freq]
+    ; fstp    [freq]
+    ; pop     eax 
+    pop     edx 
+    push    eax 
+    fld     dword[esp]                                  ; LFOValueUnproc
+    pop     eax
+    fsub    [edx + LFO.startValue]                       ; LFOValueUnproc - startValue = F
+    fdiv    [edx + LFO.deltaValue]                      ; F !!!
+    fmul    [oneSec]                                    ; F*dt = integral element
+    fadd    [edi + InstrumentMessage.LFOPrevValue]      ; F*dt + prevValue
+    fst     [edi + InstrumentMessage.LFOPrevValue]      
+
+    fmul    [edx + LFO.deltaValue]                      ; (F+prev)*A
+    fldpi
+    fldpi
+    faddp   
+    fmul    [currTime]
+    fdivp 
+    fld1 
+    faddp
+    fmul    [freq]
     fstp    [freq]
+
+    ;fld1              
+
+
+
+    ; think what must be the increment value
     
+    ; mov     eax, 1.0
+    ; fld     [freq]
+    ; push    eax 
+    ; fmul    dword[esp]
+    ; pop     eax 
+    ; fstp    [freq]
+
+
+
 
 
 
 .noPitchLFO:
     ; after cahnging the LFO, unison can be applied
 
-    movzx   eax, byte[ecx+Oscillator.oscType]
-    mov     edx, [ecx+Oscillator.detune]
+    movzx   eax, byte[esi+Oscillator.oscType]
+    mov     edx, [esi+Oscillator.detune]
 
     cmp     edx, 0
     je      .noUnison
 
 
-    movzx   ecx, byte[ecx+Oscillator.voices]
+    movzx   ecx, byte[esi+Oscillator.voices]
     mov     [NumTwo], 2.0
     mov     [NumTwelve], 12.0
     mov     [left], 0.0
@@ -83,26 +125,33 @@ proc Sound.GetOscSamples,\
     ;fchs                    ; -detune
     ;fstp    dword[esp]    
     pop     eax
+    ;pop     edi
     ; eax keeps track of the current detune
 
 .looper:
     push    ecx
     push    eax
 
+    ;push    edi 
     push    eax
     fld     dword[esp]      ; currDetune
     fdiv    [NumTwelve]     ; detune/12
     fstp    dword[esp]
+
+    ; can be optimized: 
+    ; stdcall Sound.PowXY, 2.0
+    ; but that's for later. now:
     pop     eax
     stdcall Sound.PowXY, 2.0, eax
+
     push    eax
     fld     dword[esp]      ; detunator
     fmul    [freq]          ; tune
     fstp    dword[esp]
     pop     eax
 
-    mov     ecx, [pOsc]
-    movzx   ecx, [ecx+Oscillator.oscType]
+    ;mov     ecx, [pOsc]
+    movzx   ecx, [esi+Oscillator.oscType]
     stdcall Sound.GenSample, ecx, eax
 
     fld1                    ; 1
@@ -148,8 +197,8 @@ proc Sound.GetOscSamples,\
     pop     ecx
     loop .looper
 
-    mov     ecx, [pOsc]
-    movzx   ecx, byte[ecx+Oscillator.voices]
+    ;mov     ecx, [pOsc]
+    movzx   ecx, byte[esi+Oscillator.voices]
     push    ecx
     fld     [left]      ; left
     fidiv   dword[esp]  ; finalLeft
@@ -341,60 +390,6 @@ proc Sound.FilterRecalculatePrev,\
 
     sub     eax, 4
     loop    .looper
-
-    ret
-endp
-
-proc Sound.LFOGetValue,\
-    pLFO, triggerTime
-
-    mov     edx, [pLFO]
-    push    edx
-    fld1                        ; 1
-    fdiv    dword[edx+LFO.rhythm]   ; LFOCycleTime
-    fld     [currTime]          ; currTime, LFOCycleTime
-    fsub    [triggerTime]       ; dt, LFOCycleTime
-    movzx   ecx, byte[edx+LFO.mode]
-    jecxz   .loopMode   
-    fdiv    st0, st1            ; dt/LFOCycleTime = stage
-    push    eax                 ; stage
-    fst     dword[esp]          ; stage
-    fld1                        ; 1, stage
-    FPU_CMP                     ; 
-    jbe      .interpValue
-
-    pop     eax
-    xor     eax, eax
-
-    jmp     .calcValue
-.loopMode:
-
-
-    fprem                       ; stage, LFOCycleTime
-    fxch                        ; LFOCycleTime, stage
-    fdivp                       ; phase
-    ; get interpolation value 
-    ;stdcall Sound.interpolatePhase, [edx+LFO.interpType], st0
-    push    eax
-    fstp    dword[esp]          ; 
-.interpValue:
-    movzx   eax, byte[edx+LFO.interpType]
-    push    eax
-  
-
-    
-    
-    stdcall Sound.interpolatePhase
-    
-.calcValue:
-    pop     edx
-
-    push    eax   ; the result of interp
-    fld     dword[edx+LFO.deltaValue]       ; dValue
-    fmul    dword[esp]                      ; incrementValue
-    fadd    dword[edx+LFO.startValue]       ; resultValue
-    fstp    dword[esp]                      ; 
-    pop     eax
 
     ret
 endp

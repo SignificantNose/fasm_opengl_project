@@ -33,31 +33,18 @@ struct Instrument
 ends
 
 
-
-struct Message
-       msgFreq           dd     ?
-       msgDuration       dd     ?
-       msgTrigger        dd     ?
+; Track is a struct that keeps all the
+; necessary data to produce a sound buffer
+; containing actual great-sounding sound
+; of your dreams
+struct Track
+       trackDuration     dd      ?
+       pUnprocMsgs       dd      ?
+       msgsCount         dd      ?
+       ; pSequencers        dd     ?
+       ; seqCount           dd     ?
 ends
 
-struct UnprocessedMessage
-       msgData           Message
-       instrNumber       db     ?
-ends
-
-struct Sequencer
-       msgListHead       DoublyLinkedList
-       patternListHead   DoublyLinkedList
-       tempo             dd     ?
-       timeElapsed       dd     ?
-       timeOneBeat       dd     ?
-
-       totalBeats        dw     ?
-       beats             db     ?
-       subBeats          db     ?
-       currentBeat       dw     ?
-
-ends
 
 struct GUID
        Data1             dd     ?
@@ -94,6 +81,7 @@ FILTER_BANDPASS      = 3
 
 EnvRegular    EnvelopeADSR     0.5,0.5,0.5,0.9, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR 
 EnvHiHat      EnvelopeADSR     0.0005,0.131,0.015,0.0, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR
+EnvSynth      EnvelopeADSR     0.042, 1.0, 0.64, 1.0, 1.0, INTERP_LINEAR, INTERP_LINEAR, INTERP_SQUARE
 
 
 instruments:
@@ -112,6 +100,8 @@ instrTriangle  Instrument      EnvRegular, 0, 0, 0
 INSTR_HIHAT = ($-instruments)/sizeof.Instrument
 ;instrHiHat     Instrument      <0.0001,0.181,0.1,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
 instrHihat     Instrument      EnvHiHat, 0, 0, 0
+INSTR_SYNTH = ($-instruments)/sizeof.Instrument 
+instrSynth     Instrument      EnvSynth, 0, 0, 0
 
 instrumentsEnd:
 
@@ -128,6 +118,6 @@ OSC_NOISE = 4
 
 oscSine       Oscillator    OSC_SINE, 0, 0.0, 0
 oscSquare     Oscillator    OSC_SQUARE, 0, 0.0, 0
-oscSaw        Oscillator    OSC_SAW, 0, 0.0, LFOFinePitch
+oscSaw        Oscillator    OSC_SAW, 0, 0.0, 0
 oscTriangle   Oscillator    OSC_TRIANGLE, 0, 0.0, 0
 oscNoise      Oscillator    OSC_NOISE, 0, 0.0, 0
