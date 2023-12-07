@@ -1,7 +1,8 @@
 proc SoundMsg.AddInstrMessage uses esi edi,\
     unprocMsg
 
-    nop 
+    mov     esi, [currTime]
+    nop
     mov     esi, [unprocMsg]
     movzx   eax, byte[esi+UnprocessedMessage.instrNumber]
     imul    eax, sizeof.Instrument
@@ -52,10 +53,10 @@ proc SoundMsg.AddInstrMessage uses esi edi,\
 endp
 
 proc SoundMsg.RemoveInstrMessage,\
-    instr,soundMsg
+    instr, dllSoundMsg
 
     mov ecx, [instr]
-    mov eax, [soundMsg]
+    mov eax, [dllSoundMsg]
     cmp eax, [ecx+Instrument.msgPollPtr]
     je .isHead
     mov edx, [eax+DoublyLinkedList.prev]
@@ -76,7 +77,7 @@ proc SoundMsg.RemoveInstrMessage,\
 
     ; free allocated memory for InstrumentMessage struct
     push   eax 
-    add    eax, InstrumentMessage.msgData 
+    add    eax, DoublyLinkedList.data 
     invoke HeapFree, [hHeap], 0, dword[eax]
     pop    eax 
 
@@ -86,26 +87,37 @@ proc SoundMsg.RemoveInstrMessage,\
     ret
 endp
 
-proc SoundMsg.MessagePollAdd
+; horrible, purely horrible
+proc SoundMsg.MessagePollAdd uses esi,\
+    pTrack
 
-    mov         ecx, [messagesPtr]
+    mov         esi, [pTrack]
+    mov         ecx, [esi + Track.msgsCount]
 .addMsgs:
-    cmp         ecx, msgEnd
-    je          .msgsAdded
+    push        ecx 
+    ;cmp         ecx, msgEnd
+    ;je          .msgsAdded
+    jecxz       .msgsAdded
 
 
     fld         [currTime]                                                  ; t
-    fld         [ecx+UnprocessedMessage.msgData+MessageData.msgTrigger]         ; triggerTime, t
+    mov         eax, [esi + Track.pUnprocMsgs]
+
+    fld         [eax+UnprocessedMessage.msgData+MessageData.msgTrigger]         ; triggerTime, t
     FPU_CMP
     jae         .msgsAdded
-    push        ecx
-    stdcall     SoundMsg.AddInstrMessage, ecx
-    pop         ecx
-    add         ecx, sizeof.UnprocessedMessage
-    mov         [messagesPtr], ecx
+    push        eax
+    stdcall     SoundMsg.AddInstrMessage, eax
+    pop         eax
+    add         eax, sizeof.UnprocessedMessage
+    mov         [esi + Track.pUnprocMsgs], eax
 
+    pop         ecx 
+    dec         ecx 
     jmp         .addMsgs
 .msgsAdded:
+    pop         ecx 
+    mov         [esi + Track.msgsCount], ecx 
 
     ret
 endp

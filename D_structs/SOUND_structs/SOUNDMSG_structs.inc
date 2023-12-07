@@ -30,14 +30,45 @@ struct InstrumentMessage
 ends
 
 
-msgListHead     dd      LIST_NONE
-; Message poll
-messages:
 
+FSh3          equ      181.63
+D3            equ      144.16     
+B2            equ      121.23
+
+G3            equ      192.43
+DSh3          equ      152.74
+C3            equ      128.43
+
+A3            equ      216.00
+F3            equ      171.44
+D3            equ      144.16
+
+
+;msgListHead     dd      LIST_NONE
 ;msg1            UnprocessedMessage      <165.0, 6.0, 0.0>, INSTR_SINE
 ;msg2            UnprocessedMessage      <450.0,3.0,0.0>, INSTR_SINE
-msg3            UnprocessedMessage      <165.0,2.0,0.0>, INSTR_SAW
+;msg3            UnprocessedMessage      <165.0,2.0,0.0>, INSTR_SAW
 
-msgEnd:
+; Message poll
+track1msgs:
 
-messagesPtr     dd      messages
+msg1            UnprocessedMessage        <FSh3, 1.5, 0.0>, INSTR_SYNTH
+msg2            UnprocessedMessage        <D3, 1.5, 0.0>, INSTR_SYNTH
+msg3            UnprocessedMessage        <B2, 1.5, 0.0>, INSTR_SYNTH
+
+msg4            UnprocessedMessage        <G3,0.9140625,1.5390625>, INSTR_SYNTH
+msg5            UnprocessedMessage        <DSh3,0.9140625,1.5390625>, INSTR_SYNTH
+msg6            UnprocessedMessage        <C3,0.9140625,1.5390625>, INSTR_SYNTH
+
+msg7            UnprocessedMessage        <G3,0.2421875,2.7109375>, INSTR_SYNTH
+msg8            UnprocessedMessage        <DSh3,0.2421875,2.7109375>, INSTR_SYNTH
+msg9            UnprocessedMessage        <C3,0.2421875,2.7109375>, INSTR_SYNTH
+
+msg10           UnprocessedMessage        <A3,2.5546875,3.0078125>, INSTR_SYNTH
+msg11           UnprocessedMessage        <F3,2.5546875,3.0078125>, INSTR_SYNTH
+msg12           UnprocessedMessage        <D3,2.5546875,3.0078125>, INSTR_SYNTH
+TRACK1_MESSAGESCOUNT = ($-track1msgs)/sizeof.UnprocessedMessage
+
+;messagesPtr     dd      messages
+
+track1          Track                     24.0, track1msgs, TRACK1_MESSAGESCOUNT

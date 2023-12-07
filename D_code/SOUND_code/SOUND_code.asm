@@ -31,7 +31,7 @@ LIST_NONE       =       0
 
 frDisc          dd      44100
 freqDiscValue   equ     44100
-BUFFERSIZE_BYTES equ    2*freqDiscValue*16   
+BUFFERSIZE_BYTES equ    2*freqDiscValue*2* 8 
 blockSize       dd      BUFFERSIZE_BYTES
 ptrPart1        dd      ?
 bytesPart1      dd      ?
@@ -52,8 +52,9 @@ triangleTemp    dd      0.25
 DELETE_FLAG     = 0xFFFFFFFF
 dsc             IDirectSound8                       ; it is a pointer to an interface?
 dsb             IDirectSoundBuffer8   
+track1Buffer    IDirectSoundBuffer8   
 dsbd            DSBUFFERDESC sizeof.DSBUFFERDESC, DSBCAPS_GLOBALFOCUS or DSBCAPS_CTRLPOSITIONNOTIFY,\
-                BUFFERSIZE_BYTES, 0, mywaveformat, <0,0,0,0>      
+                0, 0, mywaveformat, <0,0,0,0>      
 mywaveformat    WAVEFORMATEX 1, 2, 44100, 4*44100, 4, 16, 0
 
 
@@ -476,8 +477,10 @@ proc Sound.GetInstrumentSample,\
     pop     edx
     push    eax
     fmul    dword[esp]  ; resRight, leftSample
+    fadd    [resRight]
     fstp    [resRight]  ; leftSample
     fmul    dword[esp]  ; leftRes
+    fadd    [resLeft]
     fstp    [resLeft]
     pop     eax
 
@@ -667,36 +670,38 @@ proc Sound.init uses edi ecx
     invoke      DirectSoundCreate8, NULL, dsc, NULL
 
     cominvk     dsc, SetCooperativeLevel, [hDskWnd], DSSCL_PRIORITY
-    cominvk     dsc, CreateSoundBuffer, dsbd, dsb, NULL
-    cominvk     dsb, Lock, 0, [blockSize], ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
-
     
 ; initialization of oscillators
     ;stdcall     Sound.AddOscillator, oscSine, instrSine
-    stdcall     Sound.AddOscillator, oscSaw, instrSaw
     ;stdcall     Sound.AddOscillator, oscSaw, instrSaw
-    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
-    ;mov         [instrSaw+Instrument.filter], eax
-    ;mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff
-    ;stdcall     Sound.CalcButterworthCoeffs, 500.0, eax
+    ;stdcall     Sound.AddOscillator, oscSaw, instrSaw
+
+
+
+    stdcall     Sound.AddOscillator, oscSaw, instrSynth
+    stdcall     Sound.AddOscillator, oscSine, instrSynth
     
-; initialization of sequencer
-;    mov         ecx, seqMain
-;    mov         edx, 60.0
-;    FPU_LD      edx                             ; 60.0
-;    fdiv        [ecx+Sequencer.tempo]           ; dtOneBeat
-;    movzx       eax, [ecx+Sequencer.beats]
-;    push        eax
-;    fidiv       dword[esp]                      ; dt
-;    pop         eax
-;    fstp        [ecx+Sequencer.timeOneBeat]     ; 
-;    pop         edx
-;    mov         dl, byte[ecx+Sequencer.beats]
-;    mov         al, byte[ecx+Sequencer.subBeats]
-;    imul        dl
-;    mov         word[ecx+Sequencer.totalBeats], ax
-;    stdcall     Sound.AddSequencer, testMsg, 7555h
-;    stdcall     Sound.StartTimeSequencer, 0.0
+    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
+    mov         [instrSynth+Instrument.filter], eax
+;    mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff
+    stdcall     Sound.CalcButterworthCoeffs, 2200.0, eax
+; ; initialization of sequencer
+; ;    mov         ecx, seqMain
+; ;    mov         edx, 60.0
+; ;    FPU_LD      edx                             ; 60.0
+; ;    fdiv        [ecx+Sequencer.tempo]           ; dtOneBeat
+; ;    movzx       eax, [ecx+Sequencer.beats]
+; ;    push        eax
+; ;    fidiv       dword[esp]                      ; dt
+; ;    pop         eax
+; ;    fstp        [ecx+Sequencer.timeOneBeat]     ; 
+; ;    pop         edx
+; ;    mov         dl, byte[ecx+Sequencer.beats]
+; ;    mov         al, byte[ecx+Sequencer.subBeats]
+; ;    imul        dl
+; ;    mov         word[ecx+Sequencer.totalBeats], ax
+; ;    stdcall     Sound.AddSequencer, testMsg, 7555h
+; ;    stdcall     Sound.StartTimeSequencer, 0.0
 
 ; initialization of a global variable for one second
     mov         eax, 44100
@@ -706,10 +711,48 @@ proc Sound.init uses edi ecx
     fstp        [oneSec]    ;
     pop         eax
 
+    stdcall     Sound.GenerateTrack, track1
+    mov         [track1Buffer], eax 
+    cominvk     track1Buffer, Play, 0, 0, 0
+
+    ret
+endp
 
 
+proc Sound.GenerateTrack uses esi edi,\
+    pTrack
+
+    locals
+        BufferObject     IDirectSoundBuffer8
+        szBuffer         dd     ?
+    endl 
+
+    ; calculating the amount of data needed to
+    ; be allocated for the buffer
+    mov         esi, [pTrack]
+    fld         [esi + Track.trackDuration]     
+    mov         eax, 2*freqDiscValue*2
+    push        eax 
+    fimul       dword[esp]
+    pop         eax 
+    fistp       dword[szBuffer]
+
+    mov         edi, [szBuffer]
+    mov         [dsbd.dwBufferBytes], edi
+    
+    lea         eax, [BufferObject]
+    cominvk     dsc, CreateSoundBuffer, dsbd, eax, NULL
+    ; nop
+    cominvk     BufferObject, Lock, 0, edi, ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
+
+
+    fldz    
+    fstp        [timeValue]         
+
+    ; mov         ecx, BUFFERSIZE_BYTES/4
+    xchg        ecx, edi 
+    shr         ecx, 2
     mov         edi, [ptrPart1]
-    mov         ecx, BUFFERSIZE_BYTES/4
 .looper:
     push        ecx
 
@@ -724,7 +767,7 @@ proc Sound.init uses edi ecx
 
 
     
-    stdcall     SoundMsg.MessagePollAdd
+    stdcall     SoundMsg.MessagePollAdd, esi
 
 ;    stdcall     Sound.UpdateSequencer
     
@@ -738,8 +781,8 @@ proc Sound.init uses edi ecx
     loop .looper
 
 
-    cominvk dsb, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
-    
-    cominvk dsb, Play, 0, 0, 0
+    cominvk BufferObject, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
+    mov     eax, [BufferObject]
+
     ret
-endp
+endp 
