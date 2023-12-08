@@ -16,3 +16,6 @@ textureGroundID   GLuint        0
 
 textureRoadPath  db             'D_textures\txtrRoadway.bmp',0
 textureRoadID     GLuint        0
+
+textureCrossroadPath db         'D_textures\txtrCrossroad.bmp',0
+textureCrossroadID  GLuint      0

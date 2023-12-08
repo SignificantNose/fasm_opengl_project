@@ -45,36 +45,54 @@ proc Draw uses edi
 
      ;stdcall    Draw.ModelDraw, towerModel, true 
      stdcall    Draw.ModelDraw, planeModel, true 
+
+     invoke     glClear, GL_DEPTH_BUFFER_BIT
+     stdcall    Draw.ModelDraw, Crossroad13, true
+
+     invoke     glClear, GL_DEPTH_BUFFER_BIT
+     stdcall    Draw.ModelDraw, Crossroad23, true
+     invoke     glClear, GL_DEPTH_BUFFER_BIT
+     stdcall    Draw.ModelDraw, Crossroad33, true
+
+     invoke     glClear, GL_DEPTH_BUFFER_BIT
+     stdcall    Draw.ModelDraw, roadV13, true
+
+     invoke     glClear, GL_DEPTH_BUFFER_BIT
+     stdcall    Draw.ModelDraw, roadV23, true
      
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road11, true
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road12, true
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road13, true
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road14, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road11, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road12, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road13, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road14, true
 
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road21, true
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road22, true
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road23, true
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, road24, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road21, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road22, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road23, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, road24, true
 
-     stdcall    Draw.TownDraw, town11
-     stdcall    Draw.TownDraw, town12
-     stdcall    Draw.TownDraw, town13
+     stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
 
-     stdcall    Draw.TownDraw, town21
-     stdcall    Draw.TownDraw, town22
-     stdcall    Draw.TownDraw, town23
+     stdcall    Draw.TownDraw, townMain
 
-     stdcall    Draw.TownDraw, town31
-     stdcall    Draw.TownDraw, town32
-     stdcall    Draw.TownDraw, town33
+     ; stdcall    Draw.TownDraw, town11
+     ; stdcall    Draw.TownDraw, town12
+     ; stdcall    Draw.TownDraw, town13
+
+     ; stdcall    Draw.TownDraw, town21
+     ; stdcall    Draw.TownDraw, town22
+     ; stdcall    Draw.TownDraw, town23
+
+     ; stdcall    Draw.TownDraw, town31
+     ; stdcall    Draw.TownDraw, town32
+     ; stdcall    Draw.TownDraw, town33
 
      ;invoke     glPolygonMode, GL_FRONT_AND_BACK, GL_LINE
      invoke     glUseProgram, ebx

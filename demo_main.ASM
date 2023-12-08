@@ -182,18 +182,18 @@ proc WindowProc uses ebx,\
      je        .Destroy
 
 
-; horrible
-     cmp        [wParam], '2'
-     je         @F
+; ; horrible
+;      cmp        [wParam], '2'
+;      je         @F
 
-     cominvk     track1Buffer, Play, 0, 0, 0
-@@:
+;      cominvk     track1Buffer, Play, 0, 0, 0
+; @@:
 
-     cmp        [wParam], '1'
-     je         @F
+;      cmp        [wParam], '1'
+;      je         @F
 
-     cominvk     track1Buffer, Stop
-@@:
+;      cominvk     track1Buffer, Stop
+; @@:
 
 
 

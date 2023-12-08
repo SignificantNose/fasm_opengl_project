@@ -6,6 +6,20 @@ aThousand dw    1000
 anEleven  dw    11
 anEighty  dw    80
 
+; routine for generating a Model struct of a crossroad 
+; that is ready to use (meaning, can be passed onto the
+; Draw.ModelDraw routine and be processed). the struct 
+; is stored at pRoadModel
+proc    Build.GenerateCrossroad,\
+        pCrossModel
+
+        stdcall    Mesh.PackedMesh2Mesh, testPackedCross, testPlane, true
+        mov        eax, [pCrossModel] 
+        lea        eax, [eax+Model.meshData]
+        stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureCrossroadID]
+
+        ret 
+endp
 
 ; routine for generating a Model struct of a road 
 ; fragment that is ready to use (meaning, can be 

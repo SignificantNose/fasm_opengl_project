@@ -84,10 +84,11 @@ ends
 
 testPackedPlane PackedVerticesMesh      planeVertices, planeIndices, planeTexCoords,  PLANE_TRIANGLES_COUNT
 testPackedRoad  PackedVerticesMesh      planeVertices, planeIndices, roadTexCoords, PLANE_TRIANGLES_COUNT
+testPackedCross PackedVerticesMesh      planeVertices, planeIndices, crossTexCoords, PLANE_TRIANGLES_COUNT
 testPlane     Mesh
 planeModel    Model         <0,0,0,0,0,0>,\
                             <\
                                    <0.0, 0.0, 0.0>,\
                                    <0.0, 0.0, 0.0>,\
-                                   <90.0, 90.0, 90.0>\
+                                   <60.0, 60.0, 60.0>\
                             >

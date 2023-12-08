@@ -65,39 +65,47 @@ proc Init uses esi edi
      stdcall    Texture.LoadTexture, textureNeonPath, textureNeonID, GL_BGR
      stdcall    Texture.LoadTexture, textureGroundPath, textureGroundID, GL_BGR
      stdcall    Texture.LoadTexture, textureRoadPath, textureRoadID, GL_BGR
+     stdcall    Texture.LoadTexture, textureCrossroadPath, textureCrossroadID, GL_BGR
 
 ; generating meshes
      invoke     GetTickCount
      push       eax 
 
-     stdcall    Build.GenerateTowerModel, towerModel
+     ; stdcall    Build.GenerateTowerModel, towerModel
+     stdcall    Build.GenerateTowerModel, towerIndicatorCenter
+     stdcall    Build.GenerateCrossroad, Crossroad13
+     stdcall    Build.GenerateCrossroad, Crossroad23
+     stdcall    Build.GenerateCrossroad, Crossroad33   
 
      stdcall    Mesh.PackedMesh2Mesh, testPackedPlane, testPlane, true
      lea        eax, [planeModel+Model.meshData]
      stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureGroundID]
 
-     stdcall    Build.GenerateRoadModel, road11
-     stdcall    Build.GenerateRoadModel, road12
-     stdcall    Build.GenerateRoadModel, road13
-     stdcall    Build.GenerateRoadModel, road14
+     stdcall    Build.GenerateRoadModel, roadV13
+     stdcall    Build.GenerateRoadModel, roadV23
+     ; stdcall    Build.GenerateRoadModel, road11
+     ; stdcall    Build.GenerateRoadModel, road12
+     ; stdcall    Build.GenerateRoadModel, road13
+     ; stdcall    Build.GenerateRoadModel, road14
 
-     stdcall    Build.GenerateRoadModel, road21
-     stdcall    Build.GenerateRoadModel, road22
-     stdcall    Build.GenerateRoadModel, road23
-     stdcall    Build.GenerateRoadModel, road24
+     ; stdcall    Build.GenerateRoadModel, road21
+     ; stdcall    Build.GenerateRoadModel, road22
+     ; stdcall    Build.GenerateRoadModel, road23
+     ; stdcall    Build.GenerateRoadModel, road24
 
+     stdcall    Build.GenerateTown, 3, 3, 4.0, townMain
 
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town11
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town12
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town13
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town11
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town12
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town13
  
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town21
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town22
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town23
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town21
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town22
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town23
  
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town31
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town32
-     stdcall    Build.GenerateTown, 3, 3, 1.0, town33
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town31
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town32
+     ; stdcall    Build.GenerateTown, 3, 3, 1.0, town33
 
 
      invoke     GetTickCount 
@@ -129,7 +137,7 @@ proc Init uses esi edi
 
      invoke      glMatrixMode, GL_PROJECTION
      invoke      glLoadIdentity
-     stdcall     Matrix.Projection, [aspect], 45.0, 0.1, 100.0
+     stdcall     Matrix.Projection, [aspect], [fovY], [zNear], [zFar]
      invoke      glGetFloatv, GL_PROJECTION_MATRIX, projectionMx
      invoke      glUniformMatrix4fv, [projectionMxID], 1, GL_FALSE, projectionMx
 
@@ -141,7 +149,7 @@ proc Init uses esi edi
      ; stdcall Debug.OutputValueFloat, 160.0
      invoke    GetTickCount
      push      eax 
-     stdcall Sound.init  
+     ;stdcall Sound.init  
      invoke    GetTickCount
      pop       edx
      sub       eax, edx  
