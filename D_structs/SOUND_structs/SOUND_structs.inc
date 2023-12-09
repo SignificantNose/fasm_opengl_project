@@ -3,6 +3,12 @@ struct DoublyLinkedList
        prev              dd     ?
        data              dd     ?
 ends
+
+struct SortedStack  
+       next              dd     ?
+       data              dd     ?
+ends
+
 struct EnvelopeADSR
        attackTime        dd     ?
        decayTime         dd     ?
@@ -39,8 +45,10 @@ ends
 ; of your dreams
 struct Track
        trackDuration     dd      ?
-       pUnprocMsgs       dd      ?
-       msgsCount         dd      ?
+       pMsgStack         dd      ?
+       ; nextMessage       dd      ?
+       ; pUnprocMsgs       dd      ?
+       ; msgsCount         dd      ?
        ; pSequencers        dd     ?
        ; seqCount           dd     ?
 ends

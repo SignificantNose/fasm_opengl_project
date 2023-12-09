@@ -108,9 +108,9 @@ proc LFO.ModulatePitch uses esi edi,\
     fldpi
     faddp                                               ; 2*pi, (F+prev)*A   
     fmul    [currTime]                                  ; 2*pi*t, (F+prev)*A
-    fdivp                                               ; 2*pi*t/(F+prev)*A
-    fld1                                                ; 1, 2*pi*t/(F+prev)*A            
-    faddp                                               ; 1+2*pi*t/(F+prev)*A
+    fdivp                                               ; (F+prev)*A/2*pi*t
+    fld1                                                ; 1, (F+prev)*A/2*pi*t            
+    faddp                                               ; 1+(F+prev)*A/2*pi*t
     fstp    dword[esp]
     pop     eax
 

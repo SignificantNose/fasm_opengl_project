@@ -87,37 +87,148 @@ proc SoundMsg.RemoveInstrMessage,\
     ret
 endp
 
-; horrible, purely horrible
-proc SoundMsg.MessagePollAdd uses esi,\
+proc SoundMsg.MessagePollAdd uses esi edi,\
     pTrack
 
-    mov         esi, [pTrack]
-    mov         ecx, [esi + Track.msgsCount]
-.addMsgs:
-    push        ecx 
-    ;cmp         ecx, msgEnd
-    ;je          .msgsAdded
-    jecxz       .msgsAdded
+    mov     esi, [pTrack]
+
+.looper:
+    mov     edi, [esi + Track.pMsgStack]
+    cmp     edi, 0
+    je      .stackEmpty
+
+    mov     ecx, [edi + SortedStack.data]
+    mov     eax, [ecx + UnprocessedMessage.msgData + MessageData.msgTrigger]
+    fld     [currTime]                                                              ; time
+    push    eax 
+    fld     dword[esp]                                                              ; msgTrigger, time
+    pop     eax 
+    FPU_CMP 
+    ja      .endLoop
+    stdcall SoundMsg.AddInstrMessage, ecx
+
+    mov     ecx, [edi + SortedStack.next]
+    push    ecx 
+    invoke  HeapFree, [hHeap], 0, edi
+    pop     ecx 
+    mov     [esi + Track.pMsgStack], ecx 
 
 
-    fld         [currTime]                                                  ; t
-    mov         eax, [esi + Track.pUnprocMsgs]
+    jmp     .looper
 
-    fld         [eax+UnprocessedMessage.msgData+MessageData.msgTrigger]         ; triggerTime, t
+.stackEmpty:
+    mov     eax, 1000000000.0
+
+
+.endLoop:
+
+; while track.pStack.triggerTime<=currTime:
+;   POP message to the instrument
+;   move to the next
+; return track.pStack.triggerTime
+
+    ret
+endp
+
+
+proc SoundMsg.FormMessageStack uses esi edi,\
+    pUnprocMsgs, UnprocMsgsCount, pTrack
+
+    mov     edi, [pTrack]
+    mov     [edi + Track.pMsgStack], 0
+    mov     esi, [pUnprocMsgs]
+
+    mov     ecx, [UnprocMsgsCount]
+
+.looper:
+    push    ecx
+
+    stdcall SoundMsg.AddStack, edi, esi 
+    add     esi, sizeof.UnprocessedMessage
+
+    pop     ecx 
+    loop    .looper 
+    ret 
+endp
+
+
+; the 3-case situation is not so convenient for,
+; adding new messages, but IS convenient for a 
+; stack to not have a head element
+proc SoundMsg.AddStack uses esi edi,\
+    pTrack, pUnprocMsg
+    
+    mov     edi, [pTrack]
+    mov     esi, [pUnprocMsg]
+
+    invoke  HeapAlloc, [hHeap], 8, sizeof.SortedStack
+    mov     [eax+SortedStack.data], esi
+    push    eax 
+
+    mov     ecx, [edi + Track.pMsgStack]
+    ;jecxnz  .notEmpty
+    cmp     ecx, 0
+    jnz     .notEmpty
+
+    ; make not empty and jump
+    pop     eax 
+    mov     [edi + Track.pMsgStack], eax 
+    jmp     .return
+.notEmpty:
+    mov     edx, [ecx + SortedStack.data]
+    ;mov     edx, [edx + UnprocessedMessage.msgData + MessageData.msgTrigger]
+    ;cmp     [esi + UnprocessedMessage.msgData + MessageData.msgTrigger]
+    fld     dword[edx + UnprocessedMessage.msgData + MessageData.msgTrigger]        ; topTrigger
+    fld     dword[esi + UnprocessedMessage.msgData + MessageData.msgTrigger]        ; newTrigger, topTrigger
     FPU_CMP
-    jae         .msgsAdded
-    push        eax
-    stdcall     SoundMsg.AddInstrMessage, eax
-    pop         eax
-    add         eax, sizeof.UnprocessedMessage
-    mov         [esi + Track.pUnprocMsgs], eax
+    ja      .searchPlace
+    
+    ; make not empty and set next and jump
+    pop     eax 
+    mov     [eax + SortedStack.next], ecx
+    mov     [edi + Track.pMsgStack], eax 
+    jmp     .return 
 
-    pop         ecx 
-    dec         ecx 
-    jmp         .addMsgs
-.msgsAdded:
-    pop         ecx 
-    mov         [esi + Track.msgsCount], ecx 
+.searchPlace:
+    ; prev = edx 
+    mov     edx, ecx 
+.looper:
+    mov     ecx, [ecx + SortedStack.next]
+    jecxz .endLoop
 
+    mov     eax, [ecx + SortedStack.data]
+    fld     dword[eax + UnprocessedMessage.msgData + MessageData.msgTrigger]        ; currTrigger
+    fld     dword[esi + UnprocessedMessage.msgData + MessageData.msgTrigger]        ; newTrigger, currTrigger
+    FPU_CMP
+    jbe     .endLoop
+
+    mov     edx, ecx 
+    jmp     .looper
+.endLoop:
+
+    pop     eax 
+    mov     [edx + SortedStack.next], eax 
+    mov     [eax + SortedStack.next], ecx
+
+
+; temp = alloc(sizeof.SortedStack)
+; temp.data = pUnprocMsg 
+; //temp.next = null
+;
+; if track.pMsgStack == null:  
+;   track.pMsgStack = temp
+; else
+; if track.pMsgStack.data.triggerTime>=temp.data.triggerTime:
+;   temp.next = track.pMsgStack
+;   track.pMsgStack = temp
+; else:
+;   prev = null  // not null, something else
+;   while (currElem!=null && temp.data.triggerTime>currElem.data.triggerTime):
+;       prev = currElem
+;       currElem = currElem.next
+;   temp.next = currElem
+;   prev.next = temp
+
+.return:
     ret
 endp

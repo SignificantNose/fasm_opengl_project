@@ -533,117 +533,88 @@ proc Sound.GetInstrumentSample,\
     ret
 endp
 
-proc Sound.PlayMsgList
+; routine for acquiring the integer representation
+; of the current sample (meaning the sample that is
+; the sum of all the samples acquired from all the
+; instruments and their message polls). returns the
+; value in eax: higher 16 bits are for right sample,
+; and lower 16 bits are for left sample
+proc Sound.PlayMsgList uses esi
 
-    mov     ecx, instruments
+    mov     esi, instruments
     xor     eax, eax
+
 .looper:
-    cmp     ecx, instrumentsEnd
-    je      .return
-    push    ecx
-    push    eax
+    cmp     esi, instrumentsEnd 
+    je      .return 
 
-    push    ecx
+    ; total sum in 4 bytes
+    push    eax     
 
-;    fld     [currTime]  ; t
-;    mov     eax, 3.999  
-;    push    eax  
-;    fld     dword[esp]  ; 3.99, t
-;    pop     eax  
-;    FPU_CMP
-;    ja      @F
-;    nop
-;@@:
-    
-    ; instruments must return float values, so that the effects can be applied
-    stdcall Sound.GetInstrumentSample, ecx
+    stdcall Sound.GetInstrumentSample, esi 
+    nop
     ; return values:
     ; edx - left sample 
     ; eax - right sample
     ; samples have unison applied (if present) and ADSR as well
-    pop     ecx
-    mov     ecx, [ecx+Instrument.filter]
+
+    mov     ecx, [esi + Instrument.filter]
     jecxz   .noFilter
 
-
-    
-    ; the pushes can be optimized
-    push    ecx
-    push    eax
-    push    edx
-
-    mov     edx, ecx
-    mov     ecx, [ecx+InstrFilter.cutoffFreqLFO]
-    jecxz   .noFilterLFO
-
-    stdcall LFO.ModulateCutoffFreq, ecx, edx
-
-.noFilterLFO:
-
-    pop     edx
-    pop     eax
-    pop     ecx
-
-    
-
-    push    ecx
-    push    eax
-    ;stdcall Sound.FilterProcessChannel, edx, ecx+InstrFilter.coeffs, ecx+InstrFilter.rightSamples
-    add     ecx, InstrFilter.leftSamples
-    push    ecx
-    add     ecx, InstrFilter.coeffs-InstrFilter.leftSamples
-    push    ecx
-    push    edx
-    stdcall Sound.FilterProcessChannel
-    ; filter applied for left channel sample
-    
-    pop     edx
-    pop     ecx
-    
-    ; eax here is for the left channel
-    push    eax
-    
-    ;stdcall Sound.FilterProcessChannel, edx, ecx+InstrFilter.coeffs, ecx+InstrFilter.leftSamples
-    add     ecx, InstrFilter.rightSamples
-    push    ecx
-    add     ecx, InstrFilter.coeffs-InstrFilter.rightSamples
-    push    ecx
-    push    edx
-    stdcall Sound.FilterProcessChannel
-    ; filter applied for right channel sample
-    
-    pop     edx
+    stdcall Filter.ApplyToSamples, edx, eax, ecx 
+    ; return values:
+    ; edx - left sample 
+    ; eax - right sample
 
 .noFilter:
-
-
-    push    eax
+    push    eax 
     fld     dword[esp]      ; sample
     fimul   [maxValue]      ; resSample
     fistp   dword[esp]      ; 
     pop     eax 
 
-    ;mov     edx, eax
     push    edx 
     fld     dword[esp]      ; sample
     fimul   [maxValue]      ; resSample
-    fistp   dword[esp]      ;
-    pop     edx
+    fistp   dword[esp]
+    pop     edx 
 
 
     pop     ecx 
-    add     ax, cx
+    add     ax, cx 
     rol     eax, 16
     rol     ecx, 16
-    add     dx, cx
+    add     dx, cx 
     add     ax, dx 
-    ; i guess, the order of the elements in the buffer are reversed, as:
-    ; rol     eax, 16
-    pop     ecx
-    add     ecx, sizeof.Instrument
-    jmp     .looper
-.return:
+
+    add     esi, sizeof.Instrument
+    jmp     .looper 
+.return: 
     ret
+endp
+
+; routine for clearing the message polls 
+; of the instruments, freeing the memory
+; and re-initializing the instrument
+proc Sound.ClearInstruments uses esi
+
+    mov     esi, instruments
+.looper:
+    cmp     esi, instrumentsEnd
+    je      .return 
+
+.looperMsgPtrs:
+    mov     ecx, [esi + Instrument.msgPollPtr]
+    jecxz   .endLooperMsgPtrs
+    stdcall SoundMsg.RemoveInstrMessage, esi, ecx 
+    jmp     .looperMsgPtrs
+.endLooperMsgPtrs:    
+
+    add     esi, sizeof.Instrument
+    jmp     .looper
+
+.return:
+    ret 
 endp
 
 
@@ -703,9 +674,9 @@ proc Sound.init uses edi ecx
     fstp        [oneSec]    ;
     pop         eax
 
-    stdcall     Sound.GenerateTrack, track1
+    stdcall     Sound.GenerateTrack, track1, track1msgs, TRACK1_MESSAGESCOUNT
     mov         [track1Buffer], eax 
-    stdcall     Sound.GenerateTrack, track2
+    stdcall     Sound.GenerateTrack, track2, track2msgs, TRACK2_MESSAGESCOUNT
     mov         [track2Buffer], eax 
 
     ret
@@ -713,16 +684,20 @@ endp
 
 
 proc Sound.GenerateTrack uses esi edi,\
-    pTrack
+    pTrack, pUnprocMsgs, UnprocMsgsCount
 
     locals
         BufferObject     IDirectSoundBuffer8
         szBuffer         dd     ?
+        nextMsgTrigger   dd     0.0
     endl 
+
+
+    mov         esi, [pTrack]
+    stdcall     SoundMsg.FormMessageStack, [pUnprocMsgs], [UnprocMsgsCount], esi 
 
     ; calculating the amount of data needed to
     ; be allocated for the buffer
-    mov         esi, [pTrack]
     fld         [esi + Track.trackDuration]     
     mov         eax, 2*freqDiscValue*2
     push        eax 
@@ -739,10 +714,8 @@ proc Sound.GenerateTrack uses esi edi,\
     cominvk     BufferObject, Lock, 0, edi, ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
 
 
-    fldz    
-    fstp        [timeValue]         
-
-    ; mov         ecx, BUFFERSIZE_BYTES/4
+    ; avoiding division by zero in pitch modulation        
+    mov         [timeValue], 1
     xchg        ecx, edi 
     shr         ecx, 2
     mov         edi, [ptrPart1]
@@ -752,18 +725,14 @@ proc Sound.GenerateTrack uses esi edi,\
 
     fild        [timeValue]     ; timeCount 
     fidiv       [frDisc]        ; time
-
-    ; I made the currTime a global variable purely because of saving some bytes
-    fstp        [currTime]
-    ; so that the three next routines shouldn't allocate memory for routine parameter
-    ; maybe there will be no choice but making them routine parameters
-
-
-    
+    fst         [currTime]
+    fld         [nextMsgTrigger]    ; nextTrigger, time
+    FPU_CMP
+    ja          @F
     stdcall     SoundMsg.MessagePollAdd, esi
+    mov         [nextMsgTrigger], eax
+@@:
 
-;    stdcall     Sound.UpdateSequencer
-    
     stdcall     Sound.PlayMsgList
     stosw
     ror         eax, 16
@@ -773,6 +742,7 @@ proc Sound.GenerateTrack uses esi edi,\
     pop         ecx
     loop .looper
 
+    stdcall     Sound.ClearInstruments
 
     cominvk BufferObject, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
     mov     eax, [BufferObject]

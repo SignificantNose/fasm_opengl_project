@@ -5,4 +5,4 @@ track2msgs:
        UnprocessedMessage        <A3,2.66,7.98>, INSTR_BASS
 
 TRACK2_MESSAGESCOUNT = ($-track2msgs)/sizeof.UnprocessedMessage
-track2          Track                     10.64, track2msgs, TRACK2_MESSAGESCOUNT
+track2          Track                     10.64, 0

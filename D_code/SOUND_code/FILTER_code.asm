@@ -61,8 +61,8 @@ proc Sound.FilterProcessChannel,\
 ;    mov     [eax+SampleArray.x2], edx
 ;    mov     edx, [eax+SampleArray.x0]
 ;    mov     [eax+SampleArray.x1], edx
-    push    ecx
-    push    eax
+    push    ecx     ; coeffs
+    push    eax     ; prevSamples
 
     push    COUNTSHIFT*4
 ;    add     eax, SampleArray.x0     ; yikes
@@ -71,8 +71,8 @@ proc Sound.FilterProcessChannel,\
     push    eax
     stdcall Memory.memcpy ;, eax+4, eax, COUNTSHIFT*4
 
-    pop     eax
-    pop     ecx
+    pop     eax     ; prevSamples
+    pop     ecx     ; coeffs 
 
     mov     edx, [rawSample]
     mov     [eax+SampleArray.x0], edx
@@ -168,4 +168,42 @@ proc Sound.FilterRecalculatePrev,\
     loop    .looper
 
     ret
+endp
+
+
+; routine for applying the filter to the
+; samples leftS and rightS. returns the 
+; values of the samples with the applied
+; filter in edx (left sample) and eax 
+; (right sample) registers
+proc Filter.ApplyToSamples uses esi,\
+    leftS, rightS, filter
+
+    mov     esi, [filter]
+
+    mov     ecx, [ecx + InstrFilter.cutoffFreqLFO]
+    jecxz   .noFilterLFO
+    stdcall LFO.ModulateCutoffFreq, ecx, esi
+
+.noFilterLFO:
+    ; mov     eax, [esi + InstrFilter.coeffs]
+    mov     edx, esi 
+    add     edx, InstrFilter.leftSamples
+    ; mov     edx, [esi + InstrFilter.leftSamples]
+    mov     eax, esi 
+    add     eax, InstrFilter.coeffs
+
+    push    eax     ; coeffs
+    stdcall Sound.FilterProcessChannel, [leftS], eax, edx ;, sample, coeffs, prevSamples
+    pop     edx     ; coeffs
+    push    eax     ; left sample
+
+    ; mov     eax, [esi + InstrFilter.rightSamples]
+    mov     eax, esi 
+    add     eax, InstrFilter.rightSamples
+    stdcall Sound.FilterProcessChannel, [rightS], edx, eax 
+    
+    pop     edx     ; left sample
+
+    ret 
 endp

@@ -60,6 +60,8 @@ sound:
     resolve problem with envelope lfo
     make routine for attaching the filter to the instrument 
     resolve the confusion with IDirectSoundBuffer8 not being able to be declared
+    clear the instruments after using them to make a buffer
+    finish playing the instruments
 
 
 graphics:
