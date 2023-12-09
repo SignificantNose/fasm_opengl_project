@@ -53,6 +53,7 @@ DELETE_FLAG     = 0xFFFFFFFF
 dsc             IDirectSound8                       ; it is a pointer to an interface?
 dsb             IDirectSoundBuffer8   
 track1Buffer    IDirectSoundBuffer8   
+track2Buffer    IDirectSoundBuffer8
 dsbd            DSBUFFERDESC sizeof.DSBUFFERDESC, DSBCAPS_GLOBALFOCUS or DSBCAPS_CTRLPOSITIONNOTIFY,\
                 0, 0, mywaveformat, <0,0,0,0>      
 mywaveformat    WAVEFORMATEX 1, 2, 44100, 4*44100, 4, 16, 0
@@ -575,24 +576,7 @@ proc Sound.PlayMsgList
     mov     ecx, [ecx+InstrFilter.cutoffFreqLFO]
     jecxz   .noFilterLFO
 
-
-
-    push    edx
-    stdcall LFO.GetValue, ecx, 0.0
-    stdcall Sound.CalcButterworthCoeffs, eax    ;, filter
-    ;push    eax
-    ;add     eax, InstrFilter.leftSamples
-    ;push    eax
-    ;add     eax, InstrFilter.coeffs-InstrFilter.leftSamples
-    ;push    eax
-    ;stdcall Sound.FilterRecalculatePrev ; , eax+InstrFilter.coeffs, eax+InstrFilter.leftSamples
-    ;pop     eax
-    ;add     eax, InstrFilter.rightSamples
-    ;push    eax 
-    ;add     eax, InstrFilter.coeffs-InstrFilter.rightSamples
-    ;push    eax
-    ;stdcall Sound.FilterRecalculatePrev ; , eax+InstrFilter.coeffs, eax+InstrFilter.rightSamples
-
+    stdcall LFO.ModulateCutoffFreq, ecx, edx
 
 .noFilterLFO:
 
@@ -678,13 +662,21 @@ proc Sound.init uses edi ecx
 
 
 
-    stdcall     Sound.AddOscillator, oscSaw, instrSynth
+    stdcall     Sound.AddOscillator, oscSynthSaw, instrSynth
     stdcall     Sound.AddOscillator, oscSine, instrSynth
+
+    stdcall     Sound.AddOscillator, oscSaw, instrBass
     
     invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
     mov         [instrSynth+Instrument.filter], eax
 ;    mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff
     stdcall     Sound.CalcButterworthCoeffs, 2200.0, eax
+
+
+    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
+    mov         [instrBass+Instrument.filter], eax
+    mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff
+
 ; ; initialization of sequencer
 ; ;    mov         ecx, seqMain
 ; ;    mov         edx, 60.0
@@ -713,7 +705,8 @@ proc Sound.init uses edi ecx
 
     stdcall     Sound.GenerateTrack, track1
     mov         [track1Buffer], eax 
-    ;cominvk     track1Buffer, Play, 0, 0, 0
+    stdcall     Sound.GenerateTrack, track2
+    mov         [track2Buffer], eax 
 
     ret
 endp

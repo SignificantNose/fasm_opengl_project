@@ -59,7 +59,7 @@ sound:
     keep in mind with sequencers: the message structure has been modified
     resolve problem with envelope lfo
     make routine for attaching the filter to the instrument 
-    resolve the problem with transferring unkind message!!
+    resolve the confusion with IDirectSoundBuffer8 not being able to be declared
 
 
 graphics:

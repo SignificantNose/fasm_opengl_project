@@ -29,10 +29,15 @@
         include 'D_STRUCTS\SOUND_structs\LFO_structs.inc'
         include 'D_STRUCTS\SOUND_structs\SOUNDMSG_structs.inc'
         include 'D_STRUCTS\SOUND_structs\SEQUENCER_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\FILTER_structs.inc'
 
-        include 'D_objects\Cube.inc'
-        include 'D_objects\Plane.inc'
-        include 'D_objects\myPrimitive.inc'
+        include 'D_resources\D_objects\Cube.inc'
+        include 'D_resources\D_objects\Plane.inc'
+        include 'D_resources\D_objects\myPrimitive.inc'
+
+        include 'D_resources\NOTES.inc'
+        include 'D_resources\D_scenes\SCENE1.inc'
+        include 'D_resources\D_scenes\SCENE2.inc'
 
 ; CONST
 true            =       1

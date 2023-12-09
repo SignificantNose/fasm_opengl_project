@@ -141,6 +141,7 @@ EBO             GLuint          0
         include 'D_code\SOUND_code\LFO_code.asm'
         include 'D_code\SOUND_code\SOUNDMSG_code.asm'
         include 'D_code\SOUND_code\SEQUENCER_code.asm'
+        include 'D_code\SOUND_code\FILTER_code.asm'
 
 proc WinMain
      locals

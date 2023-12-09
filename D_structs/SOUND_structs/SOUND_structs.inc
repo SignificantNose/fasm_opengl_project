@@ -72,36 +72,33 @@ struct WAVEFORMATEX
        cbSize dw ?
 ends  
 
-FILTER_NONE          = 0
-FILTER_LOPASS        = 1
-FILTER_HIPASS        = 2
-FILTER_BANDPASS      = 3
 
-
-
+EnvBasic      EnvelopeADSR     0.0005, 1.0, 0.0015, 1.0, 1.0, INTERP_LINEAR, INTERP_LINEAR, INTERP_LINEAR
 EnvRegular    EnvelopeADSR     0.5,0.5,0.5,0.9, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR 
 EnvHiHat      EnvelopeADSR     0.0005,0.131,0.015,0.0, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR
 EnvSynth      EnvelopeADSR     0.042, 1.0, 0.64, 1.0, 1.0, INTERP_LINEAR, INTERP_LINEAR, INTERP_SQUARE
 
 
 instruments:
-INSTR_SINE = ($-instruments)/sizeof.Instrument
-instrSine      Instrument      EnvRegular, 0, 0, 0
+; INSTR_SINE = ($-instruments)/sizeof.Instrument
+; instrSine      Instrument      EnvRegular, 0, 0, 0
 
-INSTR_NOISE = ($-instruments)/sizeof.Instrument
-;instrNoise     Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
-instrNoise     Instrument      EnvRegular, 0, 0, 0
-INSTR_SAW = ($-instruments)/sizeof.Instrument
-;instrSaw       Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_SAW
-instrSaw       Instrument      EnvRegular, 0, 0, 0
-INSTR_TRIANGLE = ($-instruments)/sizeof.Instrument
-;instrTriangle  Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_TRIANGLE
-instrTriangle  Instrument      EnvRegular, 0, 0, 0
-INSTR_HIHAT = ($-instruments)/sizeof.Instrument
-;instrHiHat     Instrument      <0.0001,0.181,0.1,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
-instrHihat     Instrument      EnvHiHat, 0, 0, 0
+; INSTR_NOISE = ($-instruments)/sizeof.Instrument
+; ;instrNoise     Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
+; instrNoise     Instrument      EnvRegular, 0, 0, 0
+; INSTR_SAW = ($-instruments)/sizeof.Instrument
+; ;instrSaw       Instrument      <0.1,0.1,0.1,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_SAW
+; instrSaw       Instrument      EnvRegular, 0, 0, 0
+; INSTR_TRIANGLE = ($-instruments)/sizeof.Instrument
+; ;instrTriangle  Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_TRIANGLE
+; instrTriangle  Instrument      EnvRegular, 0, 0, 0
+; INSTR_HIHAT = ($-instruments)/sizeof.Instrument
+; ;instrHiHat     Instrument      <0.0001,0.181,0.1,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
+; instrHihat     Instrument      EnvHiHat, 0, 0, 0
 INSTR_SYNTH = ($-instruments)/sizeof.Instrument 
 instrSynth     Instrument      EnvSynth, 0, 0, 0
+INSTR_BASS = ($-instruments)/sizeof.Instrument 
+instrBass      Instrument      EnvBasic, 0, 0, 0
 
 instrumentsEnd:
 
@@ -119,5 +116,6 @@ OSC_NOISE = 4
 oscSine       Oscillator    OSC_SINE, 0, 0.0, 0
 oscSquare     Oscillator    OSC_SQUARE, 0, 0.0, 0
 oscSaw        Oscillator    OSC_SAW, 0, 0.0, 0
+oscSynthSaw   Oscillator    OSC_SAW, 0, 0.0, LFOSynthFine
 oscTriangle   Oscillator    OSC_TRIANGLE, 0, 0.0, 0
 oscNoise      Oscillator    OSC_NOISE, 0, 0.0, 0
