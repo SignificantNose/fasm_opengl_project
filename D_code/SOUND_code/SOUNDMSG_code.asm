@@ -1,8 +1,6 @@
 proc SoundMsg.AddInstrMessage uses esi edi,\
     unprocMsg
 
-    mov     esi, [currTime]
-    nop
     mov     esi, [unprocMsg]
     movzx   eax, byte[esi+UnprocessedMessage.instrNumber]
     imul    eax, sizeof.Instrument

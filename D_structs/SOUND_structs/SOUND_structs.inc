@@ -100,9 +100,9 @@ instruments:
 ; INSTR_TRIANGLE = ($-instruments)/sizeof.Instrument
 ; ;instrTriangle  Instrument      <0.5,0.5,0.5,0.5, 1.0 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_TRIANGLE
 ; instrTriangle  Instrument      EnvRegular, 0, 0, 0
-; INSTR_HIHAT = ($-instruments)/sizeof.Instrument
 ; ;instrHiHat     Instrument      <0.0001,0.181,0.1,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
-; instrHihat     Instrument      EnvHiHat, 0, 0, 0
+INSTR_HIHAT = ($-instruments)/sizeof.Instrument
+instrHihat     Instrument      EnvHiHat, 0, 0, 0
 INSTR_SYNTH = ($-instruments)/sizeof.Instrument 
 instrSynth     Instrument      EnvSynth, 0, 0, 0
 INSTR_BASS = ($-instruments)/sizeof.Instrument 

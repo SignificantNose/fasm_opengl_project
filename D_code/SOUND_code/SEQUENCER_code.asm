@@ -1,38 +1,22 @@
-
-; routine for defining starting time of sequencer
-; (relatively to the current time):
-; calculates the elapsed time, so that the 
-; sequencer starts playing [startTime] seconds
-; after the current time
-proc Sound.StartTimeSequencer,\
-    startTime
-
-    mov     eax, seqMain
-    fld     [startTime]                     ; startTime
-    fstp    [eax+Sequencer.timeElapsed]     ; 
-    mov     word[eax+Sequencer.currentBeat], -1
-
-    ret
-endp
-
-
 ; routine for adding another instrument to the sequencer.
-; Takes the message values for the sequencer and the 
+; takes the message values for the sequencer and the 
 ; pattern of the message. Adds the sequencer instrument
 ; to the main sequencer
-proc Sound.AddSequencer,\
+; DEPRECATED: multiple sequencers allow for more flexibility
+; unlike this approach
+proc Sequencer.AddMsgPattern,\
     soundMsg, pattern
     
 ; creating new message node
     invoke  HeapAlloc, [hHeap], 8, sizeof.DoublyLinkedList
     mov     ecx, [soundMsg]
-    mov     [eax+DoublyLinkedList.data], ecx
+    mov     [eax+DoublyLinkedList.data], ecx        
 
     mov     ecx, [seqMain+Sequencer.msgListHead]
     mov     [eax+DoublyLinkedList.next], ecx
     ;cmp     ecx, LIST_NONE
     ;je      .finishMessage
-    jcxz    .finishMessage
+    jecxz   .finishMessage
     mov     [ecx+DoublyLinkedList.prev], eax
 .finishMessage:
     mov     [seqMain+Sequencer.msgListHead], eax
@@ -47,7 +31,7 @@ proc Sound.AddSequencer,\
 
     ;cmp     ecx, LIST_NONE
     ;je      .finishPattern
-    jcxz    .finishPattern
+    jecxz   .finishPattern
     mov     [ecx+DoublyLinkedList.prev], eax
 .finishPattern:
     mov     [seqMain+Sequencer.patternListHead], eax
@@ -55,96 +39,132 @@ proc Sound.AddSequencer,\
     ret
 endp
 
-; must be rewritten
-;proc Sound.CreateMsgCopy uses edi esi,\
-;    soundMsg
-;
-;    invoke  HeapAlloc, [hHeap], 8, sizeof.Message
-;    ;push    eax
-;    mov     edi, eax
-;    mov     esi, [soundMsg]
-;    mov     ecx, sizeof.Message
-;;.looper:
-;    ;movsb   
-;    ;loop .looper
-;    rep movsb   
-;    ;pop     eax
-;
-;    ret
-;endp
 
+; routine for adding messages from all the sequencers
+; pSequencer points at to the pTrack message stack
+proc Sequencer.AddAllMessages uses esi,\
+    pSequencer, SeqCount, pTrack
 
+    mov     esi, [pSequencer]
+    mov     ecx, [SeqCount]
+    
+    ; if ecx is zero, then it will loop at
+    ; least once, which is not the desired 
+    ; result. moreover, the routine for adding
+    ; messages for sequencer will be called for
+    ; SOME data that is not a sequencer
+    jecxz   .return 
+.looper:
+    push    ecx 
 
-; probably will not work: new message logic
-proc Sound.UpdateSequencer
+    stdcall Sequencer.AddMessages, esi, [pTrack]
+    add     esi, sizeof.Sequencer
 
-    ; RESOLVE ONE SEC
+    pop     ecx 
+    loop    .looper 
 
-    mov     ecx, seqMain
-    fld     [ecx+Sequencer.timeElapsed]     ; tElapsed
-    fsub    [oneSec]                        ; newTime
+.return:
+    ret 
+endp 
 
-    fld     st0                             ; newTime, newTime
-    ;fld     [ecx+Sequencer.timeOneBeat]     ; dt, newTime, newTime
-    fldz                                    ; 0, newTime, newTime
-    FPU_CMP                                 ; newTime
-    ;jmp     .return
-    jbe      .return
-; adding another sequence of notes instead
+; routine for adding the messages of a separate 
+; sequencer to the message stack of pTrack 
+proc Sequencer.AddMessages uses esi edi,\
+    pSequencer, pTrack
 
+    locals  
+        currentTime     dd      ?
+        timeIncrement   dd      ?
+        timeFinal       dd      ?
 
-    ;fsub    [ecx+Sequencer.timeOneBeat]     ; finishTime
-    fadd    [ecx+Sequencer.timeOneBeat]      ; finishTime
+        totalSteps      dw      ?
+        currentStep     dw      0
+    endl
 
-    mov     ax, word[ecx+Sequencer.currentBeat]
-    inc     ax
-    xor     edx, edx
-    div     word[ecx+Sequencer.totalBeats] 
-    ; now (e)dx has the current beat
-    mov     word[ecx+Sequencer.currentBeat], dx
+    mov     esi, [pSequencer]
+    mov     edi, [pTrack]
 
+; acquiring final time 
+    mov     edx, [edi + Track.trackDuration]
+    mov     [timeFinal], edx
 
+; acquiring start time and setting it as the current
+    mov     eax, [esi + Sequencer.startTime]
+    mov     [currentTime], eax 
 
-
-;goal: to copy a message in case it corresponds to the pattern and poll it
-
-    push    ecx
-
-    mov     eax, [ecx+Sequencer.patternListHead]
-    mov     ecx, [ecx+Sequencer.msgListHead]
+; calculating step increment and the total 
+; amount of steps per cycle
+    mov     eax, 60.0
+    push    eax     ; 60.0
+    fld     dword[esp]                          ; 60.0
+    fld     dword[esi + Sequencer.tempo]        ; tempo, 60.0
+    movzx   eax, byte[esi + Sequencer.steps]
+    push    eax     ; steps
+    fimul   dword[esp]                          ; tempo*steps, 60.0
+    fdivp                                       ; timeInc
+    fstp    [timeIncrement]
+    pop     eax     ; steps 
+    mov     dl, byte[esi + Sequencer.bars]
+    imul    dl 
+    mov     [totalSteps], ax 
+    pop     eax     ; 60.0
 
 .looper:
-    ;cmp     ecx, LIST_NONE
-    ;je      .msgsEnded
-    jcxz    .msgsEnded
-    push    ecx
-    push    eax
-    push    edx
+    fld     [currentTime]       ; t
+    fld     [timeFinal]         ; tFinal, t
+    FPU_CMP     
+    jbe     .return 
 
-    mov     eax, [eax+DoublyLinkedList.data]
-    bt      eax, edx
+
+    mov     ecx, [esi + Sequencer.seqMsgCount]
+    jecxz   .return 
+
+    movzx   eax, [currentStep]
+    mov     edx, [esi + Sequencer.seqMsgArray]
+
+.addingMsgs:
+    push    ecx 
+    push    edx 
+    push    eax 
+
+    bt      dword[edx + SeqMessage.pattern], eax
     jnc     .notNewMessage
-    ;mov     eax, [eax+DoublyLinkedList.data]
-    ;stdcall Sound.CreateMsgCopy, eax
-    stdcall  Sound.CreateMsgCopy, [ecx+DoublyLinkedList.data]
 
-    mov      ecx, [currTime]
-    mov      [eax+Message.msgTrigger], ecx
-    stdcall  Sound.NewMessage, eax
+
+    mov     eax, [edx + SeqMessage.msgData]
+    mov     edx, [currentTime]
+    mov     [eax + UnprocessedMessage.msgData + MessageData.msgTrigger], edx
+    push    eax 
+    invoke  HeapAlloc, [hHeap], 8, sizeof.UnprocessedMessage
+    pop     edx 
+    push    eax 
+    stdcall Memory.memcpy, eax, edx, sizeof.UnprocessedMessage
+    pop     eax 
+    stdcall SoundMsg.AddStack, edi, eax 
+
 
 .notNewMessage:
+    pop     eax 
+    pop     edx 
+    pop     ecx 
 
-    pop     edx
-    pop     eax
-    pop     ecx
-    mov     eax, [eax+DoublyLinkedList.next]
-    mov     ecx, [ecx+DoublyLinkedList.next]
+    add     edx, sizeof.SeqMessage
+    loop    .addingMsgs
+
+    ; inc currStep and div  
+    inc     ax 
+    xor     dx, dx 
+    mov     cx, word[totalSteps] 
+    idiv    cx
+    mov     [currentStep], dx 
+    
+
+
+    fld     [currentTime]
+    fadd    [timeIncrement]
+    fstp    [currentTime]
     jmp     .looper
 
-.msgsEnded:
-    pop     ecx
-    
 .return:
-    fstp    [ecx+Sequencer.timeElapsed]     ;
-    ret
+    ret 
 endp

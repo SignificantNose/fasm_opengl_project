@@ -109,4 +109,16 @@ track1msgs:
 
 TRACK1_MESSAGESCOUNT = ($-track1msgs)/sizeof.UnprocessedMessage
 
+
+; array of sequencers
+track1seqs:
+
+TRACK1_SEQUENCERSCOUNT = ($-track1seqs)/sizeof.Sequencer
+
+
+; sequencer messages
+track1seqs.messages:
+
+TRACK1_SEQMSGSCOUNT = ($-track1seqs)/sizeof.Sequencer
+
 track1      Track       21.28, 0

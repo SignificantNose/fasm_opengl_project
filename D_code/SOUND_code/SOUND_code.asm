@@ -552,7 +552,6 @@ proc Sound.PlayMsgList uses esi
     push    eax     
 
     stdcall Sound.GetInstrumentSample, esi 
-    nop
     ; return values:
     ; edx - left sample 
     ; eax - right sample
@@ -632,6 +631,7 @@ proc Sound.init uses edi ecx
     ;stdcall     Sound.AddOscillator, oscSaw, instrSaw
 
 
+    stdcall     Sound.AddOscillator, oscNoise, instrHihat
 
     stdcall     Sound.AddOscillator, oscSynthSaw, instrSynth
     stdcall     Sound.AddOscillator, oscSine, instrSynth
@@ -674,9 +674,9 @@ proc Sound.init uses edi ecx
     fstp        [oneSec]    ;
     pop         eax
 
-    stdcall     Sound.GenerateTrack, track1, track1msgs, TRACK1_MESSAGESCOUNT
+    stdcall     Sound.GenerateTrack, track1, track1msgs, TRACK1_MESSAGESCOUNT, track1seqs, TRACK1_SEQUENCERSCOUNT
     mov         [track1Buffer], eax 
-    stdcall     Sound.GenerateTrack, track2, track2msgs, TRACK2_MESSAGESCOUNT
+    stdcall     Sound.GenerateTrack, track2, track2msgs, TRACK2_MESSAGESCOUNT, track2seqs, TRACK2_SEQUENCERSCOUNT
     mov         [track2Buffer], eax 
 
     ret
@@ -684,7 +684,7 @@ endp
 
 
 proc Sound.GenerateTrack uses esi edi,\
-    pTrack, pUnprocMsgs, UnprocMsgsCount
+    pTrack, pUnprocMsgs, UnprocMsgsCount, pSeqArray, SeqCount
 
     locals
         BufferObject     IDirectSoundBuffer8
@@ -695,7 +695,9 @@ proc Sound.GenerateTrack uses esi edi,\
 
     mov         esi, [pTrack]
     stdcall     SoundMsg.FormMessageStack, [pUnprocMsgs], [UnprocMsgsCount], esi 
+    stdcall     Sequencer.AddAllMessages,  [pSeqArray], [SeqCount], esi
 
+    nop
     ; calculating the amount of data needed to
     ; be allocated for the buffer
     fld         [esi + Track.trackDuration]     
@@ -710,7 +712,6 @@ proc Sound.GenerateTrack uses esi edi,\
     
     lea         eax, [BufferObject]
     cominvk     dsc, CreateSoundBuffer, dsbd, eax, NULL
-    ; nop
     cominvk     BufferObject, Lock, 0, edi, ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
 
 
