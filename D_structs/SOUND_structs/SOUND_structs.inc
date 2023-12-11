@@ -35,7 +35,7 @@ struct Instrument
        oscListPtr        dd     ?       
        msgPollPtr        dd     ?        
        filter            dd     ?
-       ;reverb            dd     ?    ;????      
+       reverb            dd     ?     
 ends
 
 

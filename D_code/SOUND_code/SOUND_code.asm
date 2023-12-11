@@ -566,6 +566,13 @@ proc Sound.PlayMsgList uses esi
     ; eax - right sample
 
 .noFilter:
+
+    mov     ecx, [esi + Instrument.reverb]
+    jecxz   .noReverb
+    stdcall Reverb.ApplyToSamples, edx, eax, ecx
+
+.noReverb:
+
     push    eax 
     fld     dword[esp]      ; sample
     fimul   [maxValue]      ; resSample
@@ -648,6 +655,9 @@ proc Sound.init uses edi ecx
     mov         [instrBass+Instrument.filter], eax
     mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff
 
+    stdcall     Reverb.GenerateReverberator, 0.43, 0.5
+    mov         [instrSynth + Instrument.reverb], eax 
+
 ; ; initialization of sequencer
 ; ;    mov         ecx, seqMain
 ; ;    mov         edx, 60.0
@@ -697,7 +707,6 @@ proc Sound.GenerateTrack uses esi edi,\
     stdcall     SoundMsg.FormMessageStack, [pUnprocMsgs], [UnprocMsgsCount], esi 
     stdcall     Sequencer.AddAllMessages,  [pSeqArray], [SeqCount], esi
 
-    nop
     ; calculating the amount of data needed to
     ; be allocated for the buffer
     fld         [esi + Track.trackDuration]     

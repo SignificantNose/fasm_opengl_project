@@ -4,6 +4,3 @@ struct Oscillator
        detune            dd     ?
        pitchLFO          dd     ?
 ends
-;struct Reverb
-       
-;ends

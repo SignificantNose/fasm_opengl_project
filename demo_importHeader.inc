@@ -30,6 +30,7 @@
         include 'D_STRUCTS\SOUND_structs\SOUNDMSG_structs.inc'
         include 'D_STRUCTS\SOUND_structs\SEQUENCER_structs.inc'
         include 'D_STRUCTS\SOUND_structs\FILTER_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\REVERB_structs.inc'
 
         include 'D_resources\D_objects\Cube.inc'
         include 'D_resources\D_objects\Plane.inc'
