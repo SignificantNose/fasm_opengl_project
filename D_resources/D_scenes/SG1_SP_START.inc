@@ -106,17 +106,18 @@ SG1_SpectatorStart.Msgs:
        UnprocessedMessage        <G6, 0.200885, 19.215729>, INSTR_SYNTH
        UnprocessedMessage        <D6, 0.415625, 19.388906>, INSTR_SYNTH
 
-
 SG1_SpectatorStart.MsgsCount = ($-SG1_SpectatorStart.Msgs)/sizeof.UnprocessedMessage
 
 
 ; array of sequencers
 SG1_SpectatorStart.Seqs:
-
+       ; Sequencer            SG1_SpectatorStart.SeqMsgs, SG1_SpectatorStart.SeqMsgsCount, 90.0, 0.0, 4, 4
 SG1_SpectatorStart.SeqCount = ($-SG1_SpectatorStart.Seqs)/sizeof.Sequencer
 
 
 ; sequencer messages
 SG1_SpectatorStart.SeqMsgs:
+       ; SeqMessage           mytestmessage, 0111111111111111b
+SG1_SpectatorStart.SeqMsgsCount = ($-SG1_SpectatorStart.SeqMsgs)/sizeof.SeqMessage
 
-SG1_SpectatorStart.SeqMsgsCount = ($-SG1_SpectatorStart.SeqMsgsCount)/sizeof.Sequencer
+; mytestmessage        UnprocessedMessage <A1, 0.131614, ?>, INSTR_HIHAT

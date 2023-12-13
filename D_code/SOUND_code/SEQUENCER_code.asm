@@ -42,11 +42,14 @@ endp
 
 ; routine for adding messages from all the sequencers
 ; pSequencer points at to the pPackedTrack message stack
-proc Sequencer.AddAllMessages uses esi,\
-    pSequencer, SeqCount, pPackedTrack
+proc Sequencer.AddAllMessages uses esi edi,\
+    pPackedTrack
 
-    mov     esi, [pSequencer]
-    mov     ecx, [SeqCount]
+    mov     edi, [pPackedTrack]
+
+    mov     esi, [edi + PackedTrack.pSequencers]
+    nop 
+    mov     ecx, [edi + PackedTrack.SequencersCount]
     
     ; if ecx is zero, then it will loop at
     ; least once, which is not the desired 
@@ -57,7 +60,7 @@ proc Sequencer.AddAllMessages uses esi,\
 .looper:
     push    ecx 
 
-    stdcall Sequencer.AddMessages, esi, [pPackedTrack]
+    stdcall Sequencer.AddMessages, esi, edi
     add     esi, sizeof.Sequencer
 
     pop     ecx 

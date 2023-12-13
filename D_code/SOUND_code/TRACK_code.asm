@@ -5,7 +5,7 @@
 ; returns the buffer (eax) and the duration
 ; of the track (edx)
 proc Track.GenerateTrack uses esi edi,\
-    pPackedTrack;, pUnprocMsgs, UnprocMsgsCount, pSeqArray, SeqCount
+    pPackedTrack
 
     locals
         BufferObject     IDirectSoundBuffer8
@@ -15,8 +15,8 @@ proc Track.GenerateTrack uses esi edi,\
 
 
     mov         esi, [pPackedTrack]
-    stdcall     SoundMsg.FormMessageStack, [esi + PackedTrack.pMsgsStart], [esi + PackedTrack.MsgsCount], esi 
-    stdcall     Sequencer.AddAllMessages,  [esi + PackedTrack.pSequencers], [esi + PackedTrack.SequencersCount], esi
+    stdcall     SoundMsg.FormMessageStack, esi 
+    stdcall     Sequencer.AddAllMessages, esi
 
     ; calculating the amount of data needed to
     ; be allocated for the buffer

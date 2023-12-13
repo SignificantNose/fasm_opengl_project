@@ -130,13 +130,13 @@ endp
 
 
 proc SoundMsg.FormMessageStack uses esi edi,\
-    pUnprocMsgs, UnprocMsgsCount, pPackedTrack
+    pPackedTrack
 
     mov     edi, [pPackedTrack]
     mov     [edi + PackedTrack.pMsgStack], 0
-    mov     esi, [pUnprocMsgs]
 
-    mov     ecx, [UnprocMsgsCount]
+    mov     esi, [edi + PackedTrack.pMsgsStart]
+    mov     ecx, [edi + PackedTrack.MsgsCount]
 
 .looper:
     push    ecx
