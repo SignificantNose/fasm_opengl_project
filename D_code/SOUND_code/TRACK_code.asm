@@ -65,10 +65,14 @@ proc Track.GenerateTrack uses esi edi,\
 
     stdcall     Sound.ClearInstruments
 
-    cominvk BufferObject, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
+    cominvk     BufferObject, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
 
-    mov     eax, [BufferObject]
-    mov     edx, [esi + PackedTrack.trackDuration]
+    cominvk     BufferObject, QueryInterface, IID_IDirectSoundNotify8, lpDSNotify 
+    cominvk     lpDSNotify, SetNotificationPositions, 1, PositionNotify
+    cominvk     lpDSNotify, Release
+
+    mov         eax, [BufferObject]
+    mov         edx, [esi + PackedTrack.trackDuration]
     ; invoke  HeapAlloc, [hHeap], 8, sizeof.Track
     ; mov     edx, [BufferObject]
     ; mov     [eax + Track.buffer], edx 

@@ -647,39 +647,6 @@ proc Sound.Init uses edi ecx
     fstp        [oneSec]    ;
     pop         eax
 
-    ; stdcall     Track.GenerateTrack, track1, track1msgs, TRACK1_MESSAGESCOUNT, track1seqs, TRACK1_SEQUENCERSCOUNT
-    ; ; mov         [track1Buffer], eax 
-    ; stdcall     Track.GenerateTrack, track2, track2msgs, TRACK2_MESSAGESCOUNT, track2seqs, TRACK2_SEQUENCERSCOUNT
-    ; ; mov         [track2Buffer], eax 
-
-
-
-    ; invoke      CreateEvent,\
-    ;     NULL,\      ; default security attributes
-    ;     true,\      ; is manually reset
-    ;     false, \    ; initial state = reset
-    ;     NULL        ; unnamed
-    ; mov         [hEventNotify], eax
-    ; mov         [PositionNotify + DSBPOSITIONNOTIFY.hEventNotify], eax 
-
-    ; invoke      CreateEvent,\
-    ;     NULL,\
-    ;     true,\
-    ;     false,\
-    ;     NULL
-    ; mov         [hEventTerminate], eax 
-
-    ; cominvk     track2Buffer, QueryInterface, IID_IDirectSoundNotify8, lpDSNotify 
-    ; cominvk     lpDSNotify, SetNotificationPositions, 1, PositionNotify
-    ; cominvk     lpDSNotify, Release
-
-    ; invoke      CreateThread,\
-    ;     NULL,\              ; default security attributes
-    ;     0,\                 ; default stack size
-    ;     Threads.MainThreadProc,\  
-    ;     NULL,\              ; no thread parameters
-    ;     0,\                 ; default startup flags 
-    ;     dwThreadID          
 
     ret
 endp
