@@ -1,4 +1,4 @@
-track1msgs:
+SG1_SpectatorStart.Msgs:
        UnprocessedMessage        <FSh3, 1.33, 0.0>, INSTR_SYNTH
        UnprocessedMessage        <D3, 1.33, 0.0>, INSTR_SYNTH
        UnprocessedMessage        <B2, 1.33, 0.0>, INSTR_SYNTH
@@ -107,18 +107,16 @@ track1msgs:
        UnprocessedMessage        <D6, 0.415625, 19.388906>, INSTR_SYNTH
 
 
-TRACK1_MESSAGESCOUNT = ($-track1msgs)/sizeof.UnprocessedMessage
+SG1_SpectatorStart.MsgsCount = ($-SG1_SpectatorStart.Msgs)/sizeof.UnprocessedMessage
 
 
 ; array of sequencers
-track1seqs:
+SG1_SpectatorStart.Seqs:
 
-TRACK1_SEQUENCERSCOUNT = ($-track1seqs)/sizeof.Sequencer
+SG1_SpectatorStart.SeqCount = ($-SG1_SpectatorStart.Seqs)/sizeof.Sequencer
 
 
 ; sequencer messages
-track1seqs.messages:
+SG1_SpectatorStart.SeqMsgs:
 
-TRACK1_SEQMSGSCOUNT = ($-track1seqs)/sizeof.Sequencer
-
-track1      Track       21.28, 0
+SG1_SpectatorStart.SeqMsgsCount = ($-SG1_SpectatorStart.SeqMsgsCount)/sizeof.Sequencer

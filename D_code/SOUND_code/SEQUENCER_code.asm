@@ -41,9 +41,9 @@ endp
 
 
 ; routine for adding messages from all the sequencers
-; pSequencer points at to the pTrack message stack
+; pSequencer points at to the pPackedTrack message stack
 proc Sequencer.AddAllMessages uses esi,\
-    pSequencer, SeqCount, pTrack
+    pSequencer, SeqCount, pPackedTrack
 
     mov     esi, [pSequencer]
     mov     ecx, [SeqCount]
@@ -57,7 +57,7 @@ proc Sequencer.AddAllMessages uses esi,\
 .looper:
     push    ecx 
 
-    stdcall Sequencer.AddMessages, esi, [pTrack]
+    stdcall Sequencer.AddMessages, esi, [pPackedTrack]
     add     esi, sizeof.Sequencer
 
     pop     ecx 
@@ -68,9 +68,9 @@ proc Sequencer.AddAllMessages uses esi,\
 endp 
 
 ; routine for adding the messages of a separate 
-; sequencer to the message stack of pTrack 
+; sequencer to the message stack of pPackedTrack 
 proc Sequencer.AddMessages uses esi edi,\
-    pSequencer, pTrack
+    pSequencer, pPackedTrack
 
     locals  
         currentTime     dd      ?
@@ -82,10 +82,10 @@ proc Sequencer.AddMessages uses esi edi,\
     endl
 
     mov     esi, [pSequencer]
-    mov     edi, [pTrack]
+    mov     edi, [pPackedTrack]
 
 ; acquiring final time 
-    mov     edx, [edi + Track.trackDuration]
+    mov     edx, [edi + PackedTrack.trackDuration]
     mov     [timeFinal], edx
 
 ; acquiring start time and setting it as the current

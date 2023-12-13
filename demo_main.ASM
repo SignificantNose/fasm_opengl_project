@@ -120,6 +120,15 @@ EBO             GLuint          0
 ;timeName        db              "time", 0
 ;sizeName        db              "size", 0
 
+        include 'D_code\SOUND_code\SOUNDFX_code.asm'
+        include 'D_code\SOUND_code\SOUND_code.asm'
+        include 'D_code\SOUND_code\LFO_code.asm'
+        include 'D_code\SOUND_code\SOUNDMSG_code.asm'
+        include 'D_code\SOUND_code\SEQUENCER_code.asm'
+        include 'D_code\SOUND_code\FILTER_code.asm'
+        include 'D_code\SOUND_code\REVERB_code.asm'
+        include 'D_code\SOUND_code\TRACK_code.asm'
+        
         include 'D_code\VECTOR_code.asm'
         include 'D_code\MATRIX_code.asm'
         include 'D_code\INIT_code.asm'
@@ -136,14 +145,8 @@ EBO             GLuint          0
         include 'D_code\DEBUG_code.asm'
         include 'D_code\CAMERA_code.asm'
         include 'D_code\THREADS_code.asm'
+        include 'D_code\SCENE_code.asm'
 
-        include 'D_code\SOUND_code\SOUNDFX_code.asm'
-        include 'D_code\SOUND_code\SOUND_code.asm'
-        include 'D_code\SOUND_code\LFO_code.asm'
-        include 'D_code\SOUND_code\SOUNDMSG_code.asm'
-        include 'D_code\SOUND_code\SEQUENCER_code.asm'
-        include 'D_code\SOUND_code\FILTER_code.asm'
-        include 'D_code\SOUND_code\REVERB_code.asm'
 
 proc WinMain
      locals

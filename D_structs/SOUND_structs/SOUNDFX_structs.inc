@@ -39,20 +39,6 @@ struct Instrument
 ends
 
 
-; Track is a struct that keeps all the
-; necessary data to produce a sound buffer
-; containing actual great-sounding sound
-; of your dreams
-struct Track
-       trackDuration     dd      ?
-       pMsgStack         dd      ?
-       ; nextMessage       dd      ?
-       ; pUnprocMsgs       dd      ?
-       ; msgsCount         dd      ?
-       ; pSequencers        dd     ?
-       ; seqCount           dd     ?
-ends
-
 struct Oscillator
        oscType           db     ?
        voices            db     ?

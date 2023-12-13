@@ -86,12 +86,12 @@ proc SoundMsg.RemoveInstrMessage,\
 endp
 
 proc SoundMsg.MessagePollAdd uses esi edi,\
-    pTrack
+    pPackedTrack
 
-    mov     esi, [pTrack]
+    mov     esi, [pPackedTrack]
 
 .looper:
-    mov     edi, [esi + Track.pMsgStack]
+    mov     edi, [esi + PackedTrack.pMsgStack]
     cmp     edi, 0
     je      .stackEmpty
 
@@ -109,7 +109,7 @@ proc SoundMsg.MessagePollAdd uses esi edi,\
     push    ecx 
     invoke  HeapFree, [hHeap], 0, edi
     pop     ecx 
-    mov     [esi + Track.pMsgStack], ecx 
+    mov     [esi + PackedTrack.pMsgStack], ecx 
 
 
     jmp     .looper
@@ -130,10 +130,10 @@ endp
 
 
 proc SoundMsg.FormMessageStack uses esi edi,\
-    pUnprocMsgs, UnprocMsgsCount, pTrack
+    pUnprocMsgs, UnprocMsgsCount, pPackedTrack
 
-    mov     edi, [pTrack]
-    mov     [edi + Track.pMsgStack], 0
+    mov     edi, [pPackedTrack]
+    mov     [edi + PackedTrack.pMsgStack], 0
     mov     esi, [pUnprocMsgs]
 
     mov     ecx, [UnprocMsgsCount]
@@ -154,23 +154,23 @@ endp
 ; adding new messages, but IS convenient for a 
 ; stack to not have a head element
 proc SoundMsg.AddStack uses esi edi,\
-    pTrack, pUnprocMsg
+    pPackedTrack, pUnprocMsg
     
-    mov     edi, [pTrack]
+    mov     edi, [pPackedTrack]
     mov     esi, [pUnprocMsg]
 
     invoke  HeapAlloc, [hHeap], 8, sizeof.SortedStack
     mov     [eax+SortedStack.data], esi
     push    eax 
 
-    mov     ecx, [edi + Track.pMsgStack]
+    mov     ecx, [edi + PackedTrack.pMsgStack]
     ;jecxnz  .notEmpty
     cmp     ecx, 0
     jnz     .notEmpty
 
     ; make not empty and jump
     pop     eax 
-    mov     [edi + Track.pMsgStack], eax 
+    mov     [edi + PackedTrack.pMsgStack], eax 
     jmp     .return
 .notEmpty:
     mov     edx, [ecx + SortedStack.data]
@@ -184,7 +184,7 @@ proc SoundMsg.AddStack uses esi edi,\
     ; make not empty and set next and jump
     pop     eax 
     mov     [eax + SortedStack.next], ecx
-    mov     [edi + Track.pMsgStack], eax 
+    mov     [edi + PackedTrack.pMsgStack], eax 
     jmp     .return 
 
 .searchPlace:

@@ -149,15 +149,16 @@ proc Init uses esi edi
      ; stdcall Debug.OutputValueFloat, 160.0
      invoke    GetTickCount
      push      eax 
-     stdcall   Sound.init  
-     ;cominvk   track1Buffer, Play, 0, 0, 0
-     ;cominvk   track1Buffer, Stop
-     cominvk   track2Buffer, Play, 0, 0, 0
-     ;cominvk   track2Buffer, Stop
+     stdcall   Sound.Init  
+     stdcall   Scene.InitScenes
      invoke    GetTickCount
      pop       edx
      sub       eax, edx  
      stdcall   Debug.OutputTickCount, eax
 
+     mov       eax, [SG1_SpectatorStart_Scene.soundtrack + Track.buffer]
+     mov       [track1Buffer], eax 
+     cominvk   track1Buffer, Play, 0, 0, 0
+     
      ret
 endp

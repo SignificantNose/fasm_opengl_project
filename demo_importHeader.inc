@@ -8,6 +8,15 @@
         include '..\INCLUDE\api\gdi32.inc'
         include '..\INCLUDE\api\opengl.inc'
 
+        include 'D_structs\SOUND_structs\SOUNDFX_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\SOUND_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\LFO_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\SOUNDMSG_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\SEQUENCER_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\FILTER_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\REVERB_structs.inc'
+        include 'D_STRUCTS\SOUND_structs\TRACK_structs.inc'
+        
         include 'D_structs\VECTOR_structs.inc'
         include 'D_structs\MATRIX_structs.inc'
         include 'D_structs\INIT_structs.inc'
@@ -24,22 +33,30 @@
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_STRUCTS\CAMERA_structs.inc'
         include 'D_STRUCTS\THREADS_structs.inc'
+        include 'D_STRUCTS\SCENE_structs.inc'
 
-        include 'D_structs\SOUND_structs\SOUNDFX_structs.inc'
-        include 'D_STRUCTS\SOUND_structs\SOUND_structs.inc'
-        include 'D_STRUCTS\SOUND_structs\LFO_structs.inc'
-        include 'D_STRUCTS\SOUND_structs\SOUNDMSG_structs.inc'
-        include 'D_STRUCTS\SOUND_structs\SEQUENCER_structs.inc'
-        include 'D_STRUCTS\SOUND_structs\FILTER_structs.inc'
-        include 'D_STRUCTS\SOUND_structs\REVERB_structs.inc'
 
         include 'D_resources\D_objects\Cube.inc'
         include 'D_resources\D_objects\Plane.inc'
         include 'D_resources\D_objects\myPrimitive.inc'
 
         include 'D_resources\NOTES.inc'
-        include 'D_resources\D_scenes\SCENE1.inc'
-        include 'D_resources\D_scenes\SCENE2.inc'
+
+        include 'D_resources\D_scenes\SG1_SP_START.inc'
+        include 'D_resources\D_scenes\SG1_CH_FIRST.inc'
+        include 'D_resources\D_scenes\SG1_RN_FIRST.inc'
+
+        include 'D_resources\D_scenes\SG2_SP_MVCAM.inc'
+        include 'D_resources\D_scenes\SG2_CH_SECOND.inc'
+        include 'D_resources\D_scenes\SG2_RN_SECOND.inc'
+
+        include 'D_resources\D_scenes\SG3_SP_MVCAM.inc'
+        include 'D_resources\D_scenes\SG3_CH_THIRD.inc'
+        include 'D_resources\D_scenes\SG3_RN_THIRD.inc'
+
+        include 'D_resources\D_scenes\SG4_SP_MVCAM.inc'
+        include 'D_resources\D_scenes\SG4_CH_FINAL.inc'
+        include 'D_resources\D_scenes\SG4_SP_FINAL.inc'
 
 ; CONST
 true            =       1

@@ -22,4 +22,4 @@ TRACK2_SEQMSGSCOUNT = ($-track2seqs.messages)/sizeof.SeqMessage
 testtrack2seqmessagehihat   UnprocessedMessage   <A1, 0.131614, ?>, INSTR_HIHAT
 testtrack2seqmessagehihat2  UnprocessedMessage   <A1, 0.131614, ?>, INSTR_HIHAT
 
-track2          Track                     10.64, 0
+track2          PackedTrack                     10.64, 0

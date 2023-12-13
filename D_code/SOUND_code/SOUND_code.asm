@@ -20,7 +20,7 @@ dsc             IDirectSound8
 dsb             IDirectSoundBuffer8   
 track1Buffer    IDirectSoundBuffer8   
 track2Buffer    IDirectSoundBuffer8
-myLPDSNotify    IDirectSoundNotify
+lpDSNotify    IDirectSoundNotify
 
 proc Sound.Hz2Angular,\
     freq
@@ -588,7 +588,7 @@ endp
 
 
 
-proc Sound.init uses edi ecx
+proc Sound.Init uses edi ecx
     invoke      GetDesktopWindow
     mov         [hDskWnd], eax          ; do I need it though?
     invoke      DirectSoundCreate8, NULL, dsc, NULL
@@ -647,108 +647,39 @@ proc Sound.init uses edi ecx
     fstp        [oneSec]    ;
     pop         eax
 
-    stdcall     Sound.GenerateTrack, track1, track1msgs, TRACK1_MESSAGESCOUNT, track1seqs, TRACK1_SEQUENCERSCOUNT
-    mov         [track1Buffer], eax 
-    stdcall     Sound.GenerateTrack, track2, track2msgs, TRACK2_MESSAGESCOUNT, track2seqs, TRACK2_SEQUENCERSCOUNT
-    mov         [track2Buffer], eax 
+    ; stdcall     Track.GenerateTrack, track1, track1msgs, TRACK1_MESSAGESCOUNT, track1seqs, TRACK1_SEQUENCERSCOUNT
+    ; ; mov         [track1Buffer], eax 
+    ; stdcall     Track.GenerateTrack, track2, track2msgs, TRACK2_MESSAGESCOUNT, track2seqs, TRACK2_SEQUENCERSCOUNT
+    ; ; mov         [track2Buffer], eax 
 
 
 
-    invoke      CreateEvent,\
-        NULL,\      ; default security attributes
-        true,\      ; is manually reset
-        false, \    ; initial state = reset
-        NULL        ; unnamed
+    ; invoke      CreateEvent,\
+    ;     NULL,\      ; default security attributes
+    ;     true,\      ; is manually reset
+    ;     false, \    ; initial state = reset
+    ;     NULL        ; unnamed
+    ; mov         [hEventNotify], eax
+    ; mov         [PositionNotify + DSBPOSITIONNOTIFY.hEventNotify], eax 
 
-    mov         [hEventNotify], eax
-    mov         [PositionNotify + DSBPOSITIONNOTIFY.hEventNotify], eax 
+    ; invoke      CreateEvent,\
+    ;     NULL,\
+    ;     true,\
+    ;     false,\
+    ;     NULL
+    ; mov         [hEventTerminate], eax 
 
-    invoke      CreateEvent,\
-        NULL,\
-        true,\
-        false,\
-        NULL
-    mov         [hEventTerminate], eax 
+    ; cominvk     track2Buffer, QueryInterface, IID_IDirectSoundNotify8, lpDSNotify 
+    ; cominvk     lpDSNotify, SetNotificationPositions, 1, PositionNotify
+    ; cominvk     lpDSNotify, Release
 
-    cominvk     track2Buffer, QueryInterface, IID_IDirectSoundNotify8, myLPDSNotify 
-    cominvk     myLPDSNotify, SetNotificationPositions, 1, PositionNotify
-    cominvk     myLPDSNotify, Release
-
-    invoke      CreateThread,\
-        NULL,\              ; default security attributes
-        0,\                 ; default stack size
-        Threads.MainThreadProc,\  
-        NULL,\              ; no thread parameters
-        0,\                 ; default startup flags 
-        dwThreadID          
+    ; invoke      CreateThread,\
+    ;     NULL,\              ; default security attributes
+    ;     0,\                 ; default stack size
+    ;     Threads.MainThreadProc,\  
+    ;     NULL,\              ; no thread parameters
+    ;     0,\                 ; default startup flags 
+    ;     dwThreadID          
 
     ret
 endp
-
-
-proc Sound.GenerateTrack uses esi edi,\
-    pTrack, pUnprocMsgs, UnprocMsgsCount, pSeqArray, SeqCount
-
-    locals
-        BufferObject     IDirectSoundBuffer8
-        szBuffer         dd     ?
-        nextMsgTrigger   dd     0.0
-    endl 
-
-
-    mov         esi, [pTrack]
-    stdcall     SoundMsg.FormMessageStack, [pUnprocMsgs], [UnprocMsgsCount], esi 
-    stdcall     Sequencer.AddAllMessages,  [pSeqArray], [SeqCount], esi
-
-    ; calculating the amount of data needed to
-    ; be allocated for the buffer
-    fld         [esi + Track.trackDuration]     
-    mov         eax, 2*FRDISC_VALUE*2
-    push        eax 
-    fimul       dword[esp]
-    pop         eax 
-    fistp       dword[szBuffer]
-
-    mov         edi, [szBuffer]
-    mov         [dsbd.dwBufferBytes], edi
-    
-    lea         eax, [BufferObject]
-    cominvk     dsc, CreateSoundBuffer, dsbd, eax, NULL
-    cominvk     BufferObject, Lock, 0, edi, ptrPart1, bytesPart1, ptrPart2, bytesPart2, 0
-
-
-    ; avoiding division by zero in pitch modulation        
-    mov         [timeValue], 1
-    xchg        ecx, edi 
-    shr         ecx, 2
-    mov         edi, [ptrPart1]
-.looper:
-    push        ecx
-
-
-    fild        [timeValue]     ; timeCount 
-    fidiv       [frDisc]        ; time
-    fst         [currTime]
-    fld         [nextMsgTrigger]    ; nextTrigger, time
-    FPU_CMP
-    ja          @F
-    stdcall     SoundMsg.MessagePollAdd, esi
-    mov         [nextMsgTrigger], eax
-@@:
-
-    stdcall     Sound.PlayMsgList
-    stosw
-    ror         eax, 16
-    stosw   
-
-    inc         [timeValue]
-    pop         ecx
-    loop .looper
-
-    stdcall     Sound.ClearInstruments
-
-    cominvk BufferObject, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
-    mov     eax, [BufferObject]
-
-    ret
-endp 
