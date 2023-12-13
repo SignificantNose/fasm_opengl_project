@@ -150,9 +150,9 @@ proc Init uses esi edi
      invoke    GetTickCount
      push      eax 
      stdcall   Sound.init  
-     cominvk   track1Buffer, Play, 0, 0, 0
+     ;cominvk   track1Buffer, Play, 0, 0, 0
      ;cominvk   track1Buffer, Stop
-     ;cominvk   track2Buffer, Play, 0, 0, 0
+     cominvk   track2Buffer, Play, 0, 0, 0
      ;cominvk   track2Buffer, Stop
      invoke    GetTickCount
      pop       edx

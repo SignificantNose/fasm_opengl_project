@@ -189,3 +189,10 @@ proc Debug.IntToDecStringZeroExtended uses ebx edi,\
 
     ret                   
 endp
+
+proc Debug.PrintThreadInfo
+
+    invoke     OutputDebugString, debugOutThreadPing
+
+    ret
+endp 

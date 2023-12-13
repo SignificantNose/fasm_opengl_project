@@ -14,50 +14,13 @@
 ;    fistp   word[esp]               ; 3
 ;    fstp    dword[esp]              ; 3 
 
-DSSCL_NORMAL = 1
-DSSCL_PRIORITY = 2
-DSSCL_EXCLUSIVE = 3
-DSSCL_WRITEPRIMARY = 4
-DSBCAPS_GLOBALFOCUS = $8000
-DSBCAPS_CTRLPOSITIONNOTIFY = $100  
 
-
-hDskWnd         dd      ?
-
-STATE_OFF = 0
-STATE_ON = 1
-LIST_NONE       =       0
-
-
-frDisc          dd      44100
-freqDiscValue   equ     44100
-BUFFERSIZE_BYTES equ    2*freqDiscValue*2* 8 
-blockSize       dd      BUFFERSIZE_BYTES
-ptrPart1        dd      ?
-bytesPart1      dd      ?
-ptrPart2        dd      ?
-bytesPart2      dd      ?
-
-timeValue       dd      0
-currTime        dd      0.0
-oneSec          dd      0.00002267573
-ten             dd      10
-maxValue        dd      4000  
-randNoise       dd      2000
-two             dd      2
-three           dd      3
-four            dd      4
-triangleTemp    dd      0.25
-
-DELETE_FLAG     = 0xFFFFFFFF
-dsc             IDirectSound8                       ; it is a pointer to an interface?
+; the interfaces cannot be declared in SOUND_structs, that's why:
+dsc             IDirectSound8                      
 dsb             IDirectSoundBuffer8   
 track1Buffer    IDirectSoundBuffer8   
 track2Buffer    IDirectSoundBuffer8
-dsbd            DSBUFFERDESC sizeof.DSBUFFERDESC, DSBCAPS_GLOBALFOCUS or DSBCAPS_CTRLPOSITIONNOTIFY,\
-                0, 0, mywaveformat, <0,0,0,0>      
-mywaveformat    WAVEFORMATEX 1, 2, 44100, 4*44100, 4, 16, 0
-
+myLPDSNotify    IDirectSoundNotify
 
 proc Sound.Hz2Angular,\
     freq
@@ -689,6 +652,36 @@ proc Sound.init uses edi ecx
     stdcall     Sound.GenerateTrack, track2, track2msgs, TRACK2_MESSAGESCOUNT, track2seqs, TRACK2_SEQUENCERSCOUNT
     mov         [track2Buffer], eax 
 
+
+
+    invoke      CreateEvent,\
+        NULL,\      ; default security attributes
+        true,\      ; is manually reset
+        false, \    ; initial state = reset
+        NULL        ; unnamed
+
+    mov         [hEventNotify], eax
+    mov         [PositionNotify + DSBPOSITIONNOTIFY.hEventNotify], eax 
+
+    invoke      CreateEvent,\
+        NULL,\
+        true,\
+        false,\
+        NULL
+    mov         [hEventTerminate], eax 
+
+    cominvk     track2Buffer, QueryInterface, IID_IDirectSoundNotify8, myLPDSNotify 
+    cominvk     myLPDSNotify, SetNotificationPositions, 1, PositionNotify
+    cominvk     myLPDSNotify, Release
+
+    invoke      CreateThread,\
+        NULL,\              ; default security attributes
+        0,\                 ; default stack size
+        Threads.MainThreadProc,\  
+        NULL,\              ; no thread parameters
+        0,\                 ; default startup flags 
+        dwThreadID          
+
     ret
 endp
 
@@ -710,7 +703,7 @@ proc Sound.GenerateTrack uses esi edi,\
     ; calculating the amount of data needed to
     ; be allocated for the buffer
     fld         [esi + Track.trackDuration]     
-    mov         eax, 2*freqDiscValue*2
+    mov         eax, 2*FRDISC_VALUE*2
     push        eax 
     fimul       dword[esp]
     pop         eax 

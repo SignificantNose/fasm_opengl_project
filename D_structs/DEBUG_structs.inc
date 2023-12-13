@@ -12,3 +12,5 @@ nullPointCount          db      0
 
 shaderCompiled          dd      ?
 debugOutShaderNotComp   db      'ERROR: shader not compiled',0
+
+debugOutThreadPing      db      'Thread signal set!!',0

@@ -135,6 +135,7 @@ EBO             GLuint          0
         include 'D_code\TEXTURE_code.asm'
         include 'D_code\DEBUG_code.asm'
         include 'D_code\CAMERA_code.asm'
+        include 'D_code\THREADS_code.asm'
 
         include 'D_code\SOUND_code\SOUNDFX_code.asm'
         include 'D_code\SOUND_code\SOUND_code.asm'
@@ -208,6 +209,7 @@ proc WindowProc uses ebx,\
      stdcall    Camera.LookAroundUpdate, [lParam]
      jmp        .ReturnZero
 .Destroy:
+     invoke     SetEvent, [hEventTerminate]
      invoke     ExitProcess, ebx
 .ReturnZero:
      xor    eax, eax

@@ -23,6 +23,7 @@
         include 'D_STRUCTS\TEXTURE_structs.inc'
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_STRUCTS\CAMERA_structs.inc'
+        include 'D_STRUCTS\THREADS_structs.inc'
 
         include 'D_structs\SOUND_structs\SOUNDFX_structs.inc'
         include 'D_STRUCTS\SOUND_structs\SOUND_structs.inc'
@@ -182,5 +183,10 @@ data import
                   SetFX,\
                   AcquireResources,\
                   GetObjectInPath
+        interface IDirectSoundNotify,\
+                  QueryInterface,\
+                  AddRef,\
+                  Release,\
+                  SetNotificationPositions 
 end data
 
