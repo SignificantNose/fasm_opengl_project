@@ -62,6 +62,17 @@ sound:
     resolve the confusion with IDirectSoundBuffer8 not being able to be declared
     clear the instruments after using them to make a buffer
     finish playing the instruments
+    interesting thing noticed while making tom: frequency modulation requires some 
+        adjustments in terms of frequency. can look into it, but not now.
+    make snare sound and finish the prolongation of the starting track 
+    make interpolaters for higher powers
+    implement pads, kick, snare
+    look at the frequency of the kick
+    welp, that's unfortunate. the snare needed multiple oscillators with different 
+        envelopes... that's to implement somewhen!! :) (genuinely don't know if that's a word)
+    yup, the unison kinda disappointed, but works.
+    the sound effect at the end of the start scene is not the planned one, but is interesting. 
+        I'll leave it this way, why not?
 
 
 graphics:

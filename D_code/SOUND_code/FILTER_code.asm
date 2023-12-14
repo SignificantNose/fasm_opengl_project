@@ -177,13 +177,14 @@ endp
 ; filter in edx (left sample) and eax 
 ; (right sample) registers
 proc Filter.ApplyToSamples uses esi,\
-    leftS, rightS, filter
+    leftS, rightS, pInstrument
 
-    mov     esi, [filter]
+    mov     esi, [pInstrument]
+    mov     esi, [esi + Instrument.filter]
 
     mov     ecx, [ecx + InstrFilter.cutoffFreqLFO]
     jecxz   .noFilterLFO
-    stdcall LFO.ModulateCutoffFreq, ecx, esi
+    stdcall LFO.ModulateCutoffFreq, ecx, [pInstrument]
 
 .noFilterLFO:
     ; mov     eax, [esi + InstrFilter.coeffs]

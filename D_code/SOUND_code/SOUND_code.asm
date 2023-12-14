@@ -126,29 +126,33 @@ proc Sound.interpolatePhase,\
 
     
     fld     [phase]             ; phase
+    test    eax, INTERP_REVERSE 
+    jz      .notReverse
+    fchs                        ; -phase
+    fld1                        ; 1, -phase
+    faddp                       ; reversePhase
+    fst     [phase]
+    xor     eax, INTERP_REVERSE
+.notReverse:
+
     JumpIf  INTERP_LINEAR, .linear
-    JumpIf  INTERP_REVERSELINEAR, .reverseLinear
     JumpIf  INTERP_SQUARE, .square
-    JumpIf  INTERP_REVERSESQUARE, .reverseSquare
-    JumpIf  INTERP_BISQUARE, .bisquare
+    JumpIf  INTERP_CUBIC, .cubic
+    JumpIf  INTERP_QUADRA, .quadra
     JumpIf  INTERP_TRIANGLE, .triangle
     JumpIf  INTERP_SINE, .sine
-
 
     xor eax, eax
     fstp    st0
     jmp .return
-;.linear:
-;    ; yikes
-;    jmp     .store
-.reverseSquare:
-    fchs                        ; -phase
-    fld1                        ; 1, -phase
-    faddp                       ; reversePhase
 .square:
     fmul    [phase]             ; phase^2
     jmp     .store
-.bisquare:
+.cubic: 
+    fmul    [phase]             ; phase^2
+    fmul    [phase]             ; phase^3 
+    jmp     .store
+.quadra:
     fmul    [phase]             ; phase^2
     fld     st0                 ; phase^2, phase^2
     fmulp                       ; phase^4
@@ -173,10 +177,6 @@ proc Sound.interpolatePhase,\
     fmulp                       ; phase*pi/2
     fsin                        ; sin(phase*pi/2)
     jmp     .store
-.reverseLinear:
-    fchs                        ; -phase
-    fld1                        ; 1, -phase
-    faddp                       ; reversePhase
 .linear:
 .store:
     push    eax                  ; 1 B
@@ -523,7 +523,8 @@ proc Sound.PlayMsgList uses esi
     mov     ecx, [esi + Instrument.filter]
     jecxz   .noFilter
 
-    stdcall Filter.ApplyToSamples, edx, eax, ecx 
+    ; stdcall Filter.ApplyToSamples, edx, eax, ecx
+    stdcall Filter.ApplyToSamples, edx, eax, esi 
     ; return values:
     ; edx - left sample 
     ; eax - right sample
@@ -607,7 +608,26 @@ proc Sound.Init uses edi ecx
     stdcall     Sound.AddOscillator, oscSine, instrSynth
 
     stdcall     Sound.AddOscillator, oscSaw, instrBass
+
+    stdcall     Sound.AddOscillator, oscSawPads, instrPads
+    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
+    mov         [instrPads + Instrument.filter], eax 
+    stdcall     Sound.CalcButterworthCoeffs, 290.0, eax
+
+; sad that I hadn't thought of adjusting the octave or the pitch
+; of the sound. only through LFO.
+    stdcall     Sound.AddOscillator, oscTomSine, instrTom 
+    stdcall     Sound.AddOscillator, oscNoise, instrTom 
+
+    stdcall     Sound.AddOscillator, oscKickSine, instrKick
+
+    stdcall     Sound.AddOscillator, oscSnareNoise, instrSnareTail
+    stdcall     Reverb.GenerateReverberator, 0.24, 0.55     ; oh I love it
+    mov         [instrSnareTail + Instrument.reverb], eax 
     
+    stdcall     Sound.AddOscillator, oscSnareSine, instrSnareBody
+
+
     invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
     mov         [instrSynth+Instrument.filter], eax
 ;    mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff

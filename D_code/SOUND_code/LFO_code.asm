@@ -71,19 +71,39 @@ endp
 ; routine for modulating the coefficients of the 
 ; filter based on the filter cutoff frequency at (?)
 ; the current time  (just for structurizing the code)
-proc LFO.ModulateCutoffFreq,\
-    pLFO, pFilter
+; proc LFO.ModulateCutoffFreq,\
+;     pLFO, pFilter
 
-    ; the envelope modulation is not applicable for the 
-    ; instrument, as the trigger time must be captured, 
-    ; and the trigger time is linked to the message.
-    ; so in this case the LFO must be linked to the message,
-    ; not the instrument, which is pretty expensive
-    stdcall LFO.GetValue, [pLFO], 0.0
-    stdcall Sound.CalcButterworthCoeffs, eax, [pFilter]
+;     ; the envelope modulation is not applicable for the 
+;     ; instrument, as the trigger time must be captured, 
+;     ; and the trigger time is linked to the message.
+;     ; so in this case the LFO must be linked to the message,
+;     ; not the instrument, which is pretty expensive
+;     ;
+;     ; upd: the instrument can be played somewhere in the 
+;     ; middle of the track. there has been made a decision 
+;     ; that the frequency must be recalculated based on the 
+;     ; message.
+;     stdcall LFO.GetValue, [pLFO], 0.0
+;     stdcall Sound.CalcButterworthCoeffs, eax, [pFilter]
+
+;     ret
+; endp
+proc LFO.ModulateCutoffFreq uses esi,\
+    pLFO, pInstrument
+
+    mov     esi, [pInstrument]
+    mov     ecx, [esi + Instrument.msgPollPtr]
+    jecxz   @F
+    mov     ecx, [ecx + DoublyLinkedList.data]
+    mov     ecx, [ecx + InstrumentMessage.msgData + MessageData.msgTrigger]
+@@:
+    stdcall LFO.GetValue, [pLFO], ecx
+    stdcall Sound.CalcButterworthCoeffs, eax, [esi + Instrument.filter]
 
     ret
 endp
+
 
 ; routine for modulating the current pitch of the 
 ; note. the routine returns the multiplier for the

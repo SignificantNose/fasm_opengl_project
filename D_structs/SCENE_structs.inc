@@ -16,7 +16,7 @@ ends
 ; somewhy (not a word) I have a feeling that 
 ; it will not be so convenient. but who knows.
 Scenes.ArrPacked:
-SG1_SpectatorStart_Packed       PackedScene     <21.28, 0,\
+SG1_SpectatorStart_Packed       PackedScene     <31.92, 0,\
         SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
         SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqCount>
 ; SG1_ChoiceFirst_Packed          PackedScene     ?

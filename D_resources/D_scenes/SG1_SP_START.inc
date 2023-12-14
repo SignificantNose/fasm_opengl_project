@@ -1,4 +1,11 @@
 SG1_SpectatorStart.Msgs:
+
+       ; UnprocessedMessage        <G1, KICK_TIME, 0.0>, INSTR_KICK
+       ; UnprocessedMessage        <A4, 1.0, 0.0>, INSTR_SNARETAIL
+       ; UnprocessedMessage        <FSh1, 1.0, 0.0>, INSTR_SNAREBODY
+       ; UnprocessedMessage        <E3, 0.5, 0.0>, INSTR_PADS
+
+
        UnprocessedMessage        <FSh3, 1.33, 0.0>, INSTR_SYNTH
        UnprocessedMessage        <D3, 1.33, 0.0>, INSTR_SYNTH
        UnprocessedMessage        <B2, 1.33, 0.0>, INSTR_SYNTH
@@ -105,6 +112,24 @@ SG1_SpectatorStart.Msgs:
        UnprocessedMessage        <A6, 0.200885, 19.084114>, INSTR_SYNTH
        UnprocessedMessage        <G6, 0.200885, 19.215729>, INSTR_SYNTH
        UnprocessedMessage        <D6, 0.415625, 19.388906>, INSTR_SYNTH
+
+       UnprocessedMessage        <E3, 2.66, 21.28>, INSTR_BASS
+       UnprocessedMessage        <G3, 2.66, 23.94>, INSTR_BASS
+       UnprocessedMessage        <B3, 2.66, 26.6>, INSTR_BASS
+       UnprocessedMessage        <A3, 2.66, 29.26>, INSTR_BASS
+
+       UnprocessedMessage        <E2, 0.33, 30.75625>, INSTR_TOM
+       UnprocessedMessage        <CSh2, 0.33, 30.9225>, INSTR_TOM
+       UnprocessedMessage        <B1, 0.33, 31.08875>, INSTR_TOM
+       UnprocessedMessage        <D2, 0.33, 31.255>, INSTR_TOM
+       UnprocessedMessage        <A1, 0.33, 31.75375>, INSTR_TOM
+
+       UnprocessedMessage        <FSh1, 0.16625, 30.75625>, INSTR_SNAREBODY
+       UnprocessedMessage        <A1, 0.16625, 30.75625>, INSTR_SNARETAIL
+       UnprocessedMessage        <FSh1, 0.16625, 31.255>, INSTR_SNAREBODY
+       UnprocessedMessage        <A1, 0.16625, 31.255>, INSTR_SNARETAIL
+       UnprocessedMessage        <FSh1, 0.16625, 31.75375>, INSTR_SNAREBODY
+       UnprocessedMessage        <A1, 0.16625, 31.75375>, INSTR_SNARETAIL
 
 SG1_SpectatorStart.MsgsCount = ($-SG1_SpectatorStart.Msgs)/sizeof.UnprocessedMessage
 
