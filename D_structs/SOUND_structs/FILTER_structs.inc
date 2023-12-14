@@ -3,6 +3,9 @@ FILTER_LOPASS        = 1
 FILTER_HIPASS        = 2
 FILTER_BANDPASS      = 3
 
+FILTERCOEF_CONST     = 0
+FILTERCOEF_DYNAMIC   = 1
+
 struct ButterworthCoeffs
        b0                dd     ?
        b1                dd     ?

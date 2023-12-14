@@ -610,9 +610,7 @@ proc Sound.Init uses edi ecx
     stdcall     Sound.AddOscillator, oscSaw, instrBass
 
     stdcall     Sound.AddOscillator, oscSawPads, instrPads
-    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
-    mov         [instrPads + Instrument.filter], eax 
-    stdcall     Sound.CalcButterworthCoeffs, 290.0, eax
+    stdcall     Filter.Initialize, instrPads, FILTERCOEF_CONST, 290.0
 
 ; sad that I hadn't thought of adjusting the octave or the pitch
 ; of the sound. only through LFO.
@@ -628,15 +626,8 @@ proc Sound.Init uses edi ecx
     stdcall     Sound.AddOscillator, oscSnareSine, instrSnareBody
 
 
-    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
-    mov         [instrSynth+Instrument.filter], eax
-;    mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff
-    stdcall     Sound.CalcButterworthCoeffs, 2200.0, eax
-
-
-    invoke      HeapAlloc, [hHeap], 8, sizeof.InstrFilter
-    mov         [instrBass+Instrument.filter], eax
-    mov         [eax+InstrFilter.cutoffFreqLFO], LFOCutoff
+    stdcall     Filter.Initialize, instrSynth, FILTERCOEF_CONST, 2200.0
+    stdcall     Filter.Initialize, instrBass, FILTERCOEF_DYNAMIC, LFOCutoff
 
     stdcall     Reverb.GenerateReverberator, 0.43, 0.5
     mov         [instrSynth + Instrument.reverb], eax 

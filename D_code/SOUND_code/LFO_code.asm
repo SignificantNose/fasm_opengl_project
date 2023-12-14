@@ -99,7 +99,7 @@ proc LFO.ModulateCutoffFreq uses esi,\
     mov     ecx, [ecx + InstrumentMessage.msgData + MessageData.msgTrigger]
 @@:
     stdcall LFO.GetValue, [pLFO], ecx
-    stdcall Sound.CalcButterworthCoeffs, eax, [esi + Instrument.filter]
+    stdcall Filter.CalcButterworthCoeffs, eax, [esi + Instrument.filter]
 
     ret
 endp

@@ -1,7 +1,30 @@
+; routine for initializing the filter for the
+; instument. depending on the value of 
+; filterCoefType, data must be either the cutoff 
+; frequency of the filter (const) or a pointer to 
+; the LFO for cutoff frequency modulation (dynamic)
+proc Filter.Initialize uses edi,\
+    pInstrument, filterCoefType, data
+
+    mov     edi, [pInstrument]
+    invoke  HeapAlloc, [hHeap], 8, sizeof.InstrFilter
+    mov     [edi + Instrument.filter], eax
+    mov     edx, [data]
+
+    cmp     [filterCoefType], FILTERCOEF_CONST 
+    je      .const
+    mov     [eax+InstrFilter.cutoffFreqLFO], edx
+    jmp     .return 
+.const:
+    stdcall Filter.CalcButterworthCoeffs, edx, eax
+.return:
+    ret 
+endp
+
 ; the routine recalculates the coefficients 
 ; that are used in the convolution of the 
 ; Butterworth filter. Returns the filter.
-proc Sound.CalcButterworthCoeffs,\
+proc Filter.CalcButterworthCoeffs,\
     cutoff, filter
     
     mov     eax, [filter]
