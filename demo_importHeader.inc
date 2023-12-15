@@ -8,6 +8,13 @@
         include '..\INCLUDE\api\gdi32.inc'
         include '..\INCLUDE\api\opengl.inc'
 
+; graphic primitives
+        include 'D_resources\D_objects\Cube.inc'
+        include 'D_resources\D_objects\Plane.inc'
+        include 'D_resources\D_objects\myPrimitive.inc'
+
+; sound structs
+        include 'D_STRUCTS\SOUND_structs\TRACK_structs.inc'
         include 'D_structs\SOUND_structs\SOUNDFX_structs.inc'
         include 'D_STRUCTS\SOUND_structs\SOUND_structs.inc'
         include 'D_STRUCTS\SOUND_structs\LFO_structs.inc'
@@ -15,33 +22,11 @@
         include 'D_STRUCTS\SOUND_structs\SEQUENCER_structs.inc'
         include 'D_STRUCTS\SOUND_structs\FILTER_structs.inc'
         include 'D_STRUCTS\SOUND_structs\REVERB_structs.inc'
-        include 'D_STRUCTS\SOUND_structs\TRACK_structs.inc'
-        
-        include 'D_structs\VECTOR_structs.inc'
-        include 'D_structs\MATRIX_structs.inc'
-        include 'D_structs\INIT_structs.inc'
-        include 'D_structs\SMOOTH_structs.inc'
-        include 'D_structs\MESH_structs.inc'
-        include 'D_structs\MOVEMENT_structs.inc'
-        include 'D_structs\DRAW_structs.inc'
-        include 'D_structs\GLEXT_structs.inc'
-        include 'D_structs\FILE_structs.inc'
-        include 'D_structs\RANDOM_structs.inc'
-        include 'D_structs\BUILD_structs.inc'
-        include 'D_STRUCTS\MEMORY_structs.inc'
-        include 'D_STRUCTS\TEXTURE_structs.inc'
-        include 'D_STRUCTS\DEBUG_structs.inc'
-        include 'D_STRUCTS\CAMERA_structs.inc'
-        include 'D_STRUCTS\THREADS_structs.inc'
-        include 'D_STRUCTS\KEYBOARD_structs.inc'
 
-
-        include 'D_resources\D_objects\Cube.inc'
-        include 'D_resources\D_objects\Plane.inc'
-        include 'D_resources\D_objects\myPrimitive.inc'
-
+; notes
         include 'D_resources\NOTES.inc'
 
+; scenes data
         include 'D_resources\D_scenes\SG1_SP_START.inc'
         include 'D_resources\D_scenes\SG1_CH_FIRST.inc'
         include 'D_resources\D_scenes\SG1_RN_FIRST.inc'
@@ -57,9 +42,30 @@
         include 'D_resources\D_scenes\SG4_SP_MVCAM.inc'
         include 'D_resources\D_scenes\SG4_CH_FINAL.inc'
         include 'D_resources\D_scenes\SG4_SP_FINAL.inc'
+        
 
+        include 'D_STRUCTS\DEBUG_structs.inc'
+        include 'D_structs\VECTOR_structs.inc'
+        include 'D_structs\MATRIX_structs.inc'
+        include 'D_structs\SMOOTH_structs.inc'
+        include 'D_structs\MESH_structs.inc'
+        include 'D_structs\MOVEMENT_structs.inc'
+        include 'D_structs\GLEXT_structs.inc'
+        include 'D_structs\DRAW_structs.inc'
+        include 'D_structs\FILE_structs.inc'
+        include 'D_structs\RANDOM_structs.inc'
+        include 'D_structs\BUILD_structs.inc'
+        include 'D_STRUCTS\MEMORY_structs.inc'
+        include 'D_STRUCTS\TEXTURE_structs.inc'
+        include 'D_STRUCTS\CAMERA_structs.inc'
+        include 'D_STRUCTS\THREADS_structs.inc'
+        include 'D_STRUCTS\KEYBOARD_structs.inc'
+        include 'D_structs\INIT_structs.inc'
         include 'D_STRUCTS\SCENE_structs.inc'
         include 'D_STRUCTS\RUNNER_structs.inc'
+
+
+
 ; CONST
 true            =       1
 false           =       0

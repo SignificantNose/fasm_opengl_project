@@ -14,3 +14,5 @@ shaderCompiled          dd      ?
 debugOutShaderNotComp   db      'ERROR: shader not compiled',0
 
 debugOutThreadPing      db      'Thread signal set!!',0
+debugOutFrontDir        db      'Front vector coordinates:',0
+debugOutCameraPos       db      'Camera position:',0

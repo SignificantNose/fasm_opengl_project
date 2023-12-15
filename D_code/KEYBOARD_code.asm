@@ -81,14 +81,11 @@ proc Keyboard.KeyDown,\
         mov     [mvRight], MOVEMENT_TRUE
         jmp     .return
 .independent_debugger:
-        stdcall Debug.OutputValueHex, [fYaw]
-        stdcall Debug.OutputValueHex, [fPitch]
-        stdcall Debug.OutputValueHex, [cameraFront.x]
-        stdcall Debug.OutputValueHex, [cameraFront.y]
-        stdcall Debug.OutputValueHex, [cameraFront.z]
-        stdcall Debug.OutputValueHex, [cameraPos.x]
-        stdcall Debug.OutputValueHex, [cameraPos.y]
-        stdcall Debug.OutputValueHex, [cameraPos.z]
+        ; stdcall Debug.OutputValueHex, [fYaw]
+        ; stdcall Debug.OutputValueHex, [fPitch]
+
+        stdcall Debug.PrintFrontCamText
+        stdcall Debug.PrintCameraPosText
 
 .spectator:
 

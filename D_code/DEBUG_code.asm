@@ -196,3 +196,24 @@ proc Debug.PrintThreadInfo
 
     ret
 endp 
+
+proc Debug.PrintFrontCamText
+    
+    invoke     OutputDebugString, debugOutFrontDir
+    stdcall    Debug.OutputValueFloat, [cameraFront.x]
+    stdcall    Debug.OutputValueFloat, [cameraFront.y]
+    stdcall    Debug.OutputValueFloat, [cameraFront.z]
+
+    ret 
+
+endp
+
+proc Debug.PrintCameraPosText 
+    
+    invoke     OutputDebugString, debugOutCameraPos
+    stdcall    Debug.OutputValueFloat, [cameraPos.x]
+    stdcall    Debug.OutputValueFloat, [cameraPos.y]
+    stdcall    Debug.OutputValueFloat, [cameraPos.z]
+    
+    ret 
+endp

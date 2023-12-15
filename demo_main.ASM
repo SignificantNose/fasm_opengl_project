@@ -119,6 +119,7 @@ EBO             GLuint          0
 ;timeName        db              "time", 0
 ;sizeName        db              "size", 0
 
+        include 'D_code\SOUND_code\TRACK_code.asm'
         include 'D_code\SOUND_code\SOUNDFX_code.asm'
         include 'D_code\SOUND_code\SOUND_code.asm'
         include 'D_code\SOUND_code\LFO_code.asm'
@@ -126,27 +127,26 @@ EBO             GLuint          0
         include 'D_code\SOUND_code\SEQUENCER_code.asm'
         include 'D_code\SOUND_code\FILTER_code.asm'
         include 'D_code\SOUND_code\REVERB_code.asm'
-        include 'D_code\SOUND_code\TRACK_code.asm'
         
+        include 'D_code\DEBUG_code.asm'
         include 'D_code\VECTOR_code.asm'
         include 'D_code\MATRIX_code.asm'
-        include 'D_code\INIT_code.asm'
         include 'D_code\SMOOTH_code.asm'
         include 'D_code\MESH_code.asm'
         include 'D_code\MOVEMENT_code.asm'
-        include 'D_code\DRAW_code.asm'
         include 'D_code\GLEXT_code.asm'
+        include 'D_code\DRAW_code.asm'
         include 'D_code\FILE_code.asm'
         include 'D_code\RANDOM_code.asm'
         include 'D_code\BUILD_code.asm'
         include 'D_code\MEMORY_code.asm'
         include 'D_code\TEXTURE_code.asm'
-        include 'D_code\DEBUG_code.asm'
         include 'D_code\CAMERA_code.asm'
         include 'D_code\THREADS_code.asm'
         include 'D_code\SCENE_code.asm'
-        include 'D_code\KEYBOARD_code.asm'
         include 'D_code\RUNNER_code.asm'
+        include 'D_code\KEYBOARD_code.asm'
+        include 'D_code\INIT_code.asm'
 
 
 proc WinMain
