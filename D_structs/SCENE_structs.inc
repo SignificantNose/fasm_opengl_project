@@ -18,20 +18,6 @@ ends
 
 
 
-struct Obstacle
-    data            dd      ?
-    count           dd      ?
-    nextObstacle    dw      ?
-ends 
-
-struct RunnerData 
-    startPos        Vector3 
-    dirVector       Vector3
-    currPattern     dw      ?
-    obstacles       Obstacle
-ends 
-
-
 testStartingPoint   Vector3     0.0, 1.0, -4.0
 testEndingPoint     Vector3     0.0, 1.0, 4.0
 currentScene        dd      independentSpectator
@@ -45,9 +31,9 @@ Scenes.ArrPacked:
 independentSpectatorPacked      PackedScene     <100.0, 0,\
         0, 0,\
         0, 0>
-SG1_SpectatorStart_Packed       PackedScene     <32.0, 0,\
-        SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
-        SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqsCount>
+; SG1_SpectatorStart_Packed       PackedScene     <32.0, 0,\
+;         SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
+;         SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqsCount>
 ; SG1_ChoiceFirst_Packed          PackedScene     ?
 SG1_RunnerFirst_Packed          PackedScene     <42.666666666, 0,\
         SG1_RunnerFirst.Msgs, SG1_RunnerFirst.MsgsCount,\
@@ -69,7 +55,7 @@ Scenes.ArrPackedCount = ($-Scenes.ArrPacked)/sizeof.PackedScene
 
 Scenes.ArrMain:
 independentSpectator            Scene           SCENEMODE_INDEPENDENT, ?, ?
-SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, ?, ?
+; SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, ?, ?
 ; SG1_ChoiceFirst_Scene           Scene           ?, ?, ?
 SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, ?, ?
 

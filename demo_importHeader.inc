@@ -59,6 +59,7 @@
         include 'D_resources\D_scenes\SG4_SP_FINAL.inc'
 
         include 'D_STRUCTS\SCENE_structs.inc'
+        include 'D_STRUCTS\RUNNER_structs.inc'
 ; CONST
 true            =       1
 false           =       0

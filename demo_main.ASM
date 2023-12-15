@@ -146,6 +146,7 @@ EBO             GLuint          0
         include 'D_code\THREADS_code.asm'
         include 'D_code\SCENE_code.asm'
         include 'D_code\KEYBOARD_code.asm'
+        include 'D_code\RUNNER_code.asm'
 
 
 proc WinMain

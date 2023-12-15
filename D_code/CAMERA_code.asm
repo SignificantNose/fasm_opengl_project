@@ -443,6 +443,7 @@ proc Camera.UpdateScene uses esi edi,\
 
         locals
                 CameraPosition      Vector3     ?, ?, ?
+                AdditionalOffset    Vector3     ?, ?, ?
         endl
 
         mov     esi, [pScene]
@@ -458,8 +459,13 @@ proc Camera.UpdateScene uses esi edi,\
         jmp     .return 
 .runner:
 
+        nop
         mov     esi, [esi + Scene.movement]     ; esi now points at the RunnerData struct
         
+        lea     edi, [AdditionalOffset]
+        mov     ecx, sizeof.Vector3/4
+        xor     eax, eax
+        rep     stosd
         ; the direction vector must be calculated based on the length of the 
         ; route and the duration of the runner scene. so, the direction vector is:
         ; dirVector = (point.end - point.start)/trackDuration
@@ -471,6 +477,31 @@ proc Camera.UpdateScene uses esi edi,\
         stdcall Vector3.Scale, edi, [time]
         lea     eax, [esi + RunnerData.startPos]
         stdcall Vector3.Add, edi, eax    
+        movsx   eax, [esi + RunnerData.playerData + PlayerPos.posHorizontal]
+        cmp     eax, 0
+        je      @F 
+        lea     eax, [esi + RunnerData.vectorRight]
+        jl      .horizNegative 
+.horizPositive:
+        stdcall Vector3.Add, edi, eax 
+        jmp     @F 
+.horizNegative:
+        stdcall Vector3.Sub, edi, eax 
+@@:
+
+        movsx   eax, [esi + RunnerData.playerData + PlayerPos.posVertical]
+        cmp     eax, 0
+        je      @F
+        lea     eax, [VecUpward]
+        jl      .vertNegative 
+.vertPositive:
+        stdcall Vector3.Add, edi, eax 
+        jmp     @F
+.vertNegative:
+        stdcall Vector3.Sub, edi, eax 
+
+@@:
+
         ; at this point we have the right camera position. modify matrix? 
         ; or copy it to the cameraPos?
         ; for now I can just copy it, and then modify the routine to make it more optimized

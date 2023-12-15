@@ -109,6 +109,8 @@ graphics:
         switch the buffer and xor the current time)  
     when a scene is switched, clear the variables that can be left off of the previous scene:
         for example, movement to the left 
+    the clean will be completed once all the necessary variables will be initialized
+    
 
 general:
     make time calculations for generating music and graphics 

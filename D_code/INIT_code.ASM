@@ -161,10 +161,10 @@ proc Init uses esi edi
 
 ; it's just some buffer. can be any buffer, because
 ; it's only used to calculate the current time in the buffer
-     mov       eax, [SG1_SpectatorStart_Scene + Scene.soundtrack + Track.buffer]
+     mov       eax, [independentSpectator + Scene.soundtrack + Track.buffer]
      mov       [PlayBuffer], eax  
 
-     stdcall   Scene.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
+     stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
      invoke    SetEvent, [hEventNotify]
 
      ; mov       eax, [SG1_SpectatorStart_Scene.soundtrack + Track.buffer]

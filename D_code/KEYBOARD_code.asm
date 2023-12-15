@@ -1,27 +1,64 @@
 proc Keyboard.KeyDown,\
     vKey
 
-    mov     eax, [vKey]
-    mov     edx, [currentScene]
-    movzx   edx, [edx + Scene.mode]
+        mov     eax, [vKey]
+        mov     ecx, [currentScene]
+        movzx   edx, [ecx + Scene.mode]
 
-    cmp     edx, SCENEMODE_RUNNER
-    je      .runner
-    cmp     edx, SCENEMODE_CHOICE 
-    je      .choice 
-    cmp     edx, SCENEMODE_SPECTATOR
-    je      .spectator
-    cmp     edx, SCENEMODE_INDEPENDENT
-    je      .independent
-    jmp     .return 
+        cmp     edx, SCENEMODE_RUNNER
+        je      .runner
+        cmp     edx, SCENEMODE_CHOICE 
+        je      .choice 
+        cmp     edx, SCENEMODE_SPECTATOR
+        je      .spectator
+        cmp     edx, SCENEMODE_INDEPENDENT
+        je      .independent
+        jmp     .return 
 
 .runner:
+        nop
 
-    jmp     .return 
+        mov     ecx, [ecx + Scene.movement]
+        JumpIf  VKRUN_UP, .up
+        JumpIf  VKRUN_DOWN, .down
+        JumpIf  VKRUN_LEFT, .left 
+        JumpIf  VKRUN_RIGHT, .right 
+        jmp     .return 
+
+.up:
+        movzx   eax, [Runner.CurrStateUp]
+        cmp     eax, 0
+        jne     .return
+        mov     [Runner.CurrStateUp], 1
+        stdcall Runner.Move, RUNDIR_UP, ecx
+        jmp     .return 
+.down:
+        nop
+        movzx   eax, [Runner.CurrStateDown]
+        cmp     eax, 0
+        jne     .return 
+        mov     [Runner.CurrStateDown], 1
+        stdcall Runner.Move, RUNDIR_DOWN, ecx
+        jmp     .return 
+.left:
+        movzx   eax, [Runner.CurrStateLeft]
+        cmp     eax, 0
+        jne     .return
+        mov     [Runner.CurrStateLeft], 1
+        stdcall Runner.Move, RUNDIR_LEFT, ecx 
+        jmp     .return 
+.right:
+        movzx   eax, [Runner.CurrStateRight]
+        cmp     eax, 0
+        jne     .return 
+        mov     [Runner.CurrStateRight], 1
+        stdcall Runner.Move, RUNDIR_RIGHT, ecx 
+        jmp     .return 
+
 
 .choice:
 
-    jmp     .return 
+        jmp     .return 
 
 .independent:
         JumpIf  VK_FORWARD, .independent_setForward
@@ -29,7 +66,6 @@ proc Keyboard.KeyDown,\
         JumpIf  VK_LEFT, .independent_setLeft 
         JumpIf  VK_RIGHT, .independent_setRight
         JumpIf  VK_DEBUGGER, .independent_debugger 
-
         jmp     .return 
 
 .independent_setForward:
@@ -64,26 +100,43 @@ endp
 proc Keyboard.KeyUp,\
     vKey 
 
-    mov     eax, [vKey]
-    mov     edx, [currentScene]
-    movzx   edx, [edx + Scene.mode]
+        mov     eax, [vKey]
+        mov     edx, [currentScene]
+        movzx   edx, [edx + Scene.mode]
 
-    cmp     edx, SCENEMODE_RUNNER
-    je      .runner
-    cmp     edx, SCENEMODE_CHOICE 
-    je      .choice 
-    cmp     edx, SCENEMODE_SPECTATOR
-    je      .spectator
-    cmp     edx, SCENEMODE_INDEPENDENT
-    je      .independent
-    jmp     .return 
+        cmp     edx, SCENEMODE_RUNNER
+        je      .runner
+        cmp     edx, SCENEMODE_CHOICE 
+        je      .choice 
+        cmp     edx, SCENEMODE_SPECTATOR
+        je      .spectator
+        cmp     edx, SCENEMODE_INDEPENDENT
+        je      .independent
+        jmp     .return 
 .runner:
 
-    jmp     .return 
+        JumpIf  VKRUN_UP, .up
+        JumpIf  VKRUN_DOWN, .down
+        JumpIf  VKRUN_LEFT, .left 
+        JumpIf  VKRUN_RIGHT, .right 
+        jmp     .return 
+    
+.up:
+        mov     [Runner.CurrStateUp], 0
+        jmp     .return 
+.down:
+        mov     [Runner.CurrStateDown], 0
+        jmp     .return 
+.left:
+        mov     [Runner.CurrStateLeft], 0
+        jmp     .return 
+.right:
+        mov     [Runner.CurrStateRight], 0
+        jmp     .return 
 
 .choice:
 
-    jmp     .return 
+        jmp     .return 
 
 .independent:
         JumpIf  VK_FORWARD, .independent_clearForward
