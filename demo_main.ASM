@@ -145,6 +145,7 @@ EBO             GLuint          0
         include 'D_code\CAMERA_code.asm'
         include 'D_code\THREADS_code.asm'
         include 'D_code\SCENE_code.asm'
+        include 'D_code\KEYBOARD_code.asm'
 
 
 proc WinMain
@@ -188,14 +189,29 @@ proc WindowProc uses ebx,\
      cmp        [wParam], VK_SPACE
      je         .DebugSwitchScene
 
-     stdcall    Camera.SetMovement, [wParam]
+     stdcall    Keyboard.KeyDown, [wParam]
      jmp        .ReturnZero
+
+; #############
+; to be removed
 .KeyUp:
-     stdcall    Camera.ClearMovement, [wParam]
+     stdcall    Keyboard.KeyUp, [wParam]
      jmp        .ReturnZero
+; to be removed
+; #############
+
+
+; #############
+; to be removed
 .MouseMove:
+     mov        eax, [currentScene]
+     movzx      eax, [eax + Scene.mode]
+     cmp        eax, SCENEMODE_INDEPENDENT
+     jne        .ReturnZero 
      stdcall    Camera.LookAroundUpdate, [lParam]
      jmp        .ReturnZero
+; to be removed
+; #############
 .DebugSwitchScene:
      invoke     SetEvent, [hEventNotify]
      jmp        .ReturnZero

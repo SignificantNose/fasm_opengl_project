@@ -51,7 +51,7 @@ proc Draw uses edi
      ; status of the current scene
 
      ; make a global variable for the current scene
-     stdcall   Camera.UpdateScene, SG1_RunnerFirst_Scene, [currentTime]
+     stdcall   Camera.UpdateScene, [currentScene], [currentTime]
 
 
 
@@ -142,7 +142,7 @@ proc Tick
 endp
 
 
-proc Draw.SetUpViewMx,\
+proc Draw.SetUpViewMx uses edi,\
      dTime
      locals
           cameraCurrTarget         Vector3
@@ -156,7 +156,16 @@ proc Draw.SetUpViewMx,\
      stdcall      Vector3.Copy, edi, cameraPos
      stdcall      Vector3.Add, edi, cameraFront
 
+; to be removed
+; #############
+     mov          eax, [currentScene]
+     movzx        eax, [eax + Scene.mode]
+     cmp          eax, SCENEMODE_INDEPENDENT
+     jne          @F
      stdcall      Camera.Move, [dTime]
+@@:
+; #############
+; to be removed
      stdcall      Camera.LookAt, cameraPos, edi, cameraUp
 
      invoke       glGetFloatv, GL_MODELVIEW_MATRIX, viewMx

@@ -33,6 +33,7 @@
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_STRUCTS\CAMERA_structs.inc'
         include 'D_STRUCTS\THREADS_structs.inc'
+        include 'D_STRUCTS\KEYBOARD_structs.inc'
 
 
         include 'D_resources\D_objects\Cube.inc'

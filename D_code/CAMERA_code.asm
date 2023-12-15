@@ -109,73 +109,73 @@ endp
 ; (or if the chosen key is a debug key;
 ; in that way outputs debug value to 
 ; OutputDebug buffer)
-proc Camera.SetMovement,\
-        VKCode
+; proc Camera.SetMovement,\
+;         VKCode
 
-        mov     eax, [VKCode]
-        JumpIf  VK_FORWARD, .setForward
-        JumpIf  VK_BACKWARD, .setBackward
-        JumpIf  VK_LEFT, .setLeft 
-        JumpIf  VK_RIGHT, .setRight
-        JumpIf  VK_DEBUGGER, .debugger 
+;         mov     eax, [VKCode]
+;         JumpIf  VK_FORWARD, .setForward
+;         JumpIf  VK_BACKWARD, .setBackward
+;         JumpIf  VK_LEFT, .setLeft 
+;         JumpIf  VK_RIGHT, .setRight
+;         JumpIf  VK_DEBUGGER, .debugger 
 
-        jmp     .return 
+;         jmp     .return 
 
-.setForward:
-        mov     [mvForward], MOVEMENT_TRUE  
-        jmp     .return
-.setBackward:
-        mov     [mvBackward], MOVEMENT_TRUE
-        jmp     .return
-.setLeft:
-        mov     [mvLeft], MOVEMENT_TRUE
-        jmp     .return
-.setRight:
-        mov     [mvRight], MOVEMENT_TRUE
-        jmp     .return
-.debugger:
-        stdcall Debug.OutputValueHex, [fYaw]
-        stdcall Debug.OutputValueHex, [fPitch]
-        stdcall Debug.OutputValueHex, [cameraFront.x]
-        stdcall Debug.OutputValueHex, [cameraFront.y]
-        stdcall Debug.OutputValueHex, [cameraFront.z]
-        stdcall Debug.OutputValueHex, [cameraPos.x]
-        stdcall Debug.OutputValueHex, [cameraPos.y]
-        stdcall Debug.OutputValueHex, [cameraPos.z]
+; .setForward:
+;         mov     [mvForward], MOVEMENT_TRUE  
+;         jmp     .return
+; .setBackward:
+;         mov     [mvBackward], MOVEMENT_TRUE
+;         jmp     .return
+; .setLeft:
+;         mov     [mvLeft], MOVEMENT_TRUE
+;         jmp     .return
+; .setRight:
+;         mov     [mvRight], MOVEMENT_TRUE
+;         jmp     .return
+; .debugger:
+;         stdcall Debug.OutputValueHex, [fYaw]
+;         stdcall Debug.OutputValueHex, [fPitch]
+;         stdcall Debug.OutputValueHex, [cameraFront.x]
+;         stdcall Debug.OutputValueHex, [cameraFront.y]
+;         stdcall Debug.OutputValueHex, [cameraFront.z]
+;         stdcall Debug.OutputValueHex, [cameraPos.x]
+;         stdcall Debug.OutputValueHex, [cameraPos.y]
+;         stdcall Debug.OutputValueHex, [cameraPos.z]
 
-        jmp .return 
-.return:
-        ret 
-endp
+;         jmp .return 
+; .return:
+;         ret 
+; endp
 
 ; routine for permitting movement in the 
 ; direction determined by VKCode
-proc Camera.ClearMovement,\
-        VKCode
+; proc Camera.ClearMovement,\
+;         VKCode
 
-        mov     eax, [VKCode]
-        JumpIf  VK_FORWARD, .clearForward
-        JumpIf  VK_BACKWARD, .clearBackward
-        JumpIf  VK_LEFT, .clearLeft 
-        JumpIf  VK_RIGHT, .clearRight
+;         mov     eax, [VKCode]
+;         JumpIf  VK_FORWARD, .clearForward
+;         JumpIf  VK_BACKWARD, .clearBackward
+;         JumpIf  VK_LEFT, .clearLeft 
+;         JumpIf  VK_RIGHT, .clearRight
         
-        jmp .return 
+;         jmp .return 
 
-.clearForward:
-        mov     [mvForward], MOVEMENT_FALSE
-        jmp     .return
-.clearBackward:
-        mov     [mvBackward], MOVEMENT_FALSE
-        jmp     .return
-.clearLeft:
-        mov     [mvLeft], MOVEMENT_FALSE
-        jmp     .return
-.clearRight:
-        mov     [mvRight], MOVEMENT_FALSE
-        jmp     .return
-.return:
-        ret 
-endp
+; .clearForward:
+;         mov     [mvForward], MOVEMENT_FALSE
+;         jmp     .return
+; .clearBackward:
+;         mov     [mvBackward], MOVEMENT_FALSE
+;         jmp     .return
+; .clearLeft:
+;         mov     [mvLeft], MOVEMENT_FALSE
+;         jmp     .return
+; .clearRight:
+;         mov     [mvRight], MOVEMENT_FALSE
+;         jmp     .return
+; .return:
+;         ret 
+; endp
 
 
 ; routine for updating the camera position.
@@ -450,6 +450,7 @@ proc Camera.UpdateScene uses esi edi,\
         JumpIf  SCENEMODE_SPECTATOR, .spectator
         JumpIf  SCENEMODE_RUNNER, .runner 
         JumpIf  SCENEMODE_CHOICE, .choice 
+        JumpIf  SCENEMODE_INDEPENDENT, .return 
         jmp     .return 
 
 .spectator:

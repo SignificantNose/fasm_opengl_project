@@ -138,6 +138,8 @@ proc SoundMsg.FormMessageStack uses esi edi,\
     mov     esi, [edi + PackedTrack.pMsgsStart]
     mov     ecx, [edi + PackedTrack.MsgsCount]
 
+    jecxz   .return 
+
 .looper:
     push    ecx
 
@@ -146,6 +148,8 @@ proc SoundMsg.FormMessageStack uses esi edi,\
 
     pop     ecx 
     loop    .looper 
+
+.return:
     ret 
 endp
 

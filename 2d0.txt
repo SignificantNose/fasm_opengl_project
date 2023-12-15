@@ -94,7 +94,21 @@ graphics:
     maybe make the road white? but definitely make the buildings blue
     try making the update of the scene in draw function 
     think of implementing camera movement more optimally
-
+    think of optimally implementing key controls. thoughts:
+        mouse movement can be enabled only in independent spectator mode
+        some keys might be allowed in several modes, but their purpose must 
+        be different from the independent spectator mode
+    look through all th comments and remove unnecessary parts
+    upd: the time of the scene duration is not the same. for runner,
+        it is doubled, in choice it's track duration times N. only for
+        spectator it's the same
+    the choice section might have as a scene time the expected maximum of the choice
+    implement scene time. and for default, when the buffer has reached the end, play the same buffer.
+        there will be some things to think of, like accurate time adjustment (for example, 
+        once the buffer has reached the end, start over; when the scene time has reached the end, 
+        switch the buffer and xor the current time)  
+    when a scene is switched, clear the variables that can be left off of the previous scene:
+        for example, movement to the left 
 
 general:
     make time calculations for generating music and graphics 

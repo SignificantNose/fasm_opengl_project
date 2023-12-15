@@ -159,11 +159,13 @@ proc Init uses esi edi
      sub       eax, edx  
      stdcall   Debug.OutputTickCount, eax
 
+; it's just some buffer. can be any buffer, because
+; it's only used to calculate the current time in the buffer
      mov       eax, [SG1_SpectatorStart_Scene + Scene.soundtrack + Track.buffer]
      mov       [PlayBuffer], eax  
 
      stdcall   Scene.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
-     ; invoke    SetEvent, [hEventNotify]
+     invoke    SetEvent, [hEventNotify]
 
      ; mov       eax, [SG1_SpectatorStart_Scene.soundtrack + Track.buffer]
      ; mov       [track1Buffer], eax 

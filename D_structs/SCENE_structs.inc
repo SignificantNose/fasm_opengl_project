@@ -1,6 +1,7 @@
 SCENEMODE_SPECTATOR     =       0
 SCENEMODE_RUNNER        =       1
 SCENEMODE_CHOICE        =       2
+SCENEMODE_INDEPENDENT   =       10000000b
 
 struct Scene
 
@@ -33,7 +34,7 @@ ends
 
 testStartingPoint   Vector3     0.0, 1.0, -4.0
 testEndingPoint     Vector3     0.0, 1.0, 4.0
-currentScene        dd      ? 
+currentScene        dd      independentSpectator
 
 
 
@@ -41,6 +42,9 @@ currentScene        dd      ?
 ; somewhy (not a word) I have a feeling that 
 ; it will not be so convenient. but who knows.
 Scenes.ArrPacked:
+independentSpectatorPacked      PackedScene     <100.0, 0,\
+        0, 0,\
+        0, 0>
 SG1_SpectatorStart_Packed       PackedScene     <32.0, 0,\
         SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
         SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqsCount>
@@ -64,6 +68,7 @@ Scenes.ArrPackedCount = ($-Scenes.ArrPacked)/sizeof.PackedScene
 
 
 Scenes.ArrMain:
+independentSpectator            Scene           SCENEMODE_INDEPENDENT, ?, ?
 SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, ?, ?
 ; SG1_ChoiceFirst_Scene           Scene           ?, ?, ?
 SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, ?, ?
@@ -83,5 +88,3 @@ SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, ?, ?
 
 Scenes.ArrMainCount = ($ - Scenes.ArrMain)/sizeof.Scene     
 ; must be the same as Scenes.ArrPackedCount
-
-independentSpectator        Scene       SCENEMODE_CHOICE, ?, ?
