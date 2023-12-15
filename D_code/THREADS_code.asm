@@ -35,6 +35,7 @@ proc Threads.MainThreadProc uses esi,\
     endl 
 
     mov     esi, Scenes.ArrMain
+    mov     ecx, Scenes.ArrMainCount
 
     push    ecx
 .looper:
@@ -44,6 +45,8 @@ proc Threads.MainThreadProc uses esi,\
     invoke  ResetEvent, [hEventNotify]
 
     ; scene switch 
+    ; set the camera position here, movement logic switch
+
     pop     ecx 
     jecxz   .Exit
     dec     ecx 

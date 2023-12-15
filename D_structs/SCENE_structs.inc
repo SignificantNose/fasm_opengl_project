@@ -1,3 +1,7 @@
+SCENEMODE_SPECTATOR     =       0
+SCENEMODE_RUNNER        =       1
+SCENEMODE_CHOICE        =       2
+
 struct Scene
 
     mode        db      ?
@@ -39,9 +43,9 @@ Scenes.ArrPackedCount = ($-Scenes.ArrPacked)/sizeof.PackedScene
 
 
 Scenes.ArrMain:
-SG1_SpectatorStart_Scene        Scene           ?, ?, ?
+SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, ?, ?
 ; SG1_ChoiceFirst_Scene           Scene           ?, ?, ?
-SG1_RunnerFirst_Scene           Scene           ?, ?, ?
+SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, ?, ?
 
 ; SG2_SpectatorMoveCamera_Scene   Scene           ?, ?, ?
 ; SG2_ChoiceSecond_Scene          Scene           ?, ?, ?
