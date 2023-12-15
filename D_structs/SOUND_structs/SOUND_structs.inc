@@ -13,7 +13,8 @@ STATE_ON             equ    1
 DELETE_FLAG          equ    0xFFFFFFFF
 LIST_NONE            equ    0
 FRDISC_VALUE         equ    44100
-BUFFERSIZE_BYTES     equ    2*FRDISC_VALUE*2* 8 
+BYTES_PER_SECOND     equ    FRDISC_VALUE * 4
+BUFFERSIZE_BYTES     equ    BYTES_PER_SECOND * 8 
 
 hDskWnd              dd     ?
 ptrPart1             dd     ?

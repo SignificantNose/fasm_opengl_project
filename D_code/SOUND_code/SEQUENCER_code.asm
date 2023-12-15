@@ -48,7 +48,6 @@ proc Sequencer.AddAllMessages uses esi edi,\
     mov     edi, [pPackedTrack]
 
     mov     esi, [edi + PackedTrack.pSequencers]
-    nop 
     mov     ecx, [edi + PackedTrack.SequencersCount]
     
     ; if ecx is zero, then it will loop at

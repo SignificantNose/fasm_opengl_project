@@ -32,13 +32,14 @@ PlaneAmbient    ColorRGBA       0.0, 0.3, 0.0, 1.0
 
 
 startTime       dd              ?
-lastTime        dd              ?
-currentTime     dd              ?
-programTime     dd              ?
+lastTime        dd              0.0
+currentTime     dd              0.0
+programTime     dd              0.0
 angle           GLfloat      0.0
 step            GLfloat      3.14
 length          GLfloat      6.0
 oneSecond       GLfloat      1000.0
+PlayBuffer      IDirectSoundBuffer8
 
 
 
@@ -185,23 +186,9 @@ proc WindowProc uses ebx,\
      jmp        .ReturnZero
 .KeyDown:
      cmp        [wParam], VK_ESCAPE
-     je        .Destroy
-
-
-; ; horrible
-;      cmp        [wParam], '2'
-;      je         @F
-
-;      cominvk     track1Buffer, Play, 0, 0, 0
-; @@:
-
-;      cmp        [wParam], '1'
-;      je         @F
-
-;      cominvk     track1Buffer, Stop
-; @@:
-
-
+     je         .Destroy
+     cmp        [wParam], VK_SPACE
+     je         .DebugSwitchScene
 
      stdcall    Camera.SetMovement, [wParam]
      jmp        .ReturnZero
@@ -210,6 +197,9 @@ proc WindowProc uses ebx,\
      jmp        .ReturnZero
 .MouseMove:
      stdcall    Camera.LookAroundUpdate, [lParam]
+     jmp        .ReturnZero
+.DebugSwitchScene:
+     invoke     SetEvent, [hEventNotify]
      jmp        .ReturnZero
 .Destroy:
      invoke     SetEvent, [hEventTerminate]

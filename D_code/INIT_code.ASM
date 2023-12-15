@@ -159,7 +159,9 @@ proc Init uses esi edi
      sub       eax, edx  
      stdcall   Debug.OutputTickCount, eax
 
-     invoke    SetEvent, [hEventNotify]
+     mov       eax, [SG1_SpectatorStart_Scene + Scene.soundtrack + Track.buffer]
+     mov       [PlayBuffer], eax  
+     ; invoke    SetEvent, [hEventNotify]
 
      ; mov       eax, [SG1_SpectatorStart_Scene.soundtrack + Track.buffer]
      ; mov       [track1Buffer], eax 

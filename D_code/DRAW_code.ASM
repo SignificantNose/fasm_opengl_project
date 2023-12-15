@@ -1,35 +1,57 @@
 proc Draw uses edi
      locals
-        f               dd      ?
-        tempFloat       dd      ?
         deltaTime       dd      ?
+        playCursor      dd      ?
      endl
 
-     invoke     GetTickCount
-     mov        [currentTime], eax
-     sub        eax, [startTime]
-     mov        [programTime], eax
+     ; invoke     GetTickCount
+     ; mov        [currentTime], eax
+     ; sub        eax, [startTime]
+     ; mov        [programTime], eax
 
-     fild    [programTime]
-     fdiv    [oneSecond]
-     fstp    [programTime]
+     ; fild    [programTime]
+     ; fdiv    [oneSecond]
+     ; fstp    [programTime]
 
 
-     fldz 
-     fstp    [deltaTime]
+     ; fldz 
+     ; fstp    [deltaTime]
 
-     mov     eax, [currentTime]
-     sub     eax, [lastTime]
-     cmp     eax, 10
-     jle     .Skip
+     ; mov     eax, [currentTime]
+     ; sub     eax, [lastTime]
+     ; cmp     eax, 10
+     ; jle     .Skip
 
-     fild       [currentTime]
-     fisub      [lastTime]
-     fdiv       [oneSecond]
-     fstp       [deltaTime]
+     ; fild       [currentTime]
+     ; fisub      [lastTime]
+     ; fdiv       [oneSecond]
+     ; fstp       [deltaTime]
 
-     mov        eax, [currentTime]
-     mov        [lastTime], eax
+     ; mov        eax, [currentTime]
+     ; mov        [lastTime], eax
+
+     lea       eax, [playCursor]
+     cominvk   PlayBuffer, GetCurrentPosition, eax, ebx
+     mov       eax, [playCursor]        ; in bytes?
+
+     push      eax       ; bytesSample
+     fild      dword[esp]     ; currBytes
+     pop       eax       ; bytesSample
+
+     mov       eax, BYTES_PER_SECOND
+     push      eax 
+     fidiv     dword[esp]     ; currSeconds
+     fld       st0            ; currSeconds, currSeconds
+     fsub      [lastTime]     ; deltaTime, currSeconds
+     fstp      [deltaTime]    ; currSeconds
+     fstp      [lastTime]
+     pop       eax 
+
+
+
+
+
+
 
 ; updates the scene
      ;stdcall    Tick
@@ -179,7 +201,6 @@ endp
 proc Draw.TownDraw uses esi edi,\
      pTown
 
-     nop 
      mov       esi, [pTown]
      mov       ecx, [esi + Town.total]
      mov       edi, [esi + Town.pTowerModels]

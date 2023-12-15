@@ -5,6 +5,7 @@ VK_BACKWARD         =       'S'
 VK_LEFT             =       'A'
 VK_RIGHT            =       'D'
 VK_DEBUGGER         =       'Y'
+VK_SPACE            =       0x20
 
 maxCursorY          =       700
 minCursorY          =       500

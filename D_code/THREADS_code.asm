@@ -30,23 +30,29 @@ endp
 proc Threads.MainThreadProc uses esi,\
     param
 
-    locals
-        PlayBuffer      IDirectSoundBuffer8 
-    endl 
-
     mov     esi, Scenes.ArrMain
     mov     ecx, Scenes.ArrMainCount
 
     push    ecx
 .looper:
     invoke  WaitForMultipleObjects, Threads.EventsCount, Threads.EventHandles, false, INFINITE
+
+; jesus, what is it. stop    
+; can't think of a better debug option now
+    pop     ecx 
+    push    ecx 
+    cmp     ecx, Scenes.ArrMainCount
+    je      @F
+    cominvk PlayBuffer, Stop        ; MAYBE NOT???
+@@:
+; p.s. debug option
+
     JumpIf  WAIT_OBJECT_0 + 1, .Exit 
     stdcall Debug.PrintThreadInfo
     invoke  ResetEvent, [hEventNotify]
 
     ; scene switch 
     ; set the camera position here, movement logic switch
-
     pop     ecx 
     jecxz   .Exit
     dec     ecx 
