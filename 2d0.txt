@@ -92,6 +92,8 @@ graphics:
     just a thought: maybe add another type of building where the texture 
         is reversed: edges are dark, but the inside is bright?
     maybe make the road white? but definitely make the buildings blue
+    try making the update of the scene in draw function 
+    think of implementing camera movement more optimally
 
 
 general:

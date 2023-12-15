@@ -32,7 +32,7 @@ proc Draw uses edi
 
      lea       eax, [playCursor]
      cominvk   PlayBuffer, GetCurrentPosition, eax, ebx
-     mov       eax, [playCursor]        ; in bytes?
+     mov       eax, [playCursor]        ; in bytes
 
      push      eax       ; bytesSample
      fild      dword[esp]     ; currBytes
@@ -42,12 +42,20 @@ proc Draw uses edi
      push      eax 
      fidiv     dword[esp]     ; currSeconds
      fld       st0            ; currSeconds, currSeconds
-     fsub      [lastTime]     ; deltaTime, currSeconds
+     fsub      [currentTime]  ; deltaTime, currSeconds
      fstp      [deltaTime]    ; currSeconds
-     fstp      [lastTime]
+     fstp      [currentTime]
      pop       eax 
 
+     ; some procedure for changing the camera position based on the current time moment and the 
+     ; status of the current scene
 
+     ; make a global variable for the current scene
+     stdcall   Camera.UpdateScene, SG1_RunnerFirst_Scene, [currentTime]
+
+
+
+     ; (potentially this is the place for changing the scene)
 
 
 

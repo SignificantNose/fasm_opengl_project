@@ -20,9 +20,9 @@ proc Init uses esi edi
      invoke      ShowCursor, ebx
      ;invoke      ShowCursor, true
 
-     invoke      GetTickCount
-     mov         [lastTime], eax
-     mov         [startTime], eax
+     ; invoke      GetTickCount
+     ; mov         [lastTime], eax
+     ; mov         [startTime], eax
 ; acquiring the device context handle
      invoke      GetDC, [hMainWindow]
      mov         [hdc], eax
@@ -161,6 +161,8 @@ proc Init uses esi edi
 
      mov       eax, [SG1_SpectatorStart_Scene + Scene.soundtrack + Track.buffer]
      mov       [PlayBuffer], eax  
+
+     stdcall   Scene.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
      ; invoke    SetEvent, [hEventNotify]
 
      ; mov       eax, [SG1_SpectatorStart_Scene.soundtrack + Track.buffer]

@@ -31,10 +31,8 @@ PlaneDiffuse    ColorRGBA       0.0, 0.0, 0.0, 1.0
 PlaneAmbient    ColorRGBA       0.0, 0.3, 0.0, 1.0
 
 
-startTime       dd              ?
-lastTime        dd              0.0
 currentTime     dd              0.0
-programTime     dd              0.0
+; programTime     dd              0.0
 angle           GLfloat      0.0
 step            GLfloat      3.14
 length          GLfloat      6.0

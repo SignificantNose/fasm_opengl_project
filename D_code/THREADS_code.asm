@@ -52,11 +52,11 @@ proc Threads.MainThreadProc uses esi,\
     invoke  ResetEvent, [hEventNotify]
 
     ; scene switch 
-    ; set the camera position here, movement logic switch
     pop     ecx 
     jecxz   .Exit
     dec     ecx 
     push    ecx 
+    mov     [currentScene], esi
     mov     eax, [esi + Scene.soundtrack + Track.buffer]
     mov     [PlayBuffer], eax 
     cominvk PlayBuffer, Play, 0, 0, 0

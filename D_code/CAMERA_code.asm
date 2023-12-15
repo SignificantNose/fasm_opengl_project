@@ -436,3 +436,69 @@ proc Camera.AdjustPitch
         ret 
 endp
 
+
+
+proc Camera.UpdateScene uses esi edi,\
+        pScene, time
+
+        locals
+                CameraPosition      Vector3     ?, ?, ?
+        endl
+
+        mov     esi, [pScene]
+        movzx   eax, [esi + Scene.mode]
+        JumpIf  SCENEMODE_SPECTATOR, .spectator
+        JumpIf  SCENEMODE_RUNNER, .runner 
+        JumpIf  SCENEMODE_CHOICE, .choice 
+        jmp     .return 
+
+.spectator:
+
+        jmp     .return 
+.runner:
+
+        mov     esi, [esi + Scene.movement]     ; esi now points at the RunnerData struct
+        
+        ; the direction vector must be calculated based on the length of the 
+        ; route and the duration of the runner scene. so, the direction vector is:
+        ; dirVector = (point.end - point.start)/trackDuration
+
+        ;copying. do not like. trying.
+        lea     edi, [CameraPosition]
+        lea     eax, [esi + RunnerData.dirVector]
+        stdcall Vector3.Copy, edi, eax
+        stdcall Vector3.Scale, edi, [time]
+        lea     eax, [esi + RunnerData.startPos]
+        stdcall Vector3.Add, edi, eax    
+        ; at this point we have the right camera position. modify matrix? 
+        ; or copy it to the cameraPos?
+        ; for now I can just copy it, and then modify the routine to make it more optimized
+
+        lea     eax, [cameraPos]
+        stdcall Vector3.Copy, eax, edi
+
+        ; make addition for the current pattern
+        ; then - logic for patterns 
+        ; so for now tasks are:
+        ;
+        ; form the runnerData struct 
+        ; think of how to fit the data into the scene, not with pointer to data    
+
+        ;thoughts: 
+        ;       start position
+        ;       direction vector (to not recalculate it every time)
+        ;       current pattern position of the camera 
+        ;       pointer to some kind of struct with obstacles
+        ;       
+        ; 
+        ;obstacles: (an obstacle is a pattern)
+        ;       array of obstacles  
+        ;       amount of obstacles
+        ;       next obstacle
+        jmp     .return 
+.choice:
+
+
+.return:
+        ret
+endp

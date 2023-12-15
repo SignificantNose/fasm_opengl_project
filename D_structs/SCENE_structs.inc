@@ -16,6 +16,27 @@ struct  PackedScene
 ends 
 
 
+
+struct Obstacle
+    data            dd      ?
+    count           dd      ?
+    nextObstacle    dw      ?
+ends 
+
+struct RunnerData 
+    startPos        Vector3 
+    dirVector       Vector3
+    currPattern     dw      ?
+    obstacles       Obstacle
+ends 
+
+
+testStartingPoint   Vector3     0.0, 1.0, -4.0
+testEndingPoint     Vector3     0.0, 1.0, 4.0
+currentScene        dd      ? 
+
+
+
 ; for now I've decided to put the scenes here;
 ; somewhy (not a word) I have a feeling that 
 ; it will not be so convenient. but who knows.
@@ -62,3 +83,5 @@ SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, ?, ?
 
 Scenes.ArrMainCount = ($ - Scenes.ArrMain)/sizeof.Scene     
 ; must be the same as Scenes.ArrPackedCount
+
+independentSpectator        Scene       SCENEMODE_CHOICE, ?, ?
