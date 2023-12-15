@@ -112,7 +112,7 @@ oscKickSine   Oscillator    OSC_SINE, 0, 0.0, LFOKickCoarse
 oscSnareSine  Oscillator    OSC_SINE, 0, 0.0, LFOSnareCoarse
 oscSquare     Oscillator    OSC_SQUARE, 0, 0.0, 0
 oscSaw        Oscillator    OSC_SAW, 0, 0.0, 0
-oscSawPads    Oscillator    OSC_SAW, 3, 0.24, 0
+oscSawPads    Oscillator    OSC_SAW, 4, 0.6, 0
 oscSynthSaw   Oscillator    OSC_SAW, 0, 0.0, LFOSynthFine
 oscTriangle   Oscillator    OSC_TRIANGLE, 0, 0.0, 0
 oscNoise      Oscillator    OSC_NOISE, 0, 0.0, 0

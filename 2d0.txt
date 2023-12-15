@@ -73,6 +73,8 @@ sound:
     yup, the unison kinda disappointed, but works.
     the sound effect at the end of the start scene is not the planned one, but is interesting. 
         I'll leave it this way, why not?
+    would've been great to make b's't time 
+    resolve code cannot be generated
 
 
 graphics:

@@ -16,11 +16,13 @@ ends
 ; somewhy (not a word) I have a feeling that 
 ; it will not be so convenient. but who knows.
 Scenes.ArrPacked:
-SG1_SpectatorStart_Packed       PackedScene     <31.92, 0,\
+SG1_SpectatorStart_Packed       PackedScene     <32.0, 0,\
         SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
-        SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqCount>
+        SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqsCount>
 ; SG1_ChoiceFirst_Packed          PackedScene     ?
-; SG1_RunnerFirst_Packed          PackedScene     ?
+SG1_RunnerFirst_Packed          PackedScene     <42.666666666, 0,\
+        SG1_RunnerFirst.Msgs, SG1_RunnerFirst.MsgsCount,\
+        SG1_RunnerFirst.Seqs, SG1_RunnerFirst.SeqsCount>
 
 ; SG2_SpectatorMoveCamera_Packed  PackedScene     ?
 ; SG2_ChoiceSecond_Packed         PackedScene     ?
@@ -39,7 +41,7 @@ Scenes.ArrPackedCount = ($-Scenes.ArrPacked)/sizeof.PackedScene
 Scenes.ArrMain:
 SG1_SpectatorStart_Scene        Scene           ?, ?, ?
 ; SG1_ChoiceFirst_Scene           Scene           ?, ?, ?
-; SG1_RunnerFirst_Scene           Scene           ?, ?, ?
+SG1_RunnerFirst_Scene           Scene           ?, ?, ?
 
 ; SG2_SpectatorMoveCamera_Scene   Scene           ?, ?, ?
 ; SG2_ChoiceSecond_Scene          Scene           ?, ?, ?

@@ -33,7 +33,6 @@
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_STRUCTS\CAMERA_structs.inc'
         include 'D_STRUCTS\THREADS_structs.inc'
-        include 'D_STRUCTS\SCENE_structs.inc'
 
 
         include 'D_resources\D_objects\Cube.inc'
@@ -58,6 +57,7 @@
         include 'D_resources\D_scenes\SG4_CH_FINAL.inc'
         include 'D_resources\D_scenes\SG4_SP_FINAL.inc'
 
+        include 'D_STRUCTS\SCENE_structs.inc'
 ; CONST
 true            =       1
 false           =       0
