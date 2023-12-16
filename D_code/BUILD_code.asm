@@ -455,3 +455,89 @@ proc Build.GenerateTown uses esi edi,\
         ret
 endp
 
+
+proc    Build.GenerateLayout uses edi,\
+        lengthOfUnit, unitsRoadLength
+
+        locals
+                currTransform           Transform 
+                startOffsetX            dd              ?       
+                lengthBetweenCrosses    dd              ?      
+        endl 
+
+; initializing transform matrix
+        lea     edi, [currTransform]
+        xor     eax, eax
+        mov     ecx, sizeof.Transform/4
+        rep     stosd
+
+; setting the scale values      
+        fld     [lengthOfUnit]          ; u 
+        fst     [currTransform + Transform.scale + Vector3.x]
+        fst     [currTransform + Transform.scale + Vector3.y]
+        fst     [currTransform + Transform.scale + Vector3.z]
+
+; calculating the starting offsets
+        ; fld     [lengthOfUnit]          ; u
+        mov     eax, 2.0
+        push    eax     ; 2.0
+        fmul    dword[esp]              ; 2*u
+        fadd    [unitsRoadLength]       ; 2*u + n
+        fst     [lengthBetweenCrosses]
+
+        mov     eax, LAYOUT_CROSSROADSWIDTH     
+        push    eax     ; LOCrW
+        fimul   dword[esp]              ; LOCrW * (2*u + n)
+        fsub    [unitsRoadLength]       ; LOCrW * (2*u + n) - n
+        pop     eax     ; LOCrW
+        fdiv    dword[esp]              ; (LOCrW * (2*u + n) - n) / 2
+        fsub    [lengthOfUnit]          ; (LOCrW * (2*u + n) - n) / 2 - u       ; to get cross position
+        pop     eax     ; 2.0
+        fstp    [startOffsetX]
+
+
+
+
+; acquiring pointer to the array of crossroads
+        invoke  HeapAlloc, [hHeap], 8, sizeof.Model*LAYOUT_CROSSROADSWIDTH*LAYOUT_CROSSROADSHEIGHT
+        mov     edi, eax 
+        mov     [crossroadArray], eax 
+
+        mov     ecx, LAYOUT_CROSSROADSHEIGHT
+.looperHeight:
+        push    ecx
+
+; each height at the start must place the X back to the starting point
+        fld     [startOffsetX]
+        fstp    [currTransform + Transform.position + Vector3.x]
+
+        mov     ecx, LAYOUT_CROSSROADSWIDTH
+.looperWidth:
+        push    ecx 
+
+
+        stdcall Build.ModelByTemplate, edi, templatePackedCross, [textureCrossroadID]
+        lea     eax, [edi + Model.positionData]
+        lea     edx, [currTransform]
+        stdcall Memory.memcpy, eax, edx, sizeof.Transform
+
+; each width at the end must sub the current transform X with a delta value for width
+        fld     [currTransform + Transform.position + Vector3.x]
+        fsub    [lengthBetweenCrosses]
+        fstp    [currTransform + Transform.position + Vector3.x]
+
+        pop     ecx 
+        add     edi, sizeof.Model 
+        loop    .looperWidth
+
+
+; each height at the end must add Z with delta value for height
+        fld     [lengthBetweenCrosses]
+        fadd    [currTransform + Transform.position + Vector3.z]
+        fstp    [currTransform + Transform.position + Vector3.z]
+
+        pop     ecx 
+        loop    .looperHeight
+
+        ret 
+endp

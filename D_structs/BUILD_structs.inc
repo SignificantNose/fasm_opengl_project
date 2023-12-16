@@ -11,3 +11,6 @@ struct Town
        townPos          Vector3 
        townRot          Vector3 
 ends
+
+LAYOUT_CROSSROADSWIDTH      =      5
+LAYOUT_CROSSROADSHEIGHT     =      3

@@ -1,5 +1,7 @@
 templatePackedCross         PackedVerticesMesh      planeVertices, planeIndices, crossTexCoords, PLANE_TRIANGLES_COUNT
 
+crossroadArray              dd            ?
+
 Crossroad13   Model         <0,0,0,0,0,0>,\
                             <\
                                    <0.0, 0.0, 0.0>,\
