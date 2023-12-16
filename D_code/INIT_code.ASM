@@ -72,7 +72,7 @@ proc Init uses esi edi
      push       eax 
 
      ; stdcall    Build.GenerateTowerModel, towerModel
-     stdcall    Build.GenerateTowerModel, towerIndicatorCenter
+     ; stdcall    Build.GenerateTowerModel, towerIndicatorCenter
      stdcall    Build.ModelByTemplate, Crossroad13, templatePackedCross, [textureCrossroadID]
      stdcall    Build.ModelByTemplate, Crossroad23, templatePackedCross, [textureCrossroadID]
      stdcall    Build.ModelByTemplate, Crossroad33, templatePackedCross, [textureCrossroadID]  
@@ -84,7 +84,7 @@ proc Init uses esi edi
 
 
      ; width is in direction of x
-     stdcall    Build.GenerateTown, 3, 10, 4.0, townMain
+     ; stdcall    Build.GenerateTown, 3, 10, 4.0, townMain
 
      ; stdcall    Build.GenerateTown, 3, 3, 1.0, town11
      ; stdcall    Build.GenerateTown, 3, 3, 1.0, town12

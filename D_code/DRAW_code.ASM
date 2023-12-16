@@ -153,9 +153,9 @@ proc Draw uses edi
      ; invoke     glClear, GL_DEPTH_BUFFER_BIT
      ; stdcall    Draw.ModelDraw, road24, true
 
-     stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
+     ; stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
 
-     stdcall    Draw.TownDraw, townMain
+     ; stdcall    Draw.TownDraw, townMain
 
      ; stdcall    Draw.TownDraw, town11
      ; stdcall    Draw.TownDraw, town12

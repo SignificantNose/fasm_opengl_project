@@ -6,10 +6,10 @@ planeVertices:
         GLfloat         1.0, 0.0, 1.0
         GLfloat         1.0, 0.0, -1.0
 planeTexCoords:
-        GLfloat         0.0, 60.0
+        GLfloat         0.0, 1000.0
         GLfloat         0.0, 0.0
-        GLfloat         60.0, 0.0
-        GLfloat         60.0, 60.0
+        GLfloat         1000.0, 0.0
+        GLfloat         1000.0, 1000.0
 
 roadTexCoords:
         GLfloat         0.0, 12.0
@@ -33,5 +33,5 @@ planeModel              Model   <0,0,0,0,0,0>,\
                         <\
                                <0.0, 0.0, 0.0>,\
                                <0.0, 0.0, 0.0>,\
-                               <60.0, 60.0, 60.0>\
+                               <1000.0, 1000.0, 1000.0>\
                         >
