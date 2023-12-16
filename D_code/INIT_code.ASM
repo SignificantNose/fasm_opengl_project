@@ -73,25 +73,15 @@ proc Init uses esi edi
 
      ; stdcall    Build.GenerateTowerModel, towerModel
      stdcall    Build.GenerateTowerModel, towerIndicatorCenter
-     stdcall    Build.GenerateCrossroad, Crossroad13
-     stdcall    Build.GenerateCrossroad, Crossroad23
-     stdcall    Build.GenerateCrossroad, Crossroad33   
+     stdcall    Build.ModelByTemplate, Crossroad13, templatePackedCross, [textureCrossroadID]
+     stdcall    Build.ModelByTemplate, Crossroad23, templatePackedCross, [textureCrossroadID]
+     stdcall    Build.ModelByTemplate, Crossroad33, templatePackedCross, [textureCrossroadID]  
 
-     stdcall    Mesh.PackedMesh2Mesh, testPackedPlane, testPlane, true
-     lea        eax, [planeModel+Model.meshData]
-     stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureGroundID]
+     stdcall    Build.ModelByTemplate, planeModel, templatePackedPlane, [textureGroundID]
 
-     stdcall    Build.GenerateRoadModel, roadV13
-     stdcall    Build.GenerateRoadModel, roadV23
-     ; stdcall    Build.GenerateRoadModel, road11
-     ; stdcall    Build.GenerateRoadModel, road12
-     ; stdcall    Build.GenerateRoadModel, road13
-     ; stdcall    Build.GenerateRoadModel, road14
+     stdcall    Build.ModelByTemplate, roadV13, templatePackedRoad, [textureRoadID]
+     stdcall    Build.ModelByTemplate, roadV23, templatePackedRoad, [textureRoadID]
 
-     ; stdcall    Build.GenerateRoadModel, road21
-     ; stdcall    Build.GenerateRoadModel, road22
-     ; stdcall    Build.GenerateRoadModel, road23
-     ; stdcall    Build.GenerateRoadModel, road24
 
      ; width is in direction of x
      stdcall    Build.GenerateTown, 3, 10, 4.0, townMain

@@ -6,32 +6,24 @@ aThousand dw    1000
 anEleven  dw    11
 anEighty  dw    80
 
-; routine for generating a Model struct of a crossroad 
-; that is ready to use (meaning, can be passed onto the
-; Draw.ModelDraw routine and be processed). the struct 
-; is stored at pRoadModel
-proc    Build.GenerateCrossroad,\
-        pCrossModel
 
-        stdcall    Mesh.PackedMesh2Mesh, testPackedCross, testPlane, true
-        mov        eax, [pCrossModel] 
-        lea        eax, [eax+Model.meshData]
-        stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureCrossroadID]
+; routine for generating a Model struct from a template
+; defined by pTemplatePackedMesh and the ID of a texture.
+; Model struct is stored at pDestModel and is ready to use
+; (meaning, can be passed onto the Draw.ModelDraw routine 
+; and be processed)
+proc    Build.ModelByTemplate uses edi,\
+        pDestModel, pTemplatePackedMesh, textureID
 
-        ret 
-endp
+        locals
+                bufferMesh      Mesh   
+        endl 
 
-; routine for generating a Model struct of a road 
-; fragment that is ready to use (meaning, can be 
-; passed onto the Draw.ModelDraw routine and be 
-; processed). the struct is stored at pRoadModel
-proc    Build.GenerateRoadModel,\
-        pRoadModel
-
-        stdcall    Mesh.PackedMesh2Mesh, testPackedRoad, testPlane, true
-        mov        eax, [pRoadModel] 
-        lea        eax, [eax+Model.meshData]
-        stdcall    Mesh.Mesh2ShaderMesh, testPlane, eax, [textureRoadID]
+        lea     edi, [bufferMesh]
+        stdcall Mesh.PackedMesh2Mesh, [pTemplatePackedMesh], edi, true 
+        mov     eax, [pDestModel]
+        lea     eax, [eax + Model.meshData]
+        stdcall Mesh.Mesh2ShaderMesh, edi, eax, [textureID]
 
         ret 
 endp

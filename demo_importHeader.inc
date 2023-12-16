@@ -8,11 +8,6 @@
         include '..\INCLUDE\api\gdi32.inc'
         include '..\INCLUDE\api\opengl.inc'
 
-; graphic primitives
-        include 'D_resources\D_objects\Cube.inc'
-        include 'D_resources\D_objects\Plane.inc'
-        include 'D_resources\D_objects\myPrimitive.inc'
-
 ; sound structs
         include 'D_STRUCTS\SOUND_structs\TRACK_structs.inc'
         include 'D_structs\SOUND_structs\SOUNDFX_structs.inc'
@@ -54,6 +49,12 @@
         include 'D_STRUCTS\RUNNER_structs.inc'
         include 'D_STRUCTS\CHOICE_structs.inc'
 
+; graphic primitives
+        include 'D_resources\D_objects\PLANE.inc'
+        include 'D_resources\D_objects\ROADS.inc'
+        include 'D_resources\D_objects\TOWNS.inc'
+        include 'D_resources\D_objects\TOWERS.inc'
+        include 'D_resources\D_objects\CROSSROADS.inc'
 
 
 ; CONST

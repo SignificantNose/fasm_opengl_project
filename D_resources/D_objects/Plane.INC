@@ -26,3 +26,12 @@ crossTexCoords:
 planeIndices:
         db          0, 1, 2,\
                     2, 3, 0
+
+
+templatePackedPlane     PackedVerticesMesh      planeVertices, planeIndices, planeTexCoords,  PLANE_TRIANGLES_COUNT
+planeModel              Model   <0,0,0,0,0,0>,\
+                        <\
+                               <0.0, 0.0, 0.0>,\
+                               <0.0, 0.0, 0.0>,\
+                               <60.0, 60.0, 60.0>\
+                        >
