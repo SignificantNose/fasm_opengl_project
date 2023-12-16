@@ -33,29 +33,29 @@ Scenes.PackedTracks:
                 0, 0,\
                 0, 0
 
-        ScenePackedTrack.Start          PackedTrack     32.0, 0,\
-                ST_Start.Msgs, ST_Start.MsgsCount,\
-                ST_Start.Seqs, ST_Start.SeqsCount
-        ; ScenePackedTrack.Start          PackedTrack     1.0, 0,\
-        ;         0, 0,\
-        ;         0, 0
+        ; ScenePackedTrack.Start          PackedTrack     32.0, 0,\
+        ;         ST_Start.Msgs, ST_Start.MsgsCount,\
+        ;         ST_Start.Seqs, ST_Start.SeqsCount
+        ScenePackedTrack.Start          PackedTrack     1.0, 0,\
+                0, 0,\
+                0, 0
 
 
 
-        ScenePackedTrack.Choice         PackedTrack     1.33333333, 0,\
-                ST_Choice.Msgs, ST_Choice.MsgsCount,\
-                ST_Choice.Seqs, ST_Choice.SeqsCount
-        ; ScenePackedTrack.Choice         PackedTrack     1.0, 0,\
-        ;         0, 0,\
-        ;         0, 0
+        ; ScenePackedTrack.Choice         PackedTrack     1.33333333, 0,\
+        ;         ST_Choice.Msgs, ST_Choice.MsgsCount,\
+        ;         ST_Choice.Seqs, ST_Choice.SeqsCount
+        ScenePackedTrack.Choice         PackedTrack     1.0, 0,\
+                0, 0,\
+                0, 0
 
 
-        ScenePackedTrack.RunnerFirst    PackedTrack     42.6666666, 0,\
-                ST_RunnerFirst.Msgs, ST_RunnerFirst.MsgsCount,\
-                ST_RunnerFirst.Seqs, ST_RunnerFirst.SeqsCount
-        ; ScenePackedTrack.RunnerFirst    PackedTrack     1.0, 0,\
-        ;         0, 0,\
-        ;         0, 0
+        ; ScenePackedTrack.RunnerFirst    PackedTrack     42.6666666, 0,\
+        ;         ST_RunnerFirst.Msgs, ST_RunnerFirst.MsgsCount,\
+        ;         ST_RunnerFirst.Seqs, ST_RunnerFirst.SeqsCount
+        ScenePackedTrack.RunnerFirst    PackedTrack     1.0, 0,\
+                0, 0,\
+                0, 0
 
         ScenePackedTrack.RunnerSecond   PackedTrack     1.0, 0,\
                 0, 0,\

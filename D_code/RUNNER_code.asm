@@ -21,8 +21,8 @@ proc Runner.InitializeRunner uses esi edi,\
     pop     eax         ; pDirVector
     stdcall Vector3.Sub, eax, [pStartPoint]
     pop     eax         ; pDirVector
-    fld1                                                    ; 1
-    fdiv    [edi + Scene.soundtrack + Track.trackDuration]       ; 1/dur
+    fld1                                    ; 1
+    fdiv    [edi + Scene.sceneDuration]     ; 1/dur
     push    edx         ; 
     fstp    dword[esp]
     pop     edx         ; multiplier
