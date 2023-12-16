@@ -2,6 +2,7 @@ proc Draw uses edi
      locals
         deltaTime       dd      ?
         playCursor      dd      ?
+        status          dd      ?
      endl
 
      ; invoke     GetTickCount
@@ -30,6 +31,54 @@ proc Draw uses edi
      ; mov        eax, [currentTime]
      ; mov        [lastTime], eax
 
+
+     mov       edi, [currentScene]
+     fld       [currentTime]                      ; t
+     fld       dword[edi + Scene.sceneDuration]   ; sceneDur, t
+     FPU_CMP 
+     ja        .checkBufferEnd
+     add       edi, sizeof.Scene
+     cmp       edi, Scenes.ArrMainEnd
+     je        .terminate 
+
+     ; play the new buffer
+     cominvk   PlayBuffer, Stop
+     mov       eax, [edi + Scene.soundtrack + Track.buffer]
+     mov       [PlayBuffer], eax 
+     cominvk   PlayBuffer, Play, 0, 0, 0
+     mov       [currentScene], edi
+
+     ; restore the time intervals
+     ; xor       eax, eax 
+     ; mov       [currentTime], eax
+     ; mov       [lastBufferTime], eax 
+     mov       [currentTime], 0
+     mov       [lastBufferTime], 0
+
+.checkBufferEnd:
+; ooofffff
+     lea       eax, [status]
+     cominvk   PlayBuffer, GetStatus, eax
+     mov       eax, [status]
+     cmp       eax, DSBSTATUS_PLAYING 
+     je        .continueDraw 
+     cmp       eax, DSBSTATUS_BUFFERLOST 
+     je        .continueDraw 
+     cmp       eax, DSBSTATUS_LOOPING 
+     je        .continueDraw 
+     cmp       eax, DSBSTATUS_LOCHARDWARE 
+     je        .continueDraw 
+     cmp       eax, DSBSTATUS_TERMINATED 
+     je        .continueDraw 
+
+     cominvk   PlayBuffer, Play, 0, 0, 0
+     fld       [lastBufferTime]                                       
+     fsub      dword[edi + Scene.soundtrack + Track.trackDuration]   
+     fstp      [lastBufferTime]
+     jmp       .continueDraw 
+.terminate:
+     invoke    ExitProcess, 0
+.continueDraw:
      lea       eax, [playCursor]
      cominvk   PlayBuffer, GetCurrentPosition, eax, ebx
      mov       eax, [playCursor]        ; in bytes
@@ -40,11 +89,15 @@ proc Draw uses edi
 
      mov       eax, BYTES_PER_SECOND
      push      eax 
-     fidiv     dword[esp]     ; currSeconds
-     fld       st0            ; currSeconds, currSeconds
-     fsub      [currentTime]  ; deltaTime, currSeconds
-     fstp      [deltaTime]    ; currSeconds
-     fstp      [currentTime]
+     fidiv     dword[esp]          ; currSeconds
+     fsub      [lastBufferTime]    ; deltaTime
+     fst       [deltaTime]
+     fld       st0                 ; dt, dt
+     fadd      [lastBufferTime]    ; lastBuf + dt, dt
+     fstp      [lastBufferTime]    ; dt
+     fadd      [currentTime]       ; currTime + dt
+     fstp      [currentTime]       ; 
+     
      pop       eax 
 
      ; some procedure for changing the camera position based on the current time moment and the 

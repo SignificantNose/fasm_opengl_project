@@ -5,9 +5,10 @@ SCENEMODE_INDEPENDENT   =       10000000b
 
 struct Scene
 
-    mode        db      ?
-    movement    dd      ? 
-    soundtrack  Track   
+    mode                db      ?
+    sceneDuration       dd      ?
+    movement            dd      ? 
+    soundtrack          Track   
 
 ends
 
@@ -20,7 +21,8 @@ ends
 
 testStartingPoint   Vector3     0.0, 1.0, -4.0
 testEndingPoint     Vector3     0.0, 1.0, 4.0
-currentScene        dd      independentSpectator
+currentScene        dd      Scenes.ArrMain
+currentSceneIndex   dd      0
 
 
 
@@ -28,14 +30,14 @@ currentScene        dd      independentSpectator
 ; somewhy (not a word) I have a feeling that 
 ; it will not be so convenient. but who knows.
 Scenes.ArrPacked:
-independentSpectatorPacked      PackedScene     <100.0, 0,\
+independentSpectatorPacked      PackedScene     <1.0, 0,\
         0, 0,\
         0, 0>
-; SG1_SpectatorStart_Packed       PackedScene     <32.0, 0,\
-;         SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
-;         SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqsCount>
+SG1_SpectatorStart_Packed       PackedScene     <32.0, 0,\
+        SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
+        SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqsCount>
 ; SG1_ChoiceFirst_Packed          PackedScene     ?
-SG1_RunnerFirst_Packed          PackedScene     <42.666666666, 0,\
+SG1_RunnerFirst_Packed          PackedScene     <1.0, 0,\
         SG1_RunnerFirst.Msgs, SG1_RunnerFirst.MsgsCount,\
         SG1_RunnerFirst.Seqs, SG1_RunnerFirst.SeqsCount>
 
@@ -54,10 +56,10 @@ Scenes.ArrPackedCount = ($-Scenes.ArrPacked)/sizeof.PackedScene
 
 
 Scenes.ArrMain:
-independentSpectator            Scene           SCENEMODE_INDEPENDENT, ?, ?
-; SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, ?, ?
+independentSpectator            Scene           SCENEMODE_INDEPENDENT, 100.0, ?, ?
+SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, 3.0, ?, ?
 ; SG1_ChoiceFirst_Scene           Scene           ?, ?, ?
-SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, ?, ?
+SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, ?
 
 ; SG2_SpectatorMoveCamera_Scene   Scene           ?, ?, ?
 ; SG2_ChoiceSecond_Scene          Scene           ?, ?, ?
@@ -71,6 +73,6 @@ SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, ?, ?
 ; SG4_ChoiceFinal_Scene           Scene           ?, ?, ?
 ; SG4_SpectatorFinal_Scene        Scene           ?, ?, ?
 
-
-Scenes.ArrMainCount = ($ - Scenes.ArrMain)/sizeof.Scene     
+Scenes.ArrMainEnd:
+Scenes.ArrMainCount = (Scenes.ArrMainEnd - Scenes.ArrMain)/sizeof.Scene     
 ; must be the same as Scenes.ArrPackedCount

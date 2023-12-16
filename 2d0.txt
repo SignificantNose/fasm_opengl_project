@@ -110,6 +110,10 @@ graphics:
     when a scene is switched, clear the variables that can be left off of the previous scene:
         for example, movement to the left 
     the clean will be completed once all the necessary variables will be initialized
+    current task:
+        make switching between scenes based on their time, not buffer time
+        add another event for the thread?
+        or maybe use 0 value?
     
 
 general:

@@ -31,6 +31,7 @@ PlaneDiffuse    ColorRGBA       0.0, 0.0, 0.0, 1.0
 PlaneAmbient    ColorRGBA       0.0, 0.3, 0.0, 1.0
 
 
+lastBufferTime  dd              0.0
 currentTime     dd              0.0
 ; programTime     dd              0.0
 angle           GLfloat      0.0
@@ -214,10 +215,11 @@ proc WindowProc uses ebx,\
 ; to be removed
 ; #############
 .DebugSwitchScene:
-     invoke     SetEvent, [hEventNotify]
+     ; invoke     SetEvent, [hEventNotify]
+     mov        [currentTime], 999999.0
      jmp        .ReturnZero
 .Destroy:
-     invoke     SetEvent, [hEventTerminate]
+     ; invoke     SetEvent, [hEventTerminate]
      invoke     ExitProcess, ebx
 .ReturnZero:
      xor    eax, eax

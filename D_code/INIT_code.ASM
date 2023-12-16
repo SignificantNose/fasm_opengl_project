@@ -148,7 +148,7 @@ proc Init uses esi edi
      ; stdcall Debug.OutputValueHex, 160
      ; stdcall Debug.OutputValueFloat, 160.0
 
-     stdcall   Threads.InitEventsAndThreads
+     ; stdcall   Threads.InitEventsAndThreads
 
      invoke    GetTickCount
      push      eax 
@@ -159,17 +159,16 @@ proc Init uses esi edi
      sub       eax, edx  
      stdcall   Debug.OutputTickCount, eax
 
-; it's just some buffer. can be any buffer, because
-; it's only used to calculate the current time in the buffer
-     mov       eax, [independentSpectator + Scene.soundtrack + Track.buffer]
-     mov       [PlayBuffer], eax  
 
      stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
-     invoke    SetEvent, [hEventNotify]
+     ; invoke    SetEvent, [hEventNotify]
 
-     ; mov       eax, [SG1_SpectatorStart_Scene.soundtrack + Track.buffer]
-     ; mov       [track1Buffer], eax 
-     ; cominvk   track1Buffer, Play, 0, 0, 0
+
+; it's just some buffer. can be any buffer, because
+; it's only used to calculate the current time in the buffer
+     mov       eax, [Scenes.ArrMain + Scene.soundtrack + Track.buffer]
+     mov       [PlayBuffer], eax  
+     cominvk   PlayBuffer, Play, 0, 0, 0
      
      ret
 endp
