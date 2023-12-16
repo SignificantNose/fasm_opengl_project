@@ -26,23 +26,12 @@
 ; notes
         include 'D_resources\NOTES.inc'
 
-; scenes data
-        include 'D_resources\D_scenes\SG1_SP_START.inc'
-        include 'D_resources\D_scenes\SG1_CH_FIRST.inc'
-        include 'D_resources\D_scenes\SG1_RN_FIRST.inc'
-
-        include 'D_resources\D_scenes\SG2_SP_MVCAM.inc'
-        include 'D_resources\D_scenes\SG2_CH_SECOND.inc'
-        include 'D_resources\D_scenes\SG2_RN_SECOND.inc'
-
-        include 'D_resources\D_scenes\SG3_SP_MVCAM.inc'
-        include 'D_resources\D_scenes\SG3_CH_THIRD.inc'
-        include 'D_resources\D_scenes\SG3_RN_THIRD.inc'
-
-        include 'D_resources\D_scenes\SG4_SP_MVCAM.inc'
-        include 'D_resources\D_scenes\SG4_CH_FINAL.inc'
-        include 'D_resources\D_scenes\SG4_SP_FINAL.inc'
-        
+; scene tracks data
+        include 'D_resources\D_scenetracks\ST_START.inc'
+        include 'D_resources\D_scenetracks\ST_CHOICE.inc'        
+        include 'D_resources\D_scenetracks\ST_RUNNERFIRST.inc'
+        include 'D_resources\D_scenetracks\ST_RUNNERSECOND.inc'
+        include 'D_resources\D_scenetracks\ST_RUNNERTHIRD.inc'
 
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_structs\VECTOR_structs.inc'

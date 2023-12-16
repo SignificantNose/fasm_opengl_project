@@ -1,4 +1,4 @@
-SG1_SpectatorStart.Msgs:
+ST_Start.Msgs:
 
        ; UnprocessedMessage        <G1, KICK_TIME, 0.0>, INSTR_KICK
        ; UnprocessedMessage        <A4, 1.0, 0.0>, INSTR_SNARETAIL
@@ -138,18 +138,18 @@ SG1_SpectatorStart.Msgs:
        UnprocessedMessage        <FSh1, 0.16625, 31.83333333>, INSTR_SNAREBODY
        UnprocessedMessage        <A1, 0.16625, 31.83333333>, INSTR_SNARETAIL
 
-SG1_SpectatorStart.MsgsCount = ($-SG1_SpectatorStart.Msgs)/sizeof.UnprocessedMessage
+ST_Start.MsgsCount = ($-ST_Start.Msgs)/sizeof.UnprocessedMessage
 
 
 ; array of sequencers
-SG1_SpectatorStart.Seqs:
+ST_Start.Seqs:
        ; Sequencer            SG1_SpectatorStart.SeqMsgs, SG1_SpectatorStart.SeqMsgsCount, 90.0, 0.0, 4, 4
-SG1_SpectatorStart.SeqsCount = ($-SG1_SpectatorStart.Seqs)/sizeof.Sequencer
+ST_Start.SeqsCount = ($-ST_Start.Seqs)/sizeof.Sequencer
 
 
 ; sequencer messages
-SG1_SpectatorStart.SeqMsgs:
+ST_Start.SeqMsgs:
        ; SeqMessage           mytestmessage, 0111111111111111b
-SG1_SpectatorStart.SeqMsgsCount = ($-SG1_SpectatorStart.SeqMsgs)/sizeof.SeqMessage
+ST_Start.SeqMsgsCount = ($-ST_Start.SeqMsgs)/sizeof.SeqMessage
 
 ; mytestmessage        UnprocessedMessage <A1, 0.131614, ?>, INSTR_HIHAT

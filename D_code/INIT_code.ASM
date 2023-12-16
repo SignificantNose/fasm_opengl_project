@@ -93,7 +93,8 @@ proc Init uses esi edi
      ; stdcall    Build.GenerateRoadModel, road23
      ; stdcall    Build.GenerateRoadModel, road24
 
-     stdcall    Build.GenerateTown, 3, 3, 4.0, townMain
+     ; width is in direction of x
+     stdcall    Build.GenerateTown, 3, 10, 4.0, townMain
 
      ; stdcall    Build.GenerateTown, 3, 3, 1.0, town11
      ; stdcall    Build.GenerateTown, 3, 3, 1.0, town12
@@ -153,20 +154,21 @@ proc Init uses esi edi
      invoke    GetTickCount
      push      eax 
      stdcall   Sound.Init  
-     stdcall   Scene.InitScenes
+     stdcall   Scene.UnpackSceneTracks
+     stdcall   Scene.UnpackScenes
      invoke    GetTickCount
      pop       edx
      sub       eax, edx  
      stdcall   Debug.OutputTickCount, eax
 
 
-     stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
      ; invoke    SetEvent, [hEventNotify]
+     stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
      stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
 
 ; it's just some buffer. can be any buffer, because
 ; it's only used to calculate the current time in the buffer
-     mov       eax, [Scenes.ArrMain + Scene.soundtrack + Track.buffer]
+     mov       eax, [Scenes.SceneList + Scene.soundtrack + Track.buffer]
      mov       [PlayBuffer], eax  
      cominvk   PlayBuffer, Play, 0, 0, 0
      

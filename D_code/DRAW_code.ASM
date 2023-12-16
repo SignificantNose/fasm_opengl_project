@@ -23,7 +23,7 @@ proc Draw uses edi
 @@:
 
      add       edi, sizeof.Scene
-     cmp       edi, Scenes.ArrMainEnd
+     cmp       edi, Scenes.SceneListEnd
      je        .terminate 
 
      ; play the new buffer
