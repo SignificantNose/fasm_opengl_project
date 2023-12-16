@@ -36,7 +36,9 @@ independentSpectatorPacked      PackedScene     <1.0, 0,\
 SG1_SpectatorStart_Packed       PackedScene     <32.0, 0,\
         SG1_SpectatorStart.Msgs, SG1_SpectatorStart.MsgsCount,\
         SG1_SpectatorStart.Seqs, SG1_SpectatorStart.SeqsCount>
-; SG1_ChoiceFirst_Packed          PackedScene     ?
+SG1_ChoiceFirst_Packed          PackedScene     <1.33333333, 0,\
+        SG1_ChoiceFirst.Msgs, SG1_ChoiceFirst.MsgsCount,\
+        SG1_ChoiceFirst.Seqs, SG1_ChoiceFirst.SeqsCount>
 SG1_RunnerFirst_Packed          PackedScene     <1.0, 0,\
         SG1_RunnerFirst.Msgs, SG1_RunnerFirst.MsgsCount,\
         SG1_RunnerFirst.Seqs, SG1_RunnerFirst.SeqsCount>
@@ -58,7 +60,7 @@ Scenes.ArrPackedCount = ($-Scenes.ArrPacked)/sizeof.PackedScene
 Scenes.ArrMain:
 independentSpectator            Scene           SCENEMODE_INDEPENDENT, 100.0, ?, ?
 SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, 3.0, ?, ?
-; SG1_ChoiceFirst_Scene           Scene           ?, ?, ?
+SG1_ChoiceFirst_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, ?
 SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, ?
 
 ; SG2_SpectatorMoveCamera_Scene   Scene           ?, ?, ?

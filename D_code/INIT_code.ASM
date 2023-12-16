@@ -162,7 +162,7 @@ proc Init uses esi edi
 
      stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
      ; invoke    SetEvent, [hEventNotify]
-
+     stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
 
 ; it's just some buffer. can be any buffer, because
 ; it's only used to calculate the current time in the buffer

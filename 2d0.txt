@@ -114,6 +114,12 @@ graphics:
         make switching between scenes based on their time, not buffer time
         add another event for the thread?
         or maybe use 0 value?
+    ; the problem with threads is that I would've had to use synchronization tools like
+        mutexes to null the current time values, as it would've been possible that it 
+        would've taken an old value to calculate the current time value, which would've
+        been catastrophic. and I do not have enought time to test how many framws will I 
+        lose with mutexes
+    make choice logic for the next scene
     
 
 general:

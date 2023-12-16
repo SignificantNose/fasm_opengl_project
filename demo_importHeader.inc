@@ -63,6 +63,7 @@
         include 'D_structs\INIT_structs.inc'
         include 'D_STRUCTS\SCENE_structs.inc'
         include 'D_STRUCTS\RUNNER_structs.inc'
+        include 'D_STRUCTS\CHOICE_structs.inc'
 
 
 

@@ -5,38 +5,23 @@ proc Draw uses edi
         status          dd      ?
      endl
 
-     ; invoke     GetTickCount
-     ; mov        [currentTime], eax
-     ; sub        eax, [startTime]
-     ; mov        [programTime], eax
-
-     ; fild    [programTime]
-     ; fdiv    [oneSecond]
-     ; fstp    [programTime]
-
-
-     ; fldz 
-     ; fstp    [deltaTime]
-
-     ; mov     eax, [currentTime]
-     ; sub     eax, [lastTime]
-     ; cmp     eax, 10
-     ; jle     .Skip
-
-     ; fild       [currentTime]
-     ; fisub      [lastTime]
-     ; fdiv       [oneSecond]
-     ; fstp       [deltaTime]
-
-     ; mov        eax, [currentTime]
-     ; mov        [lastTime], eax
-
-
      mov       edi, [currentScene]
      fld       [currentTime]                      ; t
      fld       dword[edi + Scene.sceneDuration]   ; sceneDur, t
      FPU_CMP 
      ja        .checkBufferEnd
+; :(
+     ; jmp       .switchScene
+.switchScene:
+     movzx     edx, byte[edi + Scene.mode]
+     cmp       edx, SCENEMODE_CHOICE
+     jne       @F
+     nop
+     mov       eax, [edi + Scene.movement]
+.switchChoiceScene:
+     stdcall   Choice.ApplyChoice, eax 
+@@:
+
      add       edi, sizeof.Scene
      cmp       edi, Scenes.ArrMainEnd
      je        .terminate 
@@ -75,7 +60,14 @@ proc Draw uses edi
      fld       [lastBufferTime]                                       
      fsub      dword[edi + Scene.soundtrack + Track.trackDuration]   
      fstp      [lastBufferTime]
-     jmp       .continueDraw 
+     movzx     eax, byte[edi + Scene.mode]
+     cmp       eax, SCENEMODE_CHOICE
+     jne       .continueDraw 
+     mov       eax, [edi + Scene.movement]
+     test      byte[eax + ChoiceData.choiceHasBeenMade], 1
+     jz        .continueDraw 
+     jmp       .switchChoiceScene
+     
 .terminate:
      invoke    ExitProcess, 0
 .continueDraw:

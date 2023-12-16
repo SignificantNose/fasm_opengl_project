@@ -16,7 +16,6 @@ proc Keyboard.KeyDown,\
         jmp     .return 
 
 .runner:
-        nop
 
         mov     ecx, [ecx + Scene.movement]
         JumpIf  VKRUN_UP, .up
@@ -58,6 +57,18 @@ proc Keyboard.KeyDown,\
 
 .choice:
 
+        mov     ecx, [ecx + Scene.movement]
+        JumpIf  VKCH_OPTION1, .option1 
+        JumpIf  VKCH_OPTION2, .option2
+        jmp     .return 
+.option1:
+        mov     al, 00000011b
+        jmp     .choiceStore
+
+.option2:
+        mov     al, 00000101b
+.choiceStore:
+        mov     [ecx + ChoiceData.choiceHasBeenMade], al 
         jmp     .return 
 
 .independent:
