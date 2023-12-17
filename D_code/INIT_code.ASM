@@ -83,15 +83,15 @@ proc Init uses esi edi
 
      ; width is in direction of x
      ; stdcall    Build.GenerateTown, 13, 13, 6.92, townMain
-     stdcall    Build.GenerateTown, 5, 5, 6.92, townM11, 6, 11
-     stdcall    Build.GenerateTown, 5, 5, 6.92, townM12, 6, 11
-     stdcall    Build.GenerateTown, 5, 5, 6.92, townM21, 6, 11
-     stdcall    Build.GenerateTown, 5, 5, 6.92, townM22, 6, 11
-     stdcall    Build.GenerateTown, 3, 4, 6.92, townS1, 2, 6
-     stdcall    Build.GenerateTown, 3, 4, 6.92, townS2, 2, 6
-     stdcall    Build.GenerateTown, 3, 4, 6.92, townS3, 2, 6
-     stdcall    Build.GenerateTown, 3, 4, 6.92, townS4, 2, 6
-     stdcall    Build.GenerateTown, 3, 3, 6.92, townL, 12, 19
+     ; stdcall    Build.GenerateTown, 5, 5, 6.92, townM11, 6, 11
+     ; stdcall    Build.GenerateTown, 5, 5, 6.92, townM12, 6, 11
+     ; stdcall    Build.GenerateTown, 5, 5, 6.92, townM21, 6, 11
+     ; stdcall    Build.GenerateTown, 5, 5, 6.92, townM22, 6, 11
+     ; stdcall    Build.GenerateTown, 3, 4, 6.92, townS1, 2, 6
+     ; stdcall    Build.GenerateTown, 3, 4, 6.92, townS2, 2, 6
+     ; stdcall    Build.GenerateTown, 3, 4, 6.92, townS3, 2, 6
+     ; stdcall    Build.GenerateTown, 3, 4, 6.92, townS4, 2, 6
+     ; stdcall    Build.GenerateTown, 3, 3, 6.92, townL, 12, 19
 
      ; stdcall    Build.GenerateTown, 3, 3, 1.0, town11
      ; stdcall    Build.GenerateTown, 3, 3, 1.0, town12

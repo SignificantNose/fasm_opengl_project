@@ -122,15 +122,15 @@ proc Draw uses edi
      stdcall    Draw.LayoutDraw
 
      ; stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
-     stdcall    Draw.TownDraw, townM11
-     stdcall    Draw.TownDraw, townM12
-     stdcall    Draw.TownDraw, townM21
-     stdcall    Draw.TownDraw, townM22
-     stdcall    Draw.TownDraw, townS1
-     stdcall    Draw.TownDraw, townS2
-     stdcall    Draw.TownDraw, townS3
-     stdcall    Draw.TownDraw, townS4
-     stdcall    Draw.TownDraw, townL
+     ; stdcall    Draw.TownDraw, townM11
+     ; stdcall    Draw.TownDraw, townM12
+     ; stdcall    Draw.TownDraw, townM21
+     ; stdcall    Draw.TownDraw, townM22
+     ; stdcall    Draw.TownDraw, townS1
+     ; stdcall    Draw.TownDraw, townS2
+     ; stdcall    Draw.TownDraw, townS3
+     ; stdcall    Draw.TownDraw, townS4
+     ; stdcall    Draw.TownDraw, townL
 
      ; invoke     glPolygonMode, GL_FRONT_AND_BACK, GL_LINE
      invoke     glUseProgram, ebx
@@ -282,6 +282,15 @@ proc Draw.LayoutDraw uses esi
      pop       ecx 
      add       esi, sizeof.Model
      loop      .looperRoadHorizontal
+
+     mov       esi, [townArray]
+     mov       ecx, (LAYOUT_CROSSROADSHEIGHT-1)*(LAYOUT_CROSSROADSWIDTH-1)*(TOWN_LCOUNT + TOWN_MCOUNT + TOWN_SCOUNT)
+.looperTown:
+     push      ecx 
+     stdcall   Draw.TownDraw, esi
+     pop       ecx 
+     add       esi, sizeof.Town 
+     loop      .looperTown 
 
      ret 
 endp 

@@ -464,6 +464,10 @@ proc    Build.GenerateLayout uses edi,\
                 currTransform           Transform 
                 startOffsetX            dd              ?       
                 lengthBetweenCrosses    dd              ?      
+
+
+        ; for towns:
+                startOffsetXTowns       dd              ?
         endl 
 
 ; initializing transform matrix
@@ -662,5 +666,148 @@ proc    Build.GenerateLayout uses edi,\
         pop     ecx 
         loop    .looperRoadHorizontalWidth
 
+
+
+
+
+
+
+
+; allocating enough memory for towns 
+        invoke  HeapAlloc, [hHeap], 8, sizeof.Town * (TOWN_LCOUNT + TOWN_MCOUNT + TOWN_SCOUNT)*(LAYOUT_CROSSROADSWIDTH-1)*(LAYOUT_CROSSROADSHEIGHT-1)
+        mov     edi, eax 
+        mov     [townArray], eax 
+
+; it's convenient to have right bottom corner of the space 
+; as a starting point for generating town section
+        fld     [startOffsetX]                  ; startOffsX
+        fsub    [lengthBetweenCrosses]          ; startOffsX - len
+        fld     [lengthOfUnit]                  ; u, startOffsX - len
+        fst     [currTransform + Transform.position + Vector3.z]
+        faddp                                   ; startOffsX - len + u
+        fst     [currTransform + Transform.position + Vector3.x]
+        fstp    [startOffsetXTowns]
+
+        mov     ecx, LAYOUT_CROSSROADSHEIGHT-1 
+.looperTownsHeight:
+        push    ecx 
+
+; set up x
+        mov     eax, [startOffsetXTowns]
+        mov     [currTransform + Transform.position + Vector3.x], eax 
+
+        mov     ecx, LAYOUT_CROSSROADSWIDTH-1
+.looperTownsWidth:
+        push    ecx
+
+        fld     [unitsRoadLength]
+        mov     eax, 2.0
+        push    eax
+        fmul    dword[esp]
+        fstp    dword[esp]
+        pop     eax  
+
+        lea     edx, [currTransform + Transform.position]
+        stdcall Build.GenerateTownSection, edi, edx, eax
+
+; shift the x
+        fld     [currTransform + Transform.position + Vector3.x]
+        fsub    [lengthBetweenCrosses]
+        fstp    [currTransform + Transform.position + Vector3.x]
+
+        pop     ecx 
+        add     edi, sizeof.Town * (TOWN_LCOUNT + TOWN_MCOUNT + TOWN_SCOUNT)
+        loop    .looperTownsWidth
+
+; shift the z
+        fld     [lengthBetweenCrosses]
+        fadd    [currTransform + Transform.position + Vector3.z]
+        fstp    [currTransform + Transform.position + Vector3.z]
+
+        pop     ecx
+        loop    .looperTownsHeight
+
+
+
+
+        ret 
+endp
+
+
+proc Build.GenerateTownSection uses esi edi,\
+        pDest, pStartPoint, lengthOfSector 
+
+        locals
+                localUnitLength         dd      ? 
+                townRadius              dd      ?
+                currentLocalPos         Vector3 
+        endl 
+
+        mov     edi, [pDest]
+
+; initializing length unit
+        fld     [lengthOfSector]        ; len
+        mov     eax, 15         
+        push    eax 
+        fidiv   dword[esp]              ; len/15
+        pop     eax 
+        fst     [localUnitLength]       
+        mov     eax, 2
+        push    eax 
+        fidiv   dword[esp]              ; (len/15)/2
+        pop     eax 
+        fstp    [townRadius]
+
+
+
+
+; making the towers 
+        mov     esi, townSectionTemplate
+        mov     ecx, TOWN_LCOUNT + TOWN_MCOUNT + TOWN_SCOUNT 
+
+.looper:
+        push    ecx 
+
+; generating town
+        movzx   eax, byte[esi + TownSectionElement.rangeFloorsMin]
+        movzx   edx, byte[esi + TownSectionElement.rangeFloorsMax]
+        push    edx
+        push    eax 
+        movzx   eax, byte[esi + TownSectionElement.unitWidth]
+        movzx   edx, byte[esi + TownSectionElement.unitHeight]
+        stdcall Build.GenerateTown, eax, edx, [townRadius], edi ; floorsMin, floorsMax
+
+; acquiring the position of the town
+        movzx   eax, byte[esi + TownSectionElement.coordX]
+        movzx   edx, byte[esi + TownSectionElement.coordZ]    
+        lea     ecx, [currentLocalPos]
+        fld     [localUnitLength]       ; u
+        push    eax 
+        fld     st0                     ; u, u
+        fimul   dword[esp]              ; x*u, u
+        fstp    [ecx + Vector3.x]       ; u
+        pop     eax                
+        push    edx 
+        fimul   dword[esp]              ; z*u
+        fstp    [ecx + Vector3.z]
+        pop     edx 
+
+        mov     eax, [pStartPoint]
+        stdcall Vector3.Add, ecx, eax 
+
+; transferring the position to the town struct 
+        lea     eax, [edi + Town.townPos]
+        lea     edx, [currentLocalPos]
+        stdcall Memory.memcpy, eax, edx, sizeof.Vector3
+
+; applying rotation 
+        mov     eax, dword[esi + TownSectionElement.rotation]
+        mov     [edi + Town.townRot + Vector3.y], eax 
+
+        add     edi, sizeof.Town
+        add     esi, sizeof.TownSectionElement
+        pop     ecx 
+        loop    .looper 
+        
         ret 
 endp

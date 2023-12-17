@@ -12,5 +12,17 @@ struct Town
        townRot          Vector3 
 ends
 
+; struct for generating a separate town 
+; secion in the whole city 
+struct TownSectionElement 
+       coordX               db     ?
+       coordZ               db     ?
+       unitWidth            db     ?
+       unitHeight           db     ?
+       rangeFloorsMin       db     ?
+       rangeFloorsMax       db     ?
+       rotation             dd     ?
+ends 
+
 LAYOUT_CROSSROADSWIDTH      =      5
 LAYOUT_CROSSROADSHEIGHT     =      3
