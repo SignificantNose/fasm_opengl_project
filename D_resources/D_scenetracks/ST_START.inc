@@ -5,22 +5,53 @@ ST_Start.Msgs:
        ; UnprocessedMessage        <FSh1, 1.0, 0.0>, INSTR_SNAREBODY
        ; UnprocessedMessage        <E3, 0.5, 0.0>, INSTR_PADS
 
+       UnprocessedMessage        <E3, 0.16666666666, 0.0>, INSTR_KEY
+       UnprocessedMessage        <E3, 0.16666666666, 0.16666666666>, INSTR_KEY
+       UnprocessedMessage        <A3, 0.16666666666, 0.33333333333>, INSTR_KEY 
+       UnprocessedMessage        <B3, 0.16666666666, 0.5>, INSTR_KEY 
+       UnprocessedMessage        <E3, 0.16666666666, 0.83333333>, INSTR_KEY 
+       UnprocessedMessage        <E3, 0.16666666666, 1.16666666>, INSTR_KEY 
 
-       UnprocessedMessage        <FSh3, 1.3333333, 0.0>, INSTR_SYNTH
-       UnprocessedMessage        <D3, 1.3333333, 0.0>, INSTR_SYNTH
-       UnprocessedMessage        <B2, 1.3333333, 0.0>, INSTR_SYNTH
+       UnprocessedMessage        <E3, 0.16666666666, 1.33333333>, INSTR_KEY 
+       UnprocessedMessage        <E3, 0.16666666666, 1.5>, INSTR_KEY
+       UnprocessedMessage        <A3, 0.16666666666, 1.66666666>, INSTR_KEY
+       UnprocessedMessage        <B3, 0.16666666666, 1.83333333>, INSTR_KEY 
+       UnprocessedMessage        <E3, 0.16666666666, 2.16666666>, INSTR_KEY
+       UnprocessedMessage        <E3, 0.16666666666, 2.5>, INSTR_KEY
 
-       UnprocessedMessage        <G3,0.8125,1.3680555>, INSTR_SYNTH
-       UnprocessedMessage        <DSh3,0.8125,1.3680555>, INSTR_SYNTH
-       UnprocessedMessage        <C3,0.8125,1.3680555>, INSTR_SYNTH
+       UnprocessedMessage        <E3, 0.16666666666, 2.66666666>, INSTR_KEY
+       UnprocessedMessage        <E3, 0.16666666666, 2.83333333>, INSTR_KEY
+       UnprocessedMessage        <B3, 0.16666666666, 3.0>, INSTR_KEY
+       UnprocessedMessage        <C4, 0.16666666666, 3.16666666>, INSTR_KEY
+       UnprocessedMessage        <E3, 0.16666666666, 3.5>, INSTR_KEY
+       UnprocessedMessage        <E3, 0.16666666666, 3.8333333>, INSTR_KEY
 
-       UnprocessedMessage        <G3,0.2152777,2.403697>, INSTR_SYNTH
-       UnprocessedMessage        <DSh3,0.2152777,2.403697>, INSTR_SYNTH
-       UnprocessedMessage        <C3,0.2152777,2.403697>, INSTR_SYNTH
+       UnprocessedMessage        <B3, 0.16666666666, 4.0>, INSTR_KEY
+       UnprocessedMessage        <A3, 0.16666666666, 4.16666666>, INSTR_KEY
+       UnprocessedMessage        <G3, 0.16666666666, 4.33333333>, INSTR_KEY
+       UnprocessedMessage        <E3, 0.16666666666, 4.5>, INSTR_KEY
+       UnprocessedMessage        <B3, 0.16666666666, 4.66666666>, INSTR_KEY
+       UnprocessedMessage        <A3, 0.16666666666, 4.83333333>, INSTR_KEY
+       UnprocessedMessage        <G3, 0.16666666666, 5.0>, INSTR_KEY
+       UnprocessedMessage        <E3, 0.16666666666, 5.16666666>, INSTR_KEY
 
-       UnprocessedMessage        <A3,2.2708333,2.6736111>, INSTR_SYNTH
-       UnprocessedMessage        <F3,2.2708333,2.6736111>, INSTR_SYNTH
-       UnprocessedMessage        <D3,2.2708333,2.6736111>, INSTR_SYNTH
+
+
+       ; UnprocessedMessage        <FSh3, 1.3333333, 0.0>, INSTR_SYNTH
+       ; UnprocessedMessage        <D3, 1.3333333, 0.0>, INSTR_SYNTH
+       ; UnprocessedMessage        <B2, 1.3333333, 0.0>, INSTR_SYNTH
+
+       ; UnprocessedMessage        <G3,0.8125,1.3680555>, INSTR_SYNTH
+       ; UnprocessedMessage        <DSh3,0.8125,1.3680555>, INSTR_SYNTH
+       ; UnprocessedMessage        <C3,0.8125,1.3680555>, INSTR_SYNTH
+
+       ; UnprocessedMessage        <G3,0.2152777,2.403697>, INSTR_SYNTH
+       ; UnprocessedMessage        <DSh3,0.2152777,2.403697>, INSTR_SYNTH
+       ; UnprocessedMessage        <C3,0.2152777,2.403697>, INSTR_SYNTH
+
+       ; UnprocessedMessage        <A3,2.2708333,2.6736111>, INSTR_SYNTH
+       ; UnprocessedMessage        <F3,2.2708333,2.6736111>, INSTR_SYNTH
+       ; UnprocessedMessage        <D3,2.2708333,2.6736111>, INSTR_SYNTH
 
 
        UnprocessedMessage        <FSh4, 1.3333333,5.34027777>, INSTR_SYNTH
