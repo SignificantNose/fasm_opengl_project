@@ -231,3 +231,21 @@ proc Filter.ApplyToSamples uses esi,\
 
     ret 
 endp
+
+; routine for clearing filter so that
+; the next track doesn't get affected by it
+proc Filter.ClearFilter uses edi,\
+    pFilter
+
+    mov     edx, [pFilter]
+    lea     edi, [edx + InstrFilter.leftSamples]
+    mov     ecx, sizeof.SampleArray/4
+    push    ecx     ; NofSamples
+    xor     eax, eax
+    rep     stosd 
+    pop     ecx     ; NofSamples
+    lea     edi, [edx + InstrFilter.rightSamples]
+    rep     stosd 
+
+    ret 
+endp 

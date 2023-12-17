@@ -564,8 +564,9 @@ proc Sound.PlayMsgList uses esi
 endp
 
 ; routine for clearing the message polls 
-; of the instruments, freeing the memory
-; and re-initializing the instrument
+; of the instruments, freeing the memory,
+; removing the effect of the reverberation,
+; filter effect and re-initializing the instrument
 proc Sound.ClearInstruments uses esi
 
     mov     esi, instruments
@@ -580,6 +581,15 @@ proc Sound.ClearInstruments uses esi
     jmp     .looperMsgPtrs
 .endLooperMsgPtrs:    
 
+    mov     ecx, [esi + Instrument.filter]
+    jecxz   .noFilter 
+    stdcall Filter.ClearFilter, ecx
+.noFilter:
+
+    mov     ecx, [esi + Instrument.reverb]
+    jecxz   .noReverb 
+    stdcall Reverb.ClearReverberator, ecx 
+.noReverb:
     add     esi, sizeof.Instrument
     jmp     .looper
 

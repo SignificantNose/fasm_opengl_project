@@ -13,7 +13,6 @@ proc Track.GenerateTrack uses esi edi,\
         nextMsgTrigger   dd     0.0
     endl 
 
-
     mov         esi, [pPackedTrack]
     stdcall     SoundMsg.FormMessageStack, esi 
     stdcall     Sequencer.AddAllMessages, esi
@@ -61,7 +60,7 @@ proc Track.GenerateTrack uses esi edi,\
 
     inc         [timeValue]
     pop         ecx
-    loop .looper
+    loop        .looper
 
     stdcall     Sound.ClearInstruments
 
