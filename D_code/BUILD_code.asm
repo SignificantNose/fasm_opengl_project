@@ -32,14 +32,14 @@ endp
 ; building that is ready to use. the struct is 
 ; stored at pTowerModel
 proc    Build.GenerateTowerModel uses esi edi,\
-        pTowerModel
+        pTowerModel, floorsMin, floorsMax
 
         invoke     HeapAlloc, [hHeap], 8, sizeof.PackedVerticesMesh
         mov        esi, eax
         invoke     HeapAlloc, [hHeap], 8, sizeof.Mesh
         mov        edi, eax                   
 
-        stdcall    Build.GeneratePackedTower, esi, 1.0
+        stdcall    Build.GeneratePackedTower, esi, 1.0, [floorsMin], [floorsMax]
         stdcall    Mesh.PackedMesh2Mesh, esi, edi, false
         stdcall    Build.DesignTower, edi
         mov        edx, [pTowerModel]
@@ -56,7 +56,8 @@ endp
 ; a tower with the radius of the basis of the 
 ; building equal to scale.
 ; the amount of the floors is generated randomly
-proc    Build.GeneratePackedTower uses ebx edi, pPackedMesh, scale
+proc    Build.GeneratePackedTower uses ebx edi,\
+        pPackedMesh, scale, floorsMin, floorsMax
         locals
                 numOfFloorsLiterally    dd      ?
                 currHeight              dd      0.0
@@ -80,7 +81,7 @@ proc    Build.GeneratePackedTower uses ebx edi, pPackedMesh, scale
         ; fstp    [currHeight]
 
 ; generating the amount of floors; literal floors, not walls: walls = numOfFloorsLiterally-1
-        stdcall   Rand.GetRandomInBetween, 2, 10                 ; generating the amount of floors
+        stdcall   Rand.GetRandomInBetween, [floorsMin], [floorsMax]               ; generating the amount of floors
         mov       [numOfFloorsLiterally], eax     ; i can just push it?
 
 ; allocating the memory and saving the handle
@@ -372,7 +373,7 @@ endp
 
 
 proc Build.GenerateTown uses esi edi,\
-        width, height, scale, resultTown
+        width, height, scale, resultTown, floorsMin, floorsMax
 
         locals
                 currPos         Transform
@@ -422,7 +423,7 @@ proc Build.GenerateTown uses esi edi,\
         push    ecx
 
 
-        stdcall   Build.GenerateTowerModel, edi 
+        stdcall   Build.GenerateTowerModel, edi, [floorsMin], [floorsMax]
         mov       eax, edi
         add       eax, Model.positionData 
 
@@ -543,6 +544,11 @@ proc    Build.GenerateLayout uses edi,\
 
 
 
+        lea     eax, [roadTexCoords]
+        fld     [unitsRoadLength]
+        fmul    dword[eax + 4*1]
+        fst     dword[eax + 4*1]
+        fst     dword[eax + 4*7]
 
 ; calculating the scale value for transform of roads
         ; fld     [lengthOfUnit]          ; u
