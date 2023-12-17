@@ -22,6 +22,7 @@ struct TownSectionElement
        rangeFloorsMin       db     ?
        rangeFloorsMax       db     ?
        rotation             dd     ?
+       pTextureID           dd     ?
 ends 
 
 LAYOUT_CROSSROADSWIDTH      =      5

@@ -32,7 +32,7 @@ endp
 ; building that is ready to use. the struct is 
 ; stored at pTowerModel
 proc    Build.GenerateTowerModel uses esi edi,\
-        pTowerModel, floorsMin, floorsMax
+        pTowerModel, textureID, floorsMin, floorsMax
 
         invoke     HeapAlloc, [hHeap], 8, sizeof.PackedVerticesMesh
         mov        esi, eax
@@ -44,7 +44,7 @@ proc    Build.GenerateTowerModel uses esi edi,\
         stdcall    Build.DesignTower, edi
         mov        edx, [pTowerModel]
         lea        eax, [edx+Model.meshData]
-        stdcall    Mesh.Mesh2ShaderMesh, edi, eax, [textureNeonID]
+        stdcall    Mesh.Mesh2ShaderMesh, edi, eax, [textureID]
 
         invoke     HeapFree, [hHeap], 0, edi 
         invoke     HeapFree, [hHeap], 0, esi
@@ -373,7 +373,7 @@ endp
 
 
 proc Build.GenerateTown uses esi edi,\
-        width, height, scale, resultTown, floorsMin, floorsMax
+        width, height, scale, resultTown, textureID, floorsMin, floorsMax
 
         locals
                 currPos         Transform
@@ -423,7 +423,7 @@ proc Build.GenerateTown uses esi edi,\
         push    ecx
 
 
-        stdcall   Build.GenerateTowerModel, edi, [floorsMin], [floorsMax]
+        stdcall   Build.GenerateTowerModel, edi, [textureID], [floorsMin], [floorsMax]
         mov       eax, edi
         add       eax, Model.positionData 
 
@@ -775,7 +775,9 @@ proc Build.GenerateTownSection uses esi edi,\
         push    eax 
         movzx   eax, byte[esi + TownSectionElement.unitWidth]
         movzx   edx, byte[esi + TownSectionElement.unitHeight]
-        stdcall Build.GenerateTown, eax, edx, [townRadius], edi ; floorsMin, floorsMax
+        mov     ecx, [esi + TownSectionElement.pTextureID]
+        mov     ecx, [ecx]
+        stdcall Build.GenerateTown, eax, edx, [townRadius], edi, ecx ; floorsMin, floorsMax
 
 ; acquiring the position of the town
         movzx   eax, byte[esi + TownSectionElement.coordX]

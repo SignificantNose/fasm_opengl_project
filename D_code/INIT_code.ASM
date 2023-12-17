@@ -62,7 +62,8 @@ proc Init uses esi edi
 
 
 ; initializing textures
-     stdcall    Texture.LoadTexture, textureNeonPath, textureNeonID, GL_BGR
+     stdcall    Texture.LoadTexture, textureNeonBluePath, textureNeonBlueID, GL_BGR
+     stdcall    Texture.LoadTexture, textureNeonWhitePath, textureNeonWhiteID, GL_BGR 
      stdcall    Texture.LoadTexture, textureGroundPath, textureGroundID, GL_BGR
      stdcall    Texture.LoadTexture, textureRoadPath, textureRoadID, GL_BGR
      stdcall    Texture.LoadTexture, textureCrossroadPath, textureCrossroadID, GL_BGR

@@ -8,8 +8,11 @@ GL_CLAMP_TO_BORDER      = 0x812D
 
 
 
-textureNeonPath db              'D_textures\txtrTriangle.bmp',0
-textureNeonID   GLuint          0
+textureNeonBluePath db          'D_textures\txtrTriangle.bmp',0
+textureNeonBlueID   GLuint      0
+
+textureNeonWhitePath db         'D_textures\txtrTriangleWhite.bmp',0
+textureNeonWhiteID   GLuint     0
 
 textureGroundPath db            'D_textures\txtrGround.bmp',0
 textureGroundID   GLuint        0
