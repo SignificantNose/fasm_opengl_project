@@ -20,3 +20,24 @@ struct Track
         trackDuration   dd      ?
         buffer          dd      ?
 ends 
+
+; struct that keeps a pointer to the
+; instrument played and its index to
+; play the instruments more optimally
+; (used as a type of elements in 
+; TrackInstrumentList field that points
+; to an array of this structs) 
+struct InstrDefiner
+        pInstrument     dd      ?
+        instrNum        db      ?
+ends 
+
+; struct for a more optimal approach to 
+; playing the instruments: it allows to 
+; store only the necessary instruments 
+; that are actually played in the current
+; track
+struct TrackInstrumentList 
+        InstrDefinerArray       dd      ?
+        InstrCount              dd      ?
+ends 

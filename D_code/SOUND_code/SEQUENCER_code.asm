@@ -43,7 +43,7 @@ endp
 ; routine for adding messages from all the sequencers
 ; pSequencer points at to the pPackedTrack message stack
 proc Sequencer.AddAllMessages uses esi edi,\
-    pPackedTrack
+    pPackedTrack, pTrackInstrList
 
     mov     edi, [pPackedTrack]
 
@@ -59,7 +59,7 @@ proc Sequencer.AddAllMessages uses esi edi,\
 .looper:
     push    ecx 
 
-    stdcall Sequencer.AddMessages, esi, edi
+    stdcall Sequencer.AddMessages, esi, edi, [pTrackInstrList]
     add     esi, sizeof.Sequencer
 
     pop     ecx 
@@ -72,7 +72,7 @@ endp
 ; routine for adding the messages of a separate 
 ; sequencer to the message stack of pPackedTrack 
 proc Sequencer.AddMessages uses esi edi,\
-    pSequencer, pPackedTrack
+    pSequencer, pPackedTrack, pTrackInstrList
 
     locals  
         currentTime     dd      ?
@@ -142,7 +142,10 @@ proc Sequencer.AddMessages uses esi edi,\
     push    eax 
     stdcall Memory.memcpy, eax, edx, sizeof.UnprocessedMessage
     pop     eax 
+    push    eax 
     stdcall SoundMsg.AddStack, edi, eax 
+    pop     eax 
+    stdcall Track.AddTrackInstrList, [pTrackInstrList], eax
 
 
 .notNewMessage:

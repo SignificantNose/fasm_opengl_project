@@ -130,7 +130,7 @@ endp
 
 
 proc SoundMsg.FormMessageStack uses esi edi,\
-    pPackedTrack
+    pPackedTrack, pTrackInstrList
 
     mov     edi, [pPackedTrack]
     mov     [edi + PackedTrack.pMsgStack], 0
@@ -144,6 +144,7 @@ proc SoundMsg.FormMessageStack uses esi edi,\
     push    ecx
 
     stdcall SoundMsg.AddStack, edi, esi 
+    stdcall Track.AddTrackInstrList, [pTrackInstrList], esi
     add     esi, sizeof.UnprocessedMessage
 
     pop     ecx 

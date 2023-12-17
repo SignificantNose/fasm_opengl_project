@@ -94,6 +94,7 @@ instrSnareTail Instrument      EnvSnareTail, 0, 0, 0, 0
 INSTR_SNAREBODY = ($-instruments)/sizeof.Instrument
 instrSnareBody Instrument      EnvSnareBody, 0, 0, 0, 0
 instrumentsEnd:
+instrumentsCount = ($ - instruments)/sizeof.Instrument
 
 
 
