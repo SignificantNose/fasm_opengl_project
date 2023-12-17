@@ -120,6 +120,9 @@ graphics:
         been catastrophic. and I do not have enought time to test how many framws will I 
         lose with mutexes
     make choice logic for the next scene
+    it has come to my (yet) thinking mind that the scene switch must be completed based on 
+        the current position, not the position of roads.
+    lots of code duplication in building a layout. solve
     
 
 general:

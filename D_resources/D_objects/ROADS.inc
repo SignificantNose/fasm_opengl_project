@@ -1,19 +1,21 @@
 templatePackedRoad          PackedVerticesMesh      planeVertices, planeIndices, roadTexCoords, PLANE_TRIANGLES_COUNT
 
+roadVerticalArray           dd                      ?
+roadHorizontalArray         dd                      ?
 
-roadV13       Model         <0,0,0,0,0,0>,\
-                            <\
-                                   <0.0, 0.0, 64.0>,\
-                                   <0.0, 0.0, 0.0>,\
-                                   <4.0, 4.0, 60.0>\   
-                            >
+; roadV13       Model         <0,0,0,0,0,0>,\
+;                             <\
+;                                    <0.0, 0.0, 64.0>,\
+;                                    <0.0, 0.0, 0.0>,\
+;                                    <4.0, 4.0, 60.0>\   
+;                             >
                             
-roadV23       Model         <0,0,0,0,0,0>,\
-                            <\
-                                   <0.0, 0.0, 192.0>,\
-                                   <0.0, 0.0, 0.0>,\
-                                   <4.0, 4.0, 60.0>\   
-                            >
+; roadV23       Model         <0,0,0,0,0,0>,\
+;                             <\
+;                                    <0.0, 0.0, 192.0>,\
+;                                    <0.0, 0.0, 0.0>,\
+;                                    <4.0, 4.0, 60.0>\   
+;                             >
 
 ; road11        Model         <0,0,0,0,0,0>,\
 ;                             <\

@@ -130,11 +130,11 @@ proc Draw uses edi
      ; stdcall    Draw.ModelDraw, Crossroad33, true
      stdcall    Draw.LayoutDraw
 
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, roadV13, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, roadV13, true
 
-     invoke     glClear, GL_DEPTH_BUFFER_BIT
-     stdcall    Draw.ModelDraw, roadV23, true
+     ; invoke     glClear, GL_DEPTH_BUFFER_BIT
+     ; stdcall    Draw.ModelDraw, roadV23, true
      
      ; invoke     glClear, GL_DEPTH_BUFFER_BIT
      ; stdcall    Draw.ModelDraw, road11, true
@@ -292,14 +292,34 @@ endp
 
 proc Draw.LayoutDraw uses esi 
 
+     invoke     glClear, GL_DEPTH_BUFFER_BIT
+
      mov       esi, [crossroadArray]
      mov       ecx, LAYOUT_CROSSROADSWIDTH*LAYOUT_CROSSROADSHEIGHT
-.looper:
+.looperCross:
      push      ecx 
      stdcall   Draw.ModelDraw, esi, true
      pop       ecx 
      add       esi, sizeof.Model 
-     loop      .looper 
+     loop      .looperCross
+
+     mov       esi, [roadVerticalArray]
+     mov       ecx, (LAYOUT_CROSSROADSHEIGHT-1)*LAYOUT_CROSSROADSWIDTH
+.looperRoadVertical:
+     push      ecx 
+     stdcall   Draw.ModelDraw, esi, true 
+     pop       ecx 
+     add       esi, sizeof.Model 
+     loop      .looperRoadVertical
+
+     mov       esi, [roadHorizontalArray]
+     mov       ecx, (LAYOUT_CROSSROADSWIDTH-1)*LAYOUT_CROSSROADSHEIGHT
+.looperRoadHorizontal:
+     push      ecx 
+     stdcall   Draw.ModelDraw, esi, true
+     pop       ecx 
+     add       esi, sizeof.Model
+     loop      .looperRoadHorizontal
 
      ret 
 endp 

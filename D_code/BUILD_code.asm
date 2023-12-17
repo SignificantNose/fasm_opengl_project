@@ -479,19 +479,20 @@ proc    Build.GenerateLayout uses edi,\
 
 ; calculating the starting offsets
         ; fld     [lengthOfUnit]          ; u
+        fadd    [unitsRoadLength]       ; u + n
         mov     eax, 2.0
         push    eax     ; 2.0
-        fmul    dword[esp]              ; 2*u
-        fadd    [unitsRoadLength]       ; 2*u + n
+        fmul    dword[esp]              ; 2*(u+n)
         fst     [lengthBetweenCrosses]
 
         mov     eax, LAYOUT_CROSSROADSWIDTH     
         push    eax     ; LOCrW
-        fimul   dword[esp]              ; LOCrW * (2*u + n)
-        fsub    [unitsRoadLength]       ; LOCrW * (2*u + n) - n
+        fimul   dword[esp]              ; LOCrW * 2 * (u + n)
+        fsub    [unitsRoadLength]       ; LOCrW * 2 * (u + n) - n
+        fsub    [unitsRoadLength]       ; LOCrW * 2 * (u + n) - 2 * n
         pop     eax     ; LOCrW
-        fdiv    dword[esp]              ; (LOCrW * (2*u + n) - n) / 2
-        fsub    [lengthOfUnit]          ; (LOCrW * (2*u + n) - n) / 2 - u       ; to get cross position
+        fdiv    dword[esp]              ; (LOCrW * 2 * (u + n) - 2 * n) / 2
+        fsub    [lengthOfUnit]          ; (LOCrW * 2 * (u + n) - 2 * n) / 2 - u       ; to get cross position
         pop     eax     ; 2.0
         fstp    [startOffsetX]
 
@@ -504,15 +505,15 @@ proc    Build.GenerateLayout uses edi,\
         mov     [crossroadArray], eax 
 
         mov     ecx, LAYOUT_CROSSROADSHEIGHT
-.looperHeight:
+.looperCrossHeight:
         push    ecx
 
 ; each height at the start must place the X back to the starting point
-        fld     [startOffsetX]
-        fstp    [currTransform + Transform.position + Vector3.x]
+        mov     eax, [startOffsetX]
+        mov     [currTransform + Transform.position + Vector3.x], eax 
 
         mov     ecx, LAYOUT_CROSSROADSWIDTH
-.looperWidth:
+.looperCrossWidth:
         push    ecx 
 
 
@@ -528,7 +529,7 @@ proc    Build.GenerateLayout uses edi,\
 
         pop     ecx 
         add     edi, sizeof.Model 
-        loop    .looperWidth
+        loop    .looperCrossWidth
 
 
 ; each height at the end must add Z with delta value for height
@@ -537,7 +538,123 @@ proc    Build.GenerateLayout uses edi,\
         fstp    [currTransform + Transform.position + Vector3.z]
 
         pop     ecx 
-        loop    .looperHeight
+        loop    .looperCrossHeight
+
+
+
+
+
+; calculating the scale value for transform of roads
+        ; fld     [lengthOfUnit]          ; u
+        ; fmul    [unitsRoadLength]       ; u * n
+        mov     eax, [unitsRoadLength]
+        mov     [currTransform + Transform.scale + Vector3.z], eax 
+
+
+; acquiring pointer to array of vertical roads
+        invoke  HeapAlloc, [hHeap], 8, sizeof.Model * (LAYOUT_CROSSROADSHEIGHT-1)*LAYOUT_CROSSROADSWIDTH
+        mov     edi, eax
+        mov     [roadVerticalArray], eax 
+
+; calculating the starting Z offset 
+        fld     [unitsRoadLength]               ; n
+        fadd    [lengthOfUnit]                  ; u + n
+        fstp    [currTransform + Transform.position + Vector3.z]
+
+
+        mov     ecx, LAYOUT_CROSSROADSHEIGHT-1
+.looperRoadVerticalHeight:
+        push    ecx 
+
+; restore start offset of x
+        mov     eax, [startOffsetX]
+        mov     [currTransform + Transform.position + Vector3.x], eax 
+
+        mov     ecx, LAYOUT_CROSSROADSWIDTH
+.looperRoadVerticalWidth:
+        push    ecx 
+
+        stdcall Build.ModelByTemplate, edi, templatePackedRoad, [textureRoadID]
+        lea     eax, [edi + Model.positionData]
+        lea     edx, [currTransform]
+        stdcall Memory.memcpy, eax, edx, sizeof.Transform
+
+; move towards negative x to progress 
+        fld     [currTransform + Transform.position + Vector3.x]
+        fsub    [lengthBetweenCrosses]
+        fstp    [currTransform + Transform.position + Vector3.x]
+ 
+        pop     ecx 
+        add     edi, sizeof.Model 
+        loop    .looperRoadVerticalWidth
+
+
+; modify z offset
+        fld     [lengthBetweenCrosses]
+        fadd    [currTransform + Transform.position + Vector3.z]
+        fstp    [currTransform + Transform.position + Vector3.z]
+
+        pop     ecx 
+        loop    .looperRoadVerticalHeight
+
+
+
+
+
+
+
+; acquiring pointer to array of horizontal roads
+        invoke  HeapAlloc, [hHeap], 8, sizeof.Model*(LAYOUT_CROSSROADSWIDTH-1)*LAYOUT_CROSSROADSHEIGHT
+        mov     edi, eax 
+        mov     [roadHorizontalArray], eax 
+
+; calculating the starting X offset
+; (in horizontal roads it's easier to calculate this value
+; and THEN move towards the Z axis)
+        fld     [startOffsetX]          ; leftBorder
+        fsub    [unitsRoadLength]       ; leftBorder - u
+        fsub    [lengthOfUnit]          ; leftBorder - u - n
+        fstp    [currTransform + Transform.position + Vector3.x]
+
+; calculating the rotation value for transform
+        mov     eax, 90.0
+        mov     [currTransform + Transform.rotation + Vector3.y], eax 
+
+        mov     ecx, LAYOUT_CROSSROADSWIDTH-1
+.looperRoadHorizontalWidth:
+        push    ecx 
+
+; restore z value 
+        xor     eax, eax 
+        mov     [currTransform + Transform.position + Vector3.z], eax 
+
+        mov     ecx, LAYOUT_CROSSROADSHEIGHT
+.looperRoadHorizontalHeight:
+        push    ecx 
+
+        stdcall Build.ModelByTemplate, edi, templatePackedRoad, [textureRoadID]
+        lea     eax, [edi + Model.positionData]
+        lea     edx, [currTransform]
+        stdcall Memory.memcpy, eax, edx, sizeof.Transform
+
+; move towards positive Z direction 
+        fld     [lengthBetweenCrosses]
+        fadd    [currTransform + Transform.position + Vector3.z]
+        fstp    [currTransform + Transform.position + Vector3.z]
+
+        pop     ecx 
+        add     edi, sizeof.Model 
+        loop    .looperRoadHorizontalHeight
+
+
+
+; modify x offset 
+        fld     [currTransform + Transform.position + Vector3.x]
+        fsub    [lengthBetweenCrosses]
+        fstp    [currTransform + Transform.position + Vector3.x]
+
+        pop     ecx 
+        loop    .looperRoadHorizontalWidth
 
         ret 
 endp

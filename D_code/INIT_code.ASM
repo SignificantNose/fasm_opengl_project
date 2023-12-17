@@ -73,15 +73,12 @@ proc Init uses esi edi
 
      ; stdcall    Build.GenerateTowerModel, towerModel
      ; stdcall    Build.GenerateTowerModel, towerIndicatorCenter
-     ; stdcall    Build.ModelByTemplate, Crossroad13, templatePackedCross, [textureCrossroadID]
-     ; stdcall    Build.ModelByTemplate, Crossroad23, templatePackedCross, [textureCrossroadID]
-     ; stdcall    Build.ModelByTemplate, Crossroad33, templatePackedCross, [textureCrossroadID]
      stdcall    Build.GenerateLayout, 4.0, 50.0  
 
      stdcall    Build.ModelByTemplate, planeModel, templatePackedPlane, [textureGroundID]
 
-     stdcall    Build.ModelByTemplate, roadV13, templatePackedRoad, [textureRoadID]
-     stdcall    Build.ModelByTemplate, roadV23, templatePackedRoad, [textureRoadID]
+     ; stdcall    Build.ModelByTemplate, roadV13, templatePackedRoad, [textureRoadID]
+     ; stdcall    Build.ModelByTemplate, roadV23, templatePackedRoad, [textureRoadID]
 
 
      ; width is in direction of x
