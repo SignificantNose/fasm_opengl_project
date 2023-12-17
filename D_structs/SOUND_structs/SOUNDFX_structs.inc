@@ -34,6 +34,7 @@ INTERP_SINE             = 5
 
 struct Instrument
        envelope          dd     ? 
+       masterValue       dd     ?
        oscListPtr        dd     ?       
        msgPollPtr        dd     ?        
        filter            dd     ?
@@ -78,21 +79,21 @@ instruments:
 ; instrTriangle  Instrument      EnvRegular, 0, 0, 0
 ; ;instrHiHat     Instrument      <0.0001,0.181,0.1,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
 INSTR_HIHAT = ($-instruments)/sizeof.Instrument
-instrHihat     Instrument      EnvHiHat, 0, 0, 0, 0
+instrHihat     Instrument      EnvHiHat, 0.25, 0, 0, 0, 0
 INSTR_SYNTH = ($-instruments)/sizeof.Instrument 
-instrSynth     Instrument      EnvSynth, 0, 0, 0, 0
+instrSynth     Instrument      EnvSynth, 0.8, 0, 0, 0, 0
 INSTR_BASS = ($-instruments)/sizeof.Instrument 
-instrBass      Instrument      EnvBasic, 0, 0, 0, 0
+instrBass      Instrument      EnvBasic, 1.0, 0, 0, 0, 0
 INSTR_PADS = ($-instruments)/sizeof.Instrument
-instrPads      Instrument      EnvPads, 0, 0, 0, 0
+instrPads      Instrument      EnvPads, 1.0, 0, 0, 0, 0
 INSTR_TOM  = ($-instruments)/sizeof.Instrument
-instrTom       Instrument      EnvTom, 0, 0, 0, 0
+instrTom       Instrument      EnvTom, 0.8, 0, 0, 0, 0
 INSTR_KICK = ($-instruments)/sizeof.Instrument
-instrKick      Instrument      EnvKick, 0, 0, 0, 0
+instrKick      Instrument      EnvKick, 1.0, 0, 0, 0, 0
 INSTR_SNARETAIL = ($-instruments)/sizeof.Instrument 
-instrSnareTail Instrument      EnvSnareTail, 0, 0, 0, 0
+instrSnareTail Instrument      EnvSnareTail, 0.75, 0, 0, 0, 0
 INSTR_SNAREBODY = ($-instruments)/sizeof.Instrument
-instrSnareBody Instrument      EnvSnareBody, 0, 0, 0, 0
+instrSnareBody Instrument      EnvSnareBody, 1.5, 0, 0, 0, 0
 instrumentsEnd:
 instrumentsCount = ($ - instruments)/sizeof.Instrument
 

@@ -542,15 +542,17 @@ proc Sound.PlayMsgList uses esi edi,\
 .noReverb:
 
     push    eax 
-    fld     dword[esp]      ; sample
-    fimul   [maxValue]      ; resSample
-    fistp   dword[esp]      ; 
+    fld     dword[esp]                      ; sample
+    fimul   [maxValue]                      ; resSample
+    fmul    [edi + Instrument.masterValue]  ; masteredSample
+    fistp   dword[esp]                      ; 
     pop     eax 
 
     push    edx 
-    fld     dword[esp]      ; sample
-    fimul   [maxValue]      ; resSample
-    fistp   dword[esp]
+    fld     dword[esp]                      ; sample
+    fimul   [maxValue]                      ; resSample
+    fmul    [edi + Instrument.masterValue]  ; masteredSample
+    fistp   dword[esp]                      ; 
     pop     edx 
 
 

@@ -78,19 +78,19 @@ Scenes.PackedTracks:
         ;         0, 0,\
         ;         0, 0
 
-        independentpackedtrack          PackedTrack     1.0, 0,\
+        independentpackedtrack          PackedTrack     100.0, 0,\
                 0, 0,\
                 0, 0
             
-        ScenePackedTrack.Start          PackedTrack     1.0, 0,\
+        ScenePackedTrack.Start          PackedTrack     32.0, 0,\
                 ST_Start.Msgs, ST_Start.MsgsCount,\
                 ST_Start.Seqs, ST_Start.SeqsCount
 
-        ScenePackedTrack.Choice         PackedTrack     1.0, 0,\
+        ScenePackedTrack.Choice         PackedTrack     1.33333333, 0,\
                 ST_Choice.Msgs, ST_Choice.MsgsCount,\
                 ST_Choice.Seqs, ST_Choice.SeqsCount
 
-        ScenePackedTrack.RunnerFirst    PackedTrack     1.0, 0,\
+        ScenePackedTrack.RunnerFirst    PackedTrack     42.6666666, 0,\
                 ST_RunnerFirst.Msgs, ST_RunnerFirst.MsgsCount,\
                 ST_RunnerFirst.Seqs, ST_RunnerFirst.SeqsCount
 
@@ -163,7 +163,7 @@ Scenes.PackedScenesCount = ($ - Scenes.PackedScenes)/sizeof.PackedScene
 Scenes.SceneList:
         independentspectator            Scene           SCENEMODE_INDEPENDENT, 100.0, ?, <?, ?>
 
-        SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
+        SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, 32.0, ?, <?, ?>
         SG1_ChoiceFirst_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
         SG1_SpectatorPreRun_Scene       Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
         SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
