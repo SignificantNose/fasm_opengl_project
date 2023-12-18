@@ -97,11 +97,12 @@ proc Draw uses edi
      invoke     glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
      ; ! uniforms must be after the useprogram function call
-     invoke    glUseProgram, [shaderProgram]
+     invoke     glUseProgram, [shaderProgram]
      stdcall    Draw.SetUpViewMx, [deltaTime]
 
      stdcall    Draw.ModelDraw, planeModel, true 
      stdcall    Draw.LayoutDraw
+     stdcall    Draw.ObstaclesDraw, SG1_RunnerFirst_Scene
 
      ; stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
      ; stdcall    Draw.TownDraw, townM11
@@ -273,6 +274,21 @@ proc Draw.LayoutDraw uses esi
      pop       ecx 
      add       esi, sizeof.Town 
      loop      .looperTown 
+
+     ret 
+endp 
+
+proc Draw.ObstaclesDraw uses edi,\
+     pRunnerScene
+
+     mov       edi, [pRunnerScene]
+     mov       edi, [edi + Scene.movement]
+     mov       ecx, [edi + RunnerData.obstacles + Obstacles.obstCount]
+     mov       edi, [edi + RunnerData.obstacles + Obstacles.arrObstacles]
+
+     lea       eax, [edi + ObstacleData.model]
+
+     stdcall   Draw.ModelDraw, eax, true
 
      ret 
 endp 

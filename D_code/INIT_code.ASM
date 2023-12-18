@@ -162,6 +162,7 @@ proc Init uses esi edi
 
      ; invoke    SetEvent, [hEventNotify]
      stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
+     stdcall   Runner.InitializeObstacles, SG1_RunnerFirst_Scene, 32, DIFFICULTY_EASY
      ; stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
      stdcall   Spectator.InitializeSpectator, SG1_SpectatorStart_Scene, cameraPosSpline, cameraFrontSpline
      ; stdcall   Spectator.InitializeSpectator, SG2_SpectatorAfterRun_Scene,

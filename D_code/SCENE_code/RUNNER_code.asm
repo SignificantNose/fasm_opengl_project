@@ -38,7 +38,321 @@ proc Runner.InitializeRunner uses esi edi,\
     ret
 endp 
 
+proc Runner.InitializeObstacles uses esi edi,\
+    pScene, amntOfObstacles, difficulty
 
+    locals
+        tempTime        dd      0.0
+        timeIncrement   dd      ?
+        currTransform   Transform   <0.0, 0.0, 0.0>,\
+                                    <0.0, 0.0, 0.0>,\
+                                    <1.0, 1.0, 1.0>
+    endl 
+
+    mov     esi, [pScene]
+    fld     [esi + Scene.sceneDuration]     ; sceneDur
+    fild    [amntOfObstacles]               ; n, sceneDur
+    fld1                                    ; 1, n, sceneDur
+    faddp                                   ; 1+n, sceneDur
+    fdivp                                   ; dt 
+    fstp    [timeIncrement]                 ; 
+
+    mov     esi, [esi + Scene.movement]     ; esi now points to RunnerData
+
+; initializing the array
+    mov     eax, [amntOfObstacles]
+    mov     [esi + RunnerData.obstacles + Obstacles.obstCount], eax 
+    imul    eax, sizeof.ObstacleData
+    invoke  HeapAlloc, [hHeap], 8, eax  
+    mov     [esi + RunnerData.obstacles + Obstacles.arrObstacles], eax 
+    mov     edi, eax 
+
+; acquiring the range of disabled cells
+    mov     eax, [difficulty]
+    JumpIf  DIFFICULTY_EASY, .easy 
+    JumpIf  DIFFICULTY_MEDIUM, .medium 
+    jmp     .hard 
+.easy:
+    mov     al, 3
+    mov     ah, 5
+    jmp     @F 
+.medium:
+    mov     al, 5
+    mov     ah, 7
+    jmp     @F
+.hard:
+    mov     al, 8
+    mov     ah, 8
+@@:
+    
+    nop
+
+; generating the cells themselves 
+    movzx   edx, al 
+    movzx   eax, ah
+    mov     ecx, [amntOfObstacles]
+.looper:
+    push    ecx 
+    push    edx
+    push    eax 
+
+    stdcall Rand.GetRandomInBetween, edx, eax 
+    push    eax     ; nOfBits
+    stdcall Runner.GetMask, eax 
+
+    mov     [edi + ObstacleData.mask], ax 
+    fld     [tempTime]
+    fadd    [timeIncrement]
+    fst     [edi + ObstacleData.time]
+    fstp    [tempTime]
+    pop     edx     ; nOfBits 
+
+    lea     ecx, [currTransform]
+    push    ecx 
+    lea     ecx, [edi + ObstacleData.model]
+    stdcall GenerateModelOfObstacle, ecx, eax, edx ;, currtransform
+
+    add     edi, sizeof.ObstacleData
+
+
+    pop     eax 
+    pop     edx 
+    pop     ecx 
+    loop    .looper 
+
+    ret 
+endp 
+
+proc Runner.GetMask uses ebx,\
+    nOfElements
+
+    mov     ebx, $FF800000
+    mov     ecx, [nOfElements]
+    rol     ebx, cl             ; bx will store the result 
+    mov     ecx, 9
+.looper:
+    push    ecx 
+    dec     ecx
+    stdcall Rand.GetRandomInBetween, 0, ecx 
+    pop     edx 
+    push    edx 
+    dec     edx
+    xor     ecx, ecx 
+    bts     ecx, eax 
+    bts     ecx, edx 
+    mov     edx, ecx
+    and     cx, bx
+    jz      .done 
+    cmp     cx, dx 
+    je      .done 
+    xor     bx, dx 
+.done:
+    pop     ecx 
+    loop    .looper
+
+    movzx   eax, bx
+    ret 
+endp 
+
+
+proc GenerateModelOfObstacle uses ebx esi edi,\
+    pModel, mask, nOfBits, pTransform 
+    
+    locals 
+        pmesh   PackedVerticesMesh
+    endl 
+
+    mov     ebx, [nOfBits]
+    mov     edx, ebx
+    shl     edx, 1
+    lea     esi, [pmesh]
+    mov     [esi + PackedVerticesMesh.trianglesCount], edx
+    ; generate indices
+    stdcall GenerateIndicesForObstacle, esi, ebx
+    ; generate tex coords
+    stdcall GenerateTexCoordsForObstacle, esi, ebx 
+    ; generate vertices 
+    stdcall GenerateVerticesForObstacle, esi, [mask], ebx  
+    
+    mov     edi, [pModel]
+    stdcall Build.ModelByTemplate, edi, esi, [textureGroundID]
+    mov     ebx, [pTransform]
+    lea     eax, [edi + Model.positionData]
+    stdcall Memory.memcpy, eax, ebx, sizeof.Transform
+
+
+    ret 
+endp 
+
+proc GenerateIndicesForObstacle uses edi,\
+    pPackedMesh, nOfBits 
+
+    mov     edi, [pPackedMesh]
+    mov     eax, [nOfBits]
+    imul    eax, 6              ; 6 is the number of indices needed for one square (= one obstacle)
+    ; imul    eax, sizeof.Indices, which are 1 byte each 
+    invoke  HeapAlloc, [hHeap], 8, eax 
+    mov     [edi + PackedVerticesMesh.pIndices], eax 
+    mov     edi, eax 
+
+    xor     eax, eax 
+    mov     ecx, [nOfBits]
+.looper:
+    stosb           
+    inc     al     
+    stosb           
+    inc     al
+    stosb
+    stosb
+    inc     al
+    stosb
+    sub     al, 3
+    stosb
+    add     al, 4
+    loop    .looper 
+    
+
+
+    ret 
+endp 
+
+proc GenerateTexCoordsForObstacle uses edi,\
+    pPackedMesh, nOfBits
+
+    mov     edi, [pPackedMesh]
+    mov     eax, [nOfBits]
+    imul    eax, sizeof.TexVertex*4         ; * 4, as each bit is 1 square => 4 vertices
+    invoke  HeapAlloc, [hHeap], 8, eax 
+    mov     [edi + PackedVerticesMesh.pTexCoords], eax 
+    mov     edi, eax 
+
+    xor     eax, eax 
+    mov     ecx, [nOfBits]
+.looper:
+    xor     eax, eax 
+    stosd   
+    mov     eax, 1.0
+    stosd 
+
+    stosd 
+    stosd 
+
+    stosd 
+    xor     eax, eax 
+    stosd 
+
+    stosd 
+    stosd 
+
+
+    loop    .looper 
+
+    ret 
+endp 
+
+proc GenerateVerticesForObstacle uses ebx edi,\
+    pPackedMesh, mask, nOfBits 
+    locals
+        currPos     Vector3     ?, 8.0, 0.0
+        rHalf       dd      ?
+        wOfSector   dd      ?
+        index       dd      ?
+    endl
+
+; initializing local variables 
+    mov     eax, [RunnerStep]
+    mov     [wOfSector], eax 
+    push    eax
+    fld     dword[esp]      ; roadLen/3
+    mov     eax, 1.5
+    push    eax 
+    fmul    dword[esp]      ; roadLen/2
+    fstp    [rHalf]         
+    pop     eax 
+    pop     eax 
+
+    mov     ebx, [mask]
+    mov     eax, [nOfBits]
+    imul    eax, 4*sizeof.Vector3 
+    invoke  HeapAlloc, [hHeap], 8, eax 
+    mov     edi, [pPackedMesh]
+    mov     [edi + PackedVerticesMesh.pVertices], eax 
+    mov     edi, eax 
+    
+
+    mov     [index], 8
+    mov     ecx, 3
+.looperOuter:
+    push    ecx 
+
+    mov     eax, [rHalf]
+    mov     [currPos + Vector3.x], eax 
+    mov     ecx, 3
+.looperInner:
+    push    ecx 
+
+    mov     eax, [index]
+    bt      bx,  ax 
+    jnc     @F 
+    lea     eax, [currPos]
+    nop
+    stdcall GetVisualVertex, eax, edi  
+    add     edi, sizeof.Vector3*4
+@@: 
+
+    dec     [index]
+    fld     [currPos + Vector3.x]
+    fsub    [wOfSector]
+    fstp    [currPos + Vector3.x]
+    pop     ecx 
+    loop    .looperInner
+
+    fld     [currPos + Vector3.y]
+    fsub    [wOfSector]
+    fstp    [currPos + Vector3.y] 
+    pop     ecx 
+    loop    .looperOuter 
+    
+    ret 
+endp 
+
+proc GetVisualVertex uses esi edi,\
+    pTopLeft, pDest 
+    locals
+        tempVertex  Vector3 
+    endl 
+
+    push    [RunnerStep]
+    mov     eax, [pTopLeft]
+    lea     esi, [tempVertex]
+    stdcall Memory.memcpy, esi, eax, sizeof.Vector3
+    mov     edi, [pDest]
+
+    stdcall Memory.memcpy, edi, esi, sizeof.Vector3 
+    add     edi, sizeof.Vector3 
+
+    fld     [esi + Vector3.x]
+    fsub    dword[esp]
+    fstp    [esi + Vector3.x]
+    stdcall Memory.memcpy, edi, esi, sizeof.Vector3
+    add     edi, sizeof.Vector3 
+
+    fld     [esi + Vector3.y]
+    fsub    dword[esp]
+    fstp    [esi + Vector3.y]
+    stdcall Memory.memcpy, edi, esi, sizeof.Vector3 
+    add     edi, sizeof.Vector3 
+
+    fld     [esi + Vector3.x]
+    fadd    dword[esp]
+    fstp    [esi + Vector3.x]
+    stdcall Memory.memcpy, edi, esi, sizeof.Vector3 
+    add     edi, sizeof.Vector3 
+
+    pop     eax 
+
+    ret 
+endp 
 
 proc Runner.Move,\
     direction, pRunnerData

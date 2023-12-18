@@ -15,10 +15,15 @@ struct PlayerPos
     posVertical     db      ?
 ends 
 
-struct Obstacle
-    arrObstacles    dd      ?
-    arrCount        dd      ?
-    nextObstacle    dw      ?
+struct ObstacleData 
+    mask            dw      ?
+    time            dd      ?
+    model           Model 
+ends 
+
+struct Obstacles
+    arrObstacles            dd      ?
+    obstCount               dd      ?
 ends 
 
 struct RunnerData 
@@ -30,8 +35,12 @@ struct RunnerData
     ; currAddOffset   Vector3
 
     playerData      PlayerPos
-    obstacles       Obstacle
+    obstacles       Obstacles
 ends 
+
+DIFFICULTY_EASY             = 0
+DIFFICULTY_MEDIUM           = 1
+DIFFICULTY_HARD             = 2
 
 
 RUNMASK_CANTMOVUP           equ     111000000b
@@ -70,7 +79,7 @@ Runner.CurrStateLeftAlt     db      ?               ; '<'
 Runner.CurrStateRight       db      ?               ; 'd'
 Runner.CurrStateRightAlt    db      ?               ; '>'
 
-RunnerStep      dd      2.66666666      ; = width of road / 3 
+RunnerStep                  dd      2.66666666      ; = width of road / 3  = UNITLENGTHTWICE / 3
 
 
 testStartingPoint   Vector3     0.0, 10.0, 4.0
