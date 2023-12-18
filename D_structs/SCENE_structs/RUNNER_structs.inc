@@ -71,3 +71,8 @@ Runner.CurrStateRight       db      ?               ; 'd'
 Runner.CurrStateRightAlt    db      ?               ; '>'
 
 RunnerStep      dd      2.66666666      ; = width of road / 3 
+
+
+testStartingPoint   Vector3     0.0, 10.0, 4.0
+testEndingPoint     Vector3     0.0, 10.0, 184.0
+testLookDown        Vector3     0.0, -10000000.0, 1.0

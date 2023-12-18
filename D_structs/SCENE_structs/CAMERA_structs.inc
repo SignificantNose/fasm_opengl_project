@@ -127,7 +127,7 @@ cameraPosPoints:
                 ;
                 ;
 
-cameraPosSpline         Spline          6, cameraPosPoints, SPLINE_NOT_LOOPED, 10.0
+cameraPosSpline         Spline          6, cameraPosPoints, SPLINE_NOT_LOOPED, 33.0
 
 
 frontFirstMovePrev1    Vector3         10000.0, 10000.0, 10000.0
@@ -166,4 +166,4 @@ cameraFrontPoints:
                 Spline.Point    frontThirdMove2, frontThirdMovePrev2, frontThirdMoveNext2, 0.0
 
 
-cameraFrontSpline       Spline          6, cameraFrontPoints, SPLINE_NOT_LOOPED, 10.0
+cameraFrontSpline       Spline          6, cameraFrontPoints, SPLINE_NOT_LOOPED, 33.0

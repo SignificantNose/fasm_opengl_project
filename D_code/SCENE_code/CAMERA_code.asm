@@ -517,6 +517,11 @@ proc Camera.UpdateScene uses esi edi,\
         lea     eax, [cameraPos]
         stdcall Vector3.Copy, eax, edi
 
+        lea     eax, [cameraFront]
+        lea     edx, [esi + RunnerData.dirVector]
+        ; lea     edx, [testLookDown]
+        stdcall Vector3.Copy, eax, edx 
+
         ; make addition for the current pattern
         ; then - logic for patterns 
         ; so for now tasks are:

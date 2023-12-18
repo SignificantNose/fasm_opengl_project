@@ -162,7 +162,7 @@ proc Init uses esi edi
 
      ; invoke    SetEvent, [hEventNotify]
      stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
-     stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
+     ; stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
      stdcall   Spectator.InitializeSpectator, SG1_SpectatorStart_Scene, cameraPosSpline, cameraFrontSpline
 
 ; it's just some buffer. can be any buffer, because
