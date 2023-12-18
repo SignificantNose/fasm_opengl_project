@@ -27,6 +27,9 @@
         include 'D_resources\D_scenetracks\ST_RUNNERFIRST.inc'
         include 'D_resources\D_scenetracks\ST_RUNNERSECOND.inc'
         include 'D_resources\D_scenetracks\ST_RUNNERTHIRD.inc'
+        include 'D_resources\D_scenetracks\ST_AFTERRUN.inc'
+        include 'D_resources\D_scenetracks\ST_PRERUN.inc'
+        include 'D_resources\D_scenetracks\ST_FINAl.inc'
 
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_structs\VECTOR_structs.inc'
