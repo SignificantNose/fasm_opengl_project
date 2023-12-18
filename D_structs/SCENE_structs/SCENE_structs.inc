@@ -95,7 +95,7 @@ Scenes.PackedScenesCount = ($ - Scenes.PackedScenes)/sizeof.PackedScene
 Scenes.SceneList:
         independentspectator            Scene           SCENEMODE_INDEPENDENT, 100.0, ?, <?, ?>
 
-        SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
+        SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, 32.0, ?, <?, ?>
         SG1_ChoiceFirst_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
         SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
 

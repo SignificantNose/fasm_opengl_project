@@ -48,6 +48,7 @@
         include 'D_STRUCTS\SCENE_structs\SCENE_structs.inc'
         include 'D_STRUCTS\SCENE_structs\RUNNER_structs.inc'
         include 'D_STRUCTS\SCENE_structs\CHOICE_structs.inc'
+        include 'D_STRUCTS\SCENE_structs\SPECTATOR_structs.inc'
 
 ; graphic primitives
         include 'D_resources\D_objects\PLANE.inc'

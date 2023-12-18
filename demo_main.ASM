@@ -144,13 +144,13 @@ EBO             GLuint          0
         include 'D_code\THREADS_code.asm'
         include 'D_code\KEYBOARD_code.asm'
         include 'D_code\INIT_code.asm'
-        
+
         include 'D_code\SCENE_code\MOVEMENT_code.asm'
         include 'D_code\SCENE_code\CAMERA_code.asm'
         include 'D_code\SCENE_code\SCENE_code.asm'
         include 'D_code\SCENE_code\RUNNER_code.asm'
         include 'D_code\SCENE_code\CHOICE_code.asm'
-
+        include 'D_code\SCENE_code\SPECTATOR_code.asm'
 
 proc WinMain
      locals
