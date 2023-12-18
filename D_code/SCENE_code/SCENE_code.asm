@@ -64,3 +64,47 @@ proc Scene.UnpackScenes uses esi edi
 .return:
     ret 
 endp 
+
+
+proc Scene.SwitchScene uses edi
+
+    mov         edi, [currentScene]
+    push        edi     ; prevScene
+
+    add         edi, sizeof.Scene
+    cmp         edi, Scenes.SceneListEnd
+    je          .terminate 
+
+    ; play the new buffer
+    cominvk     PlayBuffer, Stop
+    mov         eax, [edi + Scene.soundtrack + Track.buffer]
+    mov         [PlayBuffer], eax 
+    cominvk     PlayBuffer, Play, 0, 0, 0
+    mov         [currentScene], edi
+
+
+; deal with the previous scene
+    pop         edi     ; prevScene
+    movzx       eax, byte[edi + Scene.mode]
+    mov         ecx, [edi + Scene.movement]
+    JumpIf      SCENEMODE_CHOICE, .switchChoiceScene 
+    JumpIf      SCENEMODE_INDEPENDENT, .return 
+    JumpIf      SCENEMODE_RUNNER, .runner
+    JumpIf      SCENEMODE_SPECTATOR, .return
+    jmp         .terminate 
+.switchChoiceScene:
+    ; make smooth choice change 
+    stdcall     Choice.ApplyChoice, ecx 
+    jmp         .return 
+.runner: 
+    ; make smooth spline
+
+    jmp         .return 
+
+
+.terminate:     
+    invoke      ExitProcess, 0
+.return:
+
+    ret 
+endp

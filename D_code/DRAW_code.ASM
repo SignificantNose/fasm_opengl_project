@@ -10,28 +10,10 @@ proc Draw uses edi
      fld       dword[edi + Scene.sceneDuration]   ; sceneDur, t
      FPU_CMP 
      ja        .checkBufferEnd
-; :(
-     ; jmp       .switchScene
-.switchScene:
-     movzx     edx, byte[edi + Scene.mode]
-     cmp       edx, SCENEMODE_CHOICE
-     jne       @F
-     nop
-     mov       eax, [edi + Scene.movement]
+
 .switchChoiceScene:
-     stdcall   Choice.ApplyChoice, eax 
-@@:
 
-     add       edi, sizeof.Scene
-     cmp       edi, Scenes.SceneListEnd
-     je        .terminate 
-
-     ; play the new buffer
-     cominvk   PlayBuffer, Stop
-     mov       eax, [edi + Scene.soundtrack + Track.buffer]
-     mov       [PlayBuffer], eax 
-     cominvk   PlayBuffer, Play, 0, 0, 0
-     mov       [currentScene], edi
+     stdcall   Scene.SwitchScene
 
      ; restore the time intervals
      ; xor       eax, eax 
@@ -67,9 +49,9 @@ proc Draw uses edi
      test      byte[eax + ChoiceData.choiceHasBeenMade], 1
      jz        .continueDraw 
      jmp       .switchChoiceScene
-     
 .terminate:
      invoke    ExitProcess, 0
+     
 .continueDraw:
      lea       eax, [playCursor]
      cominvk   PlayBuffer, GetCurrentPosition, eax, ebx

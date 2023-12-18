@@ -27,3 +27,7 @@ ends
 
 LAYOUT_CROSSROADSWIDTH      =      5
 LAYOUT_CROSSROADSHEIGHT     =      3
+
+UNITLENGTH                  equ    4.0
+ROADLENGTH                  equ    90.0
+ROADLENGTHTWICE             equ    180.0
