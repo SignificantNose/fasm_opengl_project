@@ -1,3 +1,4 @@
 struct SpectatorData 
-    splineData      Spline
+    splineCameraPosData     Spline
+    splineFrontData         Spline 
 ends 

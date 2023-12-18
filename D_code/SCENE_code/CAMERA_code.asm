@@ -457,8 +457,12 @@ proc Camera.UpdateScene uses esi edi,\
 .spectator:
 
         mov     esi, [esi + Scene.movement]     ; esi now points at the SpectatorData struct
-        lea     edx, [esi + SpectatorData.splineData]
+        lea     edx, [esi + SpectatorData.splineCameraPosData]
         lea     eax, [cameraPos]
+        stdcall Spline.GetPoint, edx, eax, [time]
+
+        lea     edx, [esi + SpectatorData.splineFrontData]
+        lea     eax, [cameraFront]
         stdcall Spline.GetPoint, edx, eax, [time]
 
         jmp     .return 
