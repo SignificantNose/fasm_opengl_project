@@ -40,7 +40,7 @@ length          GLfloat      6.0
 oneSecond       GLfloat      1000.0
 PlayBuffer      IDirectSoundBuffer8
 SFXBuffer       IDirectSoundBuffer8
-
+amntOfLives     db             ?
 
 
 

@@ -18,8 +18,9 @@ struct  PackedScene
 ends 
 
 
-currentScene        dd      Scenes.SceneList
-currentSceneIndex   dd      0
+globalCurrentDirection  dd      ?
+currentScene            dd      Scenes.SceneList
+currentSceneIndex       dd      0
 
 
 
@@ -73,7 +74,7 @@ Scenes.PackedTracks:
                 ST_Final.Msgs, ST_Final.MsgsCount,\
                 ST_Final.Seqs, ST_Final.MsgsCount 
 
-        ScenePackedfTrack.Crash         PackedTrack     0.5, 0,\
+        ScenePackedfTrack.Crash         PackedTrack     1.0, 0,\
                 ST_Crash.Msgs, ST_Crash.MsgsCount,\
                 ST_Crash.Seqs, ST_Crash.SeqsCount
 
@@ -105,7 +106,7 @@ Scenes.PackedScenes:
         SG1_RunnerFirst_Packed          PackedScene     SceneTrack.RunnerFirst         
 
         SG2_SpectatorAfterRun_Packed    PackedScene     SceneTrack.AfterRunTrack
-        SG2_ChoiceSecond_Packed         PackedScene     SceneTrack.ChoiceTrack
+        SG2_ChoiceFirst_Packed          PackedScene     SceneTrack.ChoiceTrack
         SG2_SpectatorPreRun_Packed      PackedScene     SceneTrack.PreRunTrack
         SG2_RunnerSecond_Packed         PackedScene     SceneTrack.RunnerSecond   
 
@@ -129,12 +130,12 @@ Scenes.SceneList:
         SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
 
         SG2_SpectatorAfterRun_Scene     Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>     ; look to the left and right 
-        SG2_ChoiceSecond_Scene          Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
+        SG2_ChoiceFirst_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
         SG2_SpectatorPreRun_Scene       Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
         SG2_RunnerSecond_Scene          Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
 
         SG3_SpectatorAfterRun_Scene     Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
-        SG3_ChoiceThird_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
+        SG3_ChoiceSecond_Scene          Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
         SG3_SpectatorPreRun_Scene       Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
         SG3_RunnerThird_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
 

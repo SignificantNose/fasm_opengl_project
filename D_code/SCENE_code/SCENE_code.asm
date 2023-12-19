@@ -97,7 +97,16 @@ proc Scene.SwitchScene uses edi
     stdcall     Choice.ApplyChoice, ecx 
     jmp         .return 
 .runner: 
-    ; make smooth spline
+    
+; initializing after run struct
+    mov         edi, [currentScene]
+    mov         eax, [edi + Scene.movement]
+    mov         eax, [eax + SpectatorData.SPCameraPos]
+    lea         edi, [eax + Spline.Point.pMainVertex]
+    invoke      HeapAlloc, [hHeap], 8, sizeof.Vector3
+    mov         [edi], eax
+    lea         edx, [cameraPos]
+    stdcall     Vector3.Copy, eax, edx
 
     jmp         .return 
 
@@ -160,9 +169,16 @@ proc Scene.ProcessScene uses edi,\
     nop 
     bt      ecx, eax 
     jnc     .notCrash
-
+    
+    movzx   ecx, [amntOfLives]
+    dec     ecx
+    mov     [amntOfLives], cl
+    jecxz   .death 
     cominvk SFXBuffer, Play, 0, 0, 0
+    jmp     .notCrash 
+.death:
 
+    invoke  ExitProcess, 0
 .notCrash:
 
 

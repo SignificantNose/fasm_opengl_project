@@ -38,6 +38,25 @@ proc Spectator.AfterRunInitialize uses esi edi,\
         SPFront         dd      ?
     endl 
 
+    mov     ecx, 12 
+    lea     edi, [P1pP]
+.loopAlloc:
+    push    ecx 
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    stosd   
+    pop     ecx 
+    loop    .loopAlloc 
+
+    lea     edi, [P1pP]
+    mov     ecx, 6 
+.loopCopy:
+    push    ecx 
+    mov     eax, [edi] 
+    stdcall Vector3.Copy, eax, [pStartPoint]
+    add     edi, 4
+    pop     ecx 
+    loop    .loopCopy 
+
     mov     esi, [pScene]
     invoke  HeapAlloc, [hHeap], 8, sizeof.SpectatorData 
     mov     [esi + Scene.movement], eax 
@@ -51,49 +70,6 @@ proc Spectator.AfterRunInitialize uses esi edi,\
     mov     [edi + SpectatorData.SPFront], eax 
     mov     [SPFront], eax
 
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [P1pP], eax 
-    stdcall Vector3.Copy, eax, [pStartPoint]
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [P1pM], eax 
-    stdcall Vector3.Copy, eax, [pStartPoint]
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [P1pN], eax 
-    stdcall Vector3.Copy, eax, [pStartPoint]
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [P2pP], eax 
-    stdcall Vector3.Copy, eax, [pStartPoint]
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [P2pM], eax
-    stdcall Vector3.Copy, eax, [pStartPoint]
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [P2pN], eax 
-    stdcall Vector3.Copy, eax, [pStartPoint]
-
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [F1pP], eax 
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [F1pM], eax 
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [F1pN], eax 
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [F2pP], eax 
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [F2pM], eax
-
-    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
-    mov     [F2pN], eax 
 
 
     mov     eax, [direction]
@@ -241,7 +217,7 @@ proc Spectator.AfterRunInitialize uses esi edi,\
     mov     [eax + Spline.Point.pMainVertex], edx 
     mov     edx, [P2pN]
     mov     [eax + Spline.Point.pDirectionNext], edx 
-    mov     edx, 1.0
+    mov     edx, 1000000000000.0
     mov     [eax + Spline.Point.time], edx
 
 ; front array of spline points 
@@ -262,7 +238,7 @@ proc Spectator.AfterRunInitialize uses esi edi,\
     mov     [eax + Spline.Point.pMainVertex], edx 
     mov     edx, [F2pN]
     mov     [eax + Spline.Point.pDirectionNext], edx 
-    mov     edx, 1.0
+    mov     edx, 10000000000000.0
     mov     [eax + Spline.Point.time], edx
 
     mov     eax, [esi + Scene.movement] ; now has a pointer to SpectatorData struct 

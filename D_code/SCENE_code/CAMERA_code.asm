@@ -543,6 +543,11 @@ proc Camera.UpdateScene uses esi edi,\
         jmp     .return 
 .choice:
 
+        mov     esi, [esi + Scene.movement]     ; esi now points at the ChoiceData struct
+        lea     eax, [esi + ChoiceData.standingPoint]
+        stdcall Vector3.Copy, cameraPos, eax 
+        lea     eax, [esi + ChoiceData.standingDirection]
+        stdcall Vector3.Copy, cameraFront, eax 
 
 .return:
         ret

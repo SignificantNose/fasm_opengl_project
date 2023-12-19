@@ -1,29 +1,35 @@
 proc Choice.InitializeChoice uses edi,\
-    pScene, chIndex, pNextPointFirst, pNextPointSecond
+    pScene, chIndex, pStandingPoint, pStandingDirection
 
     mov     edi, [pScene]
     invoke  HeapAlloc, [hHeap], 8, sizeof.ChoiceData
     mov     [edi + Scene.movement], eax 
+    mov     edi, eax 
 
 ; initializing the choice
-    push    eax 
     stdcall Rand.GetRandomInBetween, 1, 2
-    pop     edx 
     mov     ecx, 1
     xchg    ecx, eax 
     shl     eax, cl
 ; too complex. must be simpler 
-    mov     [edx + ChoiceData.choiceHasBeenMade], al 
+    mov     [edi + ChoiceData.choiceHasBeenMade], al 
 
 ; initializing choice index
     mov     ecx, [chIndex]
-    mov     [edx + ChoiceData.choiceIndex], cl 
+    mov     [edi + ChoiceData.choiceIndex], cl 
 
-; initializing next scenes' data
-    mov     ecx, [pNextPointFirst]
-    mov     [edx + ChoiceData.pFirstDestPoint], ecx 
-    mov     ecx, [pNextPointFirst]
-    mov     [edx + ChoiceData.pSecondDestPoint], ecx
+    mov     eax, [pStandingPoint]
+    lea     edx, [edi + ChoiceData.standingPoint]
+    stdcall Vector3.Copy, edx, eax 
+    mov     eax, [pStandingDirection]
+    lea     edx, [edi + ChoiceData.standingDirection]
+    stdcall Vector3.Copy, edx, eax
+
+; ; initializing next scenes' data
+;     mov     ecx, [pNextPointFirst]
+;     mov     [edx + ChoiceData.pFirstDestPoint], ecx 
+;     mov     ecx, [pNextPointFirst]
+;     mov     [edx + ChoiceData.pSecondDestPoint], ecx
 
     ret 
 endp
