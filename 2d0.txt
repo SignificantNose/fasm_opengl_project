@@ -127,6 +127,9 @@ graphics:
     lots of code duplication in building a layout. solve
     finish starting spline 
     the graphics code is purely just 0_0
+    fail: runner obstacle generation cannot be completed beforehand: I need a direction vector 
+        to calculate transforms of each obstacle. other option would be to draw obstacles with 
+        an iterative summation of transformations of direction vector (no thanks)
     
 
 general:

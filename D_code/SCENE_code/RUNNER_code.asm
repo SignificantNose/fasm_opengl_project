@@ -22,33 +22,36 @@ proc Runner.InitializeRunner uses esi edi,\
     lea     eax, [pFinalPoint]
     stdcall Vector3.Copy, eax, [pStartPoint]
     push    ROADLENGTHTWICE
-    fld     dword[esp]                  ; lenOfPath
-    pop     eax 
     mov     eax, [direction]
     JumpIf  DIRECTION_UP, .up 
     JumpIf  DIRECTION_DOWN, .down
     JumpIf  DIRECTION_LEFT, .left 
     JumpIf  DIRECTION_RIGHT, .right
+    pop     eax 
     jmp     .return 
 .up:
-    fadd    [pFinalPoint + Vector3.z]   ; lenOfPath + startPoint.z
-    fstp    [pFinalPoint + Vector3.z]
+    fld     [pFinalPoint + Vector3.z]   ; startPoint.z
+    fadd    dword[esp]                  ; startPoint.z + lenOfPath
+    fstp    [pFinalPoint + Vector3.z]   ; 
     jmp     .calcDir 
 .down:
-    fsub    [pFinalPoint + Vector3.z]   ; lenOfPath - startPoint.z
-    fstp    [pFinalPoint + Vector3.z]
-    jmp     .calcDir
+    fld     [pFinalPoint + Vector3.z]   ; startPoint.z
+    fsub    dword[esp]                  ; startPoint.z - lenOfPath
+    fstp    [pFinalPoint + Vector3.z]   ; 
+    jmp     .calcDir    
 .left:
-    fadd    [pFinalPoint + Vector3.x]   ; lenOfPath + startPoint.x
-    fstp    [pFinalPoint + Vector3.x]
+    fld     [pFinalPoint + Vector3.x]   ; startPoint.x
+    fadd    dword[esp]                  ; startPoint.x + lenOfPath
+    fstp    [pFinalPoint + Vector3.x]   ; 
     jmp     .calcDir
-.right:
-    fsub    [pFinalPoint + Vector3.x]   ; lenOfPath - startPoint.x
-    fstp    [pFinalPoint + Vector3.x]
-
+.right: 
+    fld     [pFinalPoint + Vector3.x]   ; startPoint.x
+    fsub    dword[esp]                  ; startPoint.x - lenOfPath 
+    fstp    [pFinalPoint + Vector3.x]   ; 
 
 
 .calcDir:
+    pop     eax 
 
 ; calculating the direction vector
     lea     eax, [esi + RunnerData.dirVector]
@@ -89,7 +92,7 @@ proc Runner.InitializeRunner uses esi edi,\
 endp 
 
 proc Runner.InitializeObstacles uses ebx esi edi,\
-    pScene, amntOfObstacles, difficulty
+    pScene, amntOfObstacles, difficulty, direction
 
     locals
         tempTime            dd      0.0
@@ -99,6 +102,30 @@ proc Runner.InitializeObstacles uses ebx esi edi,\
                                         <0.0, 0.0, 0.0>,\
                                         <1.0, 1.0, 1.0>
     endl 
+
+    mov     eax, [direction]
+    JumpIf  DIRECTION_DOWN, .dirDown
+    JumpIf  DIRECTION_UP, .dirUp
+    JumpIf  DIRECTION_LEFT, .dirLeft
+    JumpIf  DIRECTION_RIGHT, .dirRight
+
+.dirDown:
+    mov     eax, 180.0
+    jmp     .endRotTransform 
+
+.dirUp:
+    mov     eax, 0.0
+    jmp     .endRotTransform 
+
+.dirLeft:
+    mov     eax, 90.0
+    jmp     .endRotTransform 
+
+.dirRight:
+    mov     eax, 270.0
+.endRotTransform:
+    mov     [currTransform + Transform.rotation + Vector3.y], eax
+
 
     mov     esi, [pScene]
     fld     [esi + Scene.sceneDuration]     ; sceneDur

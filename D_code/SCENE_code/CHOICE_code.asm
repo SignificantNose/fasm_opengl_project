@@ -56,29 +56,101 @@ proc Choice.InitializeChoice uses edi,\
     ret 
 endp
 
-proc Choice.ApplyChoice uses edi,\
+proc Choice.ApplyChoice uses ebx esi edi,\
     pChoiceData
 
+    locals 
+        nextStartPoint  Vector3
+        nextEndPoint    Vector3
+        prevDir         dd      ?
+        nextDir         dd      ?
+    endl 
+
 ; save the choice 
-    mov     eax, [pChoiceData]
-    mov     cl, byte[eax + ChoiceData.choiceIndex]
-    test    [eax + ChoiceData.choiceHasBeenMade], 00000010b
-    jz      .secondChoice
+    mov     esi, [pChoiceData]
+    xor     eax, eax
+    mov     cl, byte[esi + ChoiceData.choiceIndex]
+    test    [esi + ChoiceData.choiceHasBeenMade], 00000010b
+    jnz     .secondChoice
 .firstChoice:
-    mov     al, 1
-    shl     al, cl 
+    mov     eax, 1
+    shl     eax, cl 
     or      [Choice.Value], al 
 .secondChoice:
+    
+    mov     ecx, eax
+    movzx   eax, [esi + ChoiceData.choiceDirectionIndex]
+    JumpIf  DIRECTION_DOWN, .prevDown
+    JumpIf  DIRECTION_UP, .prevUp 
+    JumpIf  DIRECTION_LEFT, .prevLeft 
+    JumpIf  DIRECTION_RIGHT, .prevRight
 
+.prevDown:
+    jecxz   .downChoiceSet
+    mov     ebx, DIRECTION_LEFT 
+    jmp     .initScenes
+.downChoiceSet:
+    mov     ebx, DIRECTION_RIGHT 
+    jmp     .initScenes
+
+.prevUp:
+    jecxz   .upChoiceSet
+    mov     ebx, DIRECTION_RIGHT 
+    jmp     .initScenes
+.upChoiceSet:
+    mov     ebx, DIRECTION_LEFT 
+    jmp     .initScenes
+
+
+.prevLeft:
+    jecxz   .leftChoiceSet
+    mov     ebx, DIRECTION_UP 
+    jmp     .initScenes
+.leftChoiceSet:
+    mov     ebx, DIRECTION_DOWN 
+    jmp     .initScenes
+
+.prevRight:
+    jecxz   .rightChoiceSet
+    mov     ebx, DIRECTION_DOWN 
+    jmp     .initScenes
+.rightChoiceSet:
+    mov     ebx, DIRECTION_UP  
+    jmp     .initScenes
+
+
+    ; I need: 
+    ; new direction
+    ; previous direction
+    ; start point 
+    ; end point
+
+.initScenes:
+    mov     [prevDir], eax
+    mov     [nextDir], ebx
 ; initialize other scenes
     mov     edi, [currentScene]     ; which is the following scene 
-    
+    ; add     edi, sizeof.Scene       ; current scene is PreRun
+    lea     eax, [esi + ChoiceData.standingPoint]
+    stdcall Spectator.PreRunInitialize, edi, [prevDir], ebx, eax
+    lea     edx, [nextStartPoint]
+    stdcall Vector3.Copy, edx, eax
 
-    ; pre init
-    ; runner init
-    ; after init 
-    ; choice init
+    add     edi, sizeof.Scene       ; current scene is Runner
+    lea     eax, [nextStartPoint]
+    stdcall Runner.InitializeRunner, edi, eax, ebx
+    stdcall Runner.InitializeObstacles, edi, 32, DIFFICULTY_EASY, ebx
+    mov     [currObstacleScene], edi
 
+    add     edi, sizeof.Scene       ; current scene is AfterRun
+    lea     eax, [nextStartPoint]
+    stdcall Spectator.AfterRunInitialize, edi, ebx, eax  
+    lea     edx, [nextEndPoint]
+    stdcall Vector3.Copy, edx, eax
+
+    add     edi, sizeof.Scene       ; current scene is Choice 
+    lea     eax, [nextEndPoint]
+    stdcall Choice.InitializeChoice, edi, 0, eax, ebx  
 
 
     ret 

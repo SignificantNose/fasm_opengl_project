@@ -103,7 +103,7 @@ proc Draw uses edi
 
      stdcall    Draw.ModelDraw, planeModel, true 
      stdcall    Draw.LayoutDraw
-     stdcall    Draw.ObstaclesDraw, SG1_RunnerFirst_Scene
+     stdcall    Draw.ObstaclesDraw, [currObstacleScene]
 
      ; stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
      ; stdcall    Draw.TownDraw, townM11
@@ -292,10 +292,13 @@ proc Draw.ObstaclesDraw uses esi edi,\
      invoke    glMatrixMode, GL_MODELVIEW
      invoke    glPushMatrix 
      invoke    glLoadIdentity
+
      invoke    glTranslatef, [esi + RunnerData.startPos + Vector3.x], [esi + RunnerData.startPos + Vector3.y], [esi + RunnerData.startPos + Vector3.z]
-     lea       eax, [nullVector]
-     lea       edx, [esi + RunnerData.dirNegativeVec]
-     stdcall   Camera.LookAt, eax, edx, VecUpward
+     
+     ; lea       eax, [nullVector]
+     ; lea       edx, [esi + RunnerData.dirNegativeVec]
+     ; stdcall   Camera.LookAt, eax, edx, VecUpward
+
      lea       eax, [edi + ObstacleData.model]
      stdcall   Draw.ModelDraw, eax, false
      invoke    glPopMatrix

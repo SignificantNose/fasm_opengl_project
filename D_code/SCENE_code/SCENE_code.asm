@@ -174,6 +174,8 @@ proc Scene.ProcessScene uses edi,\
     dec     ecx
     mov     [amntOfLives], cl
     jecxz   .death 
+    cominvk SFXBuffer, Stop
+    cominvk SFXBuffer, SetCurrentPosition, 0
     cominvk SFXBuffer, Play, 0, 0, 0
     jmp     .notCrash 
 .death:

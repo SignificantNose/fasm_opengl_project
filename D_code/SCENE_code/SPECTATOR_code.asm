@@ -18,6 +18,7 @@ proc Spectator.InitializeSpectator,\
 endp
 
 
+; ! warning ! returns pointer to the end point of afterrun
 proc Spectator.AfterRunInitialize uses esi edi,\
     pScene, direction, pStartPoint 
 
@@ -263,6 +264,7 @@ proc Spectator.AfterRunInitialize uses esi edi,\
     ret 
 endp 
 
+; ! warning ! returns ptr to next point
 proc Spectator.PreRunInitialize uses esi edi,\
     pScene, prevDirection, nextDirection, pStartPoint 
 
@@ -425,6 +427,7 @@ proc Spectator.PreRunInitialize uses esi edi,\
     fadd    [esi + Scene.sceneDuration]
     fstp    [eax + SpectatorData.splineFrontData + Spline.time]  
 
+    mov     eax, [posEnd]
 .return:
     ret
 endp 

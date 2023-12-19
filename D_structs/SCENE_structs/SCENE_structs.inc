@@ -130,7 +130,7 @@ Scenes.SceneList:
         SG2_SpectatorAfterRun_Scene     Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>     ; look to the left and right 
         SG2_ChoiceFirst_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
         SG2_SpectatorPreRun_Scene       Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
-        SG2_RunnerSecond_Scene          Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
+        SG2_RunnerSecond_Scene          Scene           SCENEMODE_RUNNER, 10.0, ?, <?, ?>
 
         SG3_SpectatorAfterRun_Scene     Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
         SG3_ChoiceSecond_Scene          Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
