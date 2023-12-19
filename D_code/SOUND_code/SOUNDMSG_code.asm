@@ -36,13 +36,23 @@ proc SoundMsg.AddInstrMessage uses esi edi,\
 
 
     mov     ecx, [edi+Instrument.msgPollPtr]
+
+    cmp     [edi + Instrument.monoMode], MONO_TRUE
+    je      .mono
+    
     mov     [eax+DoublyLinkedList.next], ecx
 
     ; CAN BE REMOVED: THE ALLOCATED MEMORY IS INITIALIZED WITH ZERO
     mov     [eax+DoublyLinkedList.prev], LIST_NONE
     jecxz   .return
     mov     [ecx+DoublyLinkedList.prev], eax
-
+    jmp     .return 
+.mono:
+    push    eax 
+    jecxz   @F 
+    invoke  HeapFree, [hHeap], 0, ecx 
+@@:
+    pop     eax 
 .return:
     ;pop     ecx
     mov     [edi+Instrument.msgPollPtr], eax
@@ -130,7 +140,7 @@ endp
 
 
 proc SoundMsg.FormMessageStack uses esi edi,\
-    pPackedTrack
+    pPackedTrack, pTrackInstrList
 
     mov     edi, [pPackedTrack]
     mov     [edi + PackedTrack.pMsgStack], 0
@@ -144,6 +154,7 @@ proc SoundMsg.FormMessageStack uses esi edi,\
     push    ecx
 
     stdcall SoundMsg.AddStack, edi, esi 
+    stdcall Track.AddTrackInstrList, [pTrackInstrList], esi
     add     esi, sizeof.UnprocessedMessage
 
     pop     ecx 

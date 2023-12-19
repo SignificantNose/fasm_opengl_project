@@ -31,9 +31,22 @@ INTERP_QUADRA           = 3
 INTERP_TRIANGLE         = 4
 INTERP_SINE             = 5
 
+; hate to do this to the instument struct, but
+; I'm adding a mono mode: instruments that have
+; mono mode enabled can have only one message 
+; at a time. it's not the way, it's a dirty hack,
+; because the right way would be to look at all
+; the messages with the same key, which is difficult
+; in my situation: the messages stored can have their
+; frequency changed. so, here we go.
+MONO_FALSE              = 0
+MONO_TRUE               = 1
+
 
 struct Instrument
        envelope          dd     ? 
+       masterValue       dd     ?
+       monoMode          db     ?
        oscListPtr        dd     ?       
        msgPollPtr        dd     ?        
        filter            dd     ?
@@ -62,6 +75,8 @@ EnvKick       EnvelopeADSR     0.0005, KICK_TIME, 0.150, 1.0, 1.0, INTERP_LINEAR
 ; man, I wish I'd implemented envelopes for oscillators
 EnvSnareTail  EnvelopeADSR     0.0005, 0.667, 0.0015, 0.0, 1.0, INTERP_LINEAR, INTERP_QUADRA, INTERP_LINEAR
 EnvSnareBody  EnvelopeADSR     0.0005, 0.287, 0.0015, 0.0, 1.0, INTERP_LINEAR, INTERP_CUBIC, INTERP_LINEAR
+EnvKey        EnvelopeADSR     0.03, 0.1, 1.0, 1.0, 1.0, INTERP_SQUARE, INTERP_LINEAR, INTERP_CUBIC              
+EnvLaser      EnvelopeADSR     0.0005, 0.850, 0.035, 0.0, 1.0, INTERP_LINEAR, INTERP_LINEAR, INTERP_LINEAR 
 
 instruments:
 ; INSTR_SINE = ($-instruments)/sizeof.Instrument
@@ -78,22 +93,27 @@ instruments:
 ; instrTriangle  Instrument      EnvRegular, 0, 0, 0
 ; ;instrHiHat     Instrument      <0.0001,0.181,0.1,0.0, 0.3 ,INTERP_LINEAR,INTERP_LINEAR,INTERP_LINEAR>, OSC_NOISE
 INSTR_HIHAT = ($-instruments)/sizeof.Instrument
-instrHihat     Instrument      EnvHiHat, 0, 0, 0, 0
+instrHihat     Instrument      EnvHiHat, 0.25, MONO_FALSE, 0, 0, 0, 0
 INSTR_SYNTH = ($-instruments)/sizeof.Instrument 
-instrSynth     Instrument      EnvSynth, 0, 0, 0, 0
+instrSynth     Instrument      EnvSynth, 0.8, MONO_FALSE, 0, 0, 0, 0
 INSTR_BASS = ($-instruments)/sizeof.Instrument 
-instrBass      Instrument      EnvBasic, 0, 0, 0, 0
+instrBass      Instrument      EnvBasic, 1.0, MONO_FALSE, 0, 0, 0, 0
 INSTR_PADS = ($-instruments)/sizeof.Instrument
-instrPads      Instrument      EnvPads, 0, 0, 0, 0
+instrPads      Instrument      EnvPads, 1.0, MONO_FALSE, 0, 0, 0, 0
 INSTR_TOM  = ($-instruments)/sizeof.Instrument
-instrTom       Instrument      EnvTom, 0, 0, 0, 0
+instrTom       Instrument      EnvTom, 0.8, MONO_FALSE, 0, 0, 0, 0
 INSTR_KICK = ($-instruments)/sizeof.Instrument
-instrKick      Instrument      EnvKick, 0, 0, 0, 0
+instrKick      Instrument      EnvKick, 1.0, MONO_FALSE, 0, 0, 0, 0
 INSTR_SNARETAIL = ($-instruments)/sizeof.Instrument 
-instrSnareTail Instrument      EnvSnareTail, 0, 0, 0, 0
+instrSnareTail Instrument      EnvSnareTail, 0.75, MONO_FALSE, 0, 0, 0, 0
 INSTR_SNAREBODY = ($-instruments)/sizeof.Instrument
-instrSnareBody Instrument      EnvSnareBody, 0, 0, 0, 0
+instrSnareBody Instrument      EnvSnareBody, 1.5, MONO_FALSE, 0, 0, 0, 0
+INSTR_KEY = ($ - instruments)/sizeof.Instrument
+instrKey       Instrument      EnvKey, 1.2, MONO_TRUE, 0, 0, 0, 0
+INSTR_LASER = ($ - instruments)/sizeof.Instrument 
+instrLaser     Instrument      EnvLaser, 1.3, MONO_FALSE, 0, 0, 0, 0
 instrumentsEnd:
+instrumentsCount = ($ - instruments)/sizeof.Instrument
 
 
 
@@ -106,14 +126,16 @@ OSC_SAW = 2
 OSC_TRIANGLE = 3
 OSC_NOISE = 4
 
-oscSine       Oscillator    OSC_SINE, 0, 0.0, 0
-oscTomSine    Oscillator    OSC_SINE, 0, 0.0, LFOTomCoarse
-oscKickSine   Oscillator    OSC_SINE, 0, 0.0, LFOKickCoarse
-oscSnareSine  Oscillator    OSC_SINE, 0, 0.0, LFOSnareCoarse
-oscSquare     Oscillator    OSC_SQUARE, 0, 0.0, 0
-oscSaw        Oscillator    OSC_SAW, 0, 0.0, 0
-oscSawPads    Oscillator    OSC_SAW, 4, 0.6, 0
-oscSynthSaw   Oscillator    OSC_SAW, 0, 0.0, LFOSynthFine
-oscTriangle   Oscillator    OSC_TRIANGLE, 0, 0.0, 0
-oscNoise      Oscillator    OSC_NOISE, 0, 0.0, 0
-oscSnareNoise Oscillator    OSC_NOISE, 0, 0.0, 0
+oscSine              Oscillator    OSC_SINE, 0, 0.0, 0
+oscTomSine           Oscillator    OSC_SINE, 0, 0.0, LFOTomCoarse
+oscKickSine          Oscillator    OSC_SINE, 0, 0.0, LFOKickCoarse
+oscSnareSine         Oscillator    OSC_SINE, 0, 0.0, LFOSnareCoarse
+oscSquare            Oscillator    OSC_SQUARE, 0, 0.0, 0
+oscLaserSquare       Oscillator    OSC_SQUARE, 0, 0.0, LFOLaserCoarse
+oscSaw               Oscillator    OSC_SAW, 0, 0.0, 0
+oscSawPads           Oscillator    OSC_SAW, 4, 0.6, 0
+oscSynthSaw          Oscillator    OSC_SAW, 0, 0.0, LFOSynthFine
+oscKeySaw            Oscillator    OSC_SAW, 2, 0.1, 0
+oscTriangle          Oscillator    OSC_TRIANGLE, 0, 0.0, 0
+oscNoise             Oscillator    OSC_NOISE, 0, 0.0, 0
+oscSnareNoise        Oscillator    OSC_NOISE, 0, 0.0, 0

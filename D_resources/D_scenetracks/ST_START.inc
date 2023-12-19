@@ -5,7 +5,6 @@ ST_Start.Msgs:
        ; UnprocessedMessage        <FSh1, 1.0, 0.0>, INSTR_SNAREBODY
        ; UnprocessedMessage        <E3, 0.5, 0.0>, INSTR_PADS
 
-
        UnprocessedMessage        <FSh3, 1.3333333, 0.0>, INSTR_SYNTH
        UnprocessedMessage        <D3, 1.3333333, 0.0>, INSTR_SYNTH
        UnprocessedMessage        <B2, 1.3333333, 0.0>, INSTR_SYNTH

@@ -502,51 +502,57 @@ endp
 ; instruments and their message polls). returns the
 ; value in eax: higher 16 bits are for right sample,
 ; and lower 16 bits are for left sample
-proc Sound.PlayMsgList uses esi
+proc Sound.PlayMsgList uses esi edi,\
+    pTrackInstrList
 
-    mov     esi, instruments
+    mov     esi, [pTrackInstrList]
+    mov     ecx, [esi + TrackInstrumentList.InstrCount]
+    mov     esi, [esi + TrackInstrumentList.InstrDefinerArray]
     xor     eax, eax
 
+    jecxz   .return 
 .looper:
-    cmp     esi, instrumentsEnd 
-    je      .return 
-
+    push    ecx     ; iterator
+    
     ; total sum in 4 bytes
     push    eax     
+    mov     edi, [esi + InstrDefiner.pInstrument]
 
-    stdcall Sound.GetInstrumentSample, esi 
+    stdcall Sound.GetInstrumentSample, edi
     ; return values:
     ; edx - left sample 
     ; eax - right sample
     ; samples have unison applied (if present) and ADSR as well
 
-    mov     ecx, [esi + Instrument.filter]
+    mov     ecx, [edi + Instrument.filter]
     jecxz   .noFilter
 
     ; stdcall Filter.ApplyToSamples, edx, eax, ecx
-    stdcall Filter.ApplyToSamples, edx, eax, esi 
+    stdcall Filter.ApplyToSamples, edx, eax, edi 
     ; return values:
     ; edx - left sample 
     ; eax - right sample
 
 .noFilter:
 
-    mov     ecx, [esi + Instrument.reverb]
+    mov     ecx, [edi + Instrument.reverb]
     jecxz   .noReverb
     stdcall Reverb.ApplyToSamples, edx, eax, ecx
 
 .noReverb:
 
     push    eax 
-    fld     dword[esp]      ; sample
-    fimul   [maxValue]      ; resSample
-    fistp   dword[esp]      ; 
+    fld     dword[esp]                      ; sample
+    fimul   [maxValue]                      ; resSample
+    fmul    [edi + Instrument.masterValue]  ; masteredSample
+    fistp   dword[esp]                      ; 
     pop     eax 
 
     push    edx 
-    fld     dword[esp]      ; sample
-    fimul   [maxValue]      ; resSample
-    fistp   dword[esp]
+    fld     dword[esp]                      ; sample
+    fimul   [maxValue]                      ; resSample
+    fmul    [edi + Instrument.masterValue]  ; masteredSample
+    fistp   dword[esp]                      ; 
     pop     edx 
 
 
@@ -557,31 +563,49 @@ proc Sound.PlayMsgList uses esi
     add     dx, cx 
     add     ax, dx 
 
-    add     esi, sizeof.Instrument
-    jmp     .looper 
+    pop     ecx     ; iterator
+    add     esi, sizeof.InstrDefiner
+    loop    .looper 
 .return: 
     ret
 endp
 
 ; routine for clearing the message polls 
-; of the instruments, freeing the memory
-; and re-initializing the instrument
-proc Sound.ClearInstruments uses esi
+; of the instruments, freeing the memory,
+; removing the effect of the reverberation,
+; filter effect and re-initializing the instrument
+proc Sound.ClearInstruments uses esi,\
+    pTrackInstrList
 
-    mov     esi, instruments
+    mov     esi, [pTrackInstrList]
+    mov     ecx, [esi + TrackInstrumentList.InstrCount]
+    mov     esi, [esi + TrackInstrumentList.InstrDefinerArray]
+
+    jecxz   .return 
 .looper:
-    cmp     esi, instrumentsEnd
-    je      .return 
+    push    ecx     ; iterator
+    mov     edi, [esi + InstrDefiner.pInstrument]
+
 
 .looperMsgPtrs:
-    mov     ecx, [esi + Instrument.msgPollPtr]
+    mov     ecx, [edi + Instrument.msgPollPtr]
     jecxz   .endLooperMsgPtrs
-    stdcall SoundMsg.RemoveInstrMessage, esi, ecx 
+    stdcall SoundMsg.RemoveInstrMessage, edi, ecx 
     jmp     .looperMsgPtrs
 .endLooperMsgPtrs:    
 
-    add     esi, sizeof.Instrument
-    jmp     .looper
+    mov     ecx, [edi + Instrument.filter]
+    jecxz   .noFilter 
+    stdcall Filter.ClearFilter, ecx
+.noFilter:
+
+    mov     ecx, [edi + Instrument.reverb]
+    jecxz   .noReverb 
+    stdcall Reverb.ClearReverberator, ecx 
+.noReverb:
+    pop     ecx     ; iterator
+    add     esi, sizeof.InstrDefiner
+    loop    .looper
 
 .return:
     ret 
@@ -625,6 +649,11 @@ proc Sound.Init uses edi ecx
     
     stdcall     Sound.AddOscillator, oscSnareSine, instrSnareBody
 
+    stdcall     Sound.AddOscillator, oscKeySaw, instrKey
+    stdcall     Reverb.GenerateReverberator, 0.2, 0.5
+    mov         [instrKey + Instrument.reverb], eax 
+
+    stdcall     Sound.AddOscillator, oscLaserSquare, instrLaser
 
     stdcall     Filter.Initialize, instrSynth, FILTERCOEF_CONST, 2200.0
     stdcall     Filter.Initialize, instrBass, FILTERCOEF_DYNAMIC, LFOCutoff

@@ -75,6 +75,8 @@ sound:
         I'll leave it this way, why not?
     would've been great to make b's't time 
     resolve code cannot be generated
+    optimize by including only instruments that are used and clear only them
+    include sound mastering
 
 
 graphics:

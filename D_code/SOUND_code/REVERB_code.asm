@@ -189,3 +189,32 @@ proc Reverb.ShiftIndex uses edi,\
 
     ret 
 endp
+
+; routine for clearing reverberator so that
+; the next track doesn't get affected by it
+proc Reverb.ClearReverberator uses edi,\
+    pReverberator
+
+    mov     eax, [pReverberator]
+    mov     ecx, [eax + Reverberator.countBuffers]
+    mov     edx, [eax + Reverberator.arrOfBuffers]
+
+.looperReverbBuffers:
+    push    ecx     ; counterBuffers
+
+    mov     ecx, [edx + ReverbBuffer.delayInSamples]
+    push    ecx     ; NofSamples
+    mov     edi, [edx + ReverbBuffer.dataLeft]
+    xor     eax, eax 
+    rep     stosd 
+
+    pop     ecx     ;NofSamples
+    mov     edi, [edx + ReverbBuffer.dataRight]
+    rep     stosd     
+
+    pop     ecx     ; counterBuffers
+    add     edx, sizeof.ReverbBuffer 
+    loop    .looperReverbBuffers
+
+    ret 
+endp
