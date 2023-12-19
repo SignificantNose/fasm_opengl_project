@@ -108,7 +108,7 @@ instrSnareTail Instrument      EnvSnareTail, 0.75, MONO_FALSE, 0, 0, 0, 0
 INSTR_SNAREBODY = ($-instruments)/sizeof.Instrument
 instrSnareBody Instrument      EnvSnareBody, 1.5, MONO_FALSE, 0, 0, 0, 0
 INSTR_KEY = ($ - instruments)/sizeof.Instrument
-instrKey       Instrument      EnvKey, 0.7, MONO_TRUE, 0, 0, 0, 0
+instrKey       Instrument      EnvKey, 1.2, MONO_TRUE, 0, 0, 0, 0
 instrumentsEnd:
 instrumentsCount = ($ - instruments)/sizeof.Instrument
 
