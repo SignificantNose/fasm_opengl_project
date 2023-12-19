@@ -262,3 +262,169 @@ proc Spectator.AfterRunInitialize uses esi edi,\
 .return:
     ret 
 endp 
+
+proc Spectator.PreRunInitialize uses esi edi,\
+    pScene, prevDirection, nextDirection, pStartPoint 
+
+    locals
+        posStart        dd      ?
+        posEnd          dd      ?
+        frontStart      dd      ?
+        frontEnd        dd      ?
+
+        SPCameraPos     dd      ?
+        SPFront         dd      ?
+    endl 
+
+
+; allocating memory for local variables
+    mov     ecx, 4
+    lea     edi, [posStart]
+.loopAlloc:
+    push    ecx 
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
+    stosd
+    pop     ecx 
+    loop    .loopAlloc 
+
+; copying starting point 
+    lea     edi, [posStart]
+    mov     ecx, 2
+.loopCopyStartPos:
+    push    ecx 
+    mov     eax, [edi]
+    stdcall Vector3.Copy, eax, [pStartPoint]
+    add     edi, 4
+    pop     ecx 
+    loop    .loopCopyStartPos 
+
+    mov     esi, [pScene]
+    invoke  HeapAlloc, [hHeap], 8, sizeof.SpectatorData 
+    mov     [esi + Scene.movement], eax 
+    mov     edi, eax
+
+    invoke  HeapAlloc, [hHeap], 8 sizeof.Spline.Point*2
+    mov     [edi + SpectatorData.SPCameraPos], eax 
+    mov     [SPCameraPos], eax 
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Spline.Point*2
+    mov     [edi + SpectatorData.SPFront], eax 
+    mov     [SPFront], eax
+
+; initializing frontStart 
+    mov     eax, [prevDirection]
+    JumpIf  DIRECTION_LEFT, .FSleft 
+    JumpIf  DIRECTION_RIGHT, .FSright
+    JumpIf  DIRECTION_UP, .FSup 
+    JumpIf  DIRECTION_DOWN, .FSdown 
+    jmp     .return
+.FSleft:
+    lea     eax, [dirVector_left]
+    jmp     .endFS 
+.FSright:
+    lea     eax, [dirVector_right]
+    jmp     .endFS
+.FSup:  
+    lea     eax, [dirVector_up]
+    jmp     .endFS
+.FSdown:
+    lea     eax, [dirVector_down]
+.endFS:
+    mov     edx, [frontStart]
+    stdcall Vector3.Copy, edx, eax 
+
+; initializing frontEnd
+    mov     edx, [posEnd]
+    mov     eax, [nextDirection]
+    push    UNITLENGTH
+    JumpIf  DIRECTION_LEFT, .FEleft 
+    JumpIf  DIRECTION_RIGHT, .FEright
+    JumpIf  DIRECTION_UP, .FEup 
+    JumpIf  DIRECTION_DOWN, .FEdown 
+    pop     eax 
+    jmp     .return
+.FEleft:
+    fld     [edx + Vector3.x]           ; x
+    fadd    dword[esp]                  ; x + U
+    fstp    [edx + Vector3.x]           ; 
+    lea     eax, [dirVector_left]
+    jmp     .endFE 
+.FEright:
+    fld     [edx + Vector3.x]           ; x
+    fsub    dword[esp]                  ; x - U
+    fstp    [edx + Vector3.x]           ; 
+    lea     eax, [dirVector_right]
+    jmp     .endFE
+.FEup:  
+    fld     [edx + Vector3.z]           ; z
+    fadd    dword[esp]                  ; z + U
+    fstp    [edx + Vector3.z]           ; 
+    lea     eax, [dirVector_up]
+    jmp     .endFE
+.FEdown:
+    fld     [edx + Vector3.z]           ; z
+    fsub    dword[esp]                  ; z - U
+    fstp    [edx + Vector3.z]           ; 
+    lea     eax, [dirVector_down]
+.endFE:
+    pop     ecx  
+    mov     edx, [frontEnd]
+    stdcall Vector3.Copy, edx, eax 
+
+; now all vectors are set. store them :)
+
+; position array of spline points 
+    mov     eax, [SPCameraPos]
+    mov     edx, [posStart]
+    mov     [eax + Spline.Point.pDirectionPrev], edx 
+    mov     [eax + Spline.Point.pMainVertex], edx 
+    mov     [eax + Spline.Point.pDirectionNext], edx 
+    mov     edx, [esi + Scene.sceneDuration]
+    mov     [eax + Spline.Point.time], edx
+
+    add     eax, sizeof.Spline.Point  
+    mov     edx, [posEnd]
+    mov     [eax + Spline.Point.pDirectionPrev], edx 
+    mov     [eax + Spline.Point.pMainVertex], edx 
+    mov     [eax + Spline.Point.pDirectionNext], edx 
+    mov     edx, 1000000000000.0
+    mov     [eax + Spline.Point.time], edx
+
+; front array of spline points 
+    mov     eax, [SPFront]
+    mov     edx, [frontStart]
+    mov     [eax + Spline.Point.pDirectionPrev], edx
+    mov     [eax + Spline.Point.pMainVertex], edx
+    mov     [eax + Spline.Point.pDirectionNext], edx 
+    mov     edx, [esi + Scene.sceneDuration]
+    mov     [eax + Spline.Point.time], edx
+
+    add     eax, sizeof.Spline.Point  
+    mov     edx, [frontEnd]
+    mov     [eax + Spline.Point.pDirectionPrev], edx 
+    mov     [eax + Spline.Point.pMainVertex], edx 
+    mov     [eax + Spline.Point.pDirectionNext], edx 
+    mov     edx, 10000000000000.0
+    mov     [eax + Spline.Point.time], edx
+
+    mov     eax, [esi + Scene.movement] ; now has a pointer to SpectatorData struct 
+    mov     edx, [SPCameraPos]
+    mov     [eax + SpectatorData.SPCameraPos], edx 
+    mov     [eax + SpectatorData.splineCameraPosData + Spline.points], edx 
+    mov     [eax + SpectatorData.splineCameraPosData + Spline.pointsCount], 2
+    ; mov     [eax + SpectatorData.splineCameraPosData + Spline.cycle], SPLINE_NOT_LOOPED
+    fld1 
+    fadd    [esi + Scene.sceneDuration]
+    fstp    [eax + SpectatorData.splineCameraPosData + Spline.time]  
+
+    mov     edx, [SPFront]
+    mov     [eax + SpectatorData.SPFront], edx 
+    mov     [eax + SpectatorData.splineFrontData + Spline.points], edx 
+    mov     [eax + SpectatorData.splineFrontData + Spline.pointsCount], 2
+    ; mov     [eax + SpectatorData.splineFrontData + Spline.cycle], SPLINE_NOT_LOOPED
+    fld1 
+    fadd    [esi + Scene.sceneDuration]
+    fstp    [eax + SpectatorData.splineFrontData + Spline.time]  
+
+.return:
+    ret
+endp 

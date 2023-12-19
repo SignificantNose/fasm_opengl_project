@@ -164,15 +164,12 @@ proc Init uses esi edi
      
      mov       [amntOfLives], 3
 
-
-     ; invoke    SetEvent, [hEventNotify]
-     stdcall   Choice.InitializeChoice, SG2_ChoiceFirst_Scene, 0, testchoiceendpoint, testchoiceenddir 
-     stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
+     stdcall   Choice.InitializeChoice, SG2_ChoiceFirst_Scene, 0, firstChoiceEndPoint, DIRECTION_UP 
+     stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, firstRunnerStartPoint, DIRECTION_UP
      stdcall   Runner.InitializeObstacles, SG1_RunnerFirst_Scene, 32, DIFFICULTY_EASY
-     ; stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
      stdcall   Spectator.InitializeSpectator, SG1_SpectatorStart_Scene, cameraPosSpline, cameraFrontSpline
-     ; stdcall   Spectator.InitializeSpectator, SG2_SpectatorAfterRun_Scene,
-     stdcall   Spectator.AfterRunInitialize, SG2_SpectatorAfterRun_Scene, DIRECTION_RIGHT, testStartingPoint   
+     stdcall   Spectator.AfterRunInitialize, SG2_SpectatorAfterRun_Scene, DIRECTION_UP, firstRunnerStartPoint   
+     stdcall   Spectator.PreRunInitialize, SG2_SpectatorPreRun_Scene, DIRECTION_UP, DIRECTION_RIGHT, firstChoiceEndPoint
 
 ; it's just some buffer. can be any buffer, because
 ; it's only used to calculate the current time in the buffer

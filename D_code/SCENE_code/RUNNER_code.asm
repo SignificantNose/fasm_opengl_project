@@ -1,6 +1,12 @@
 proc Runner.InitializeRunner uses esi edi,\
-    pScene, pStartPoint, pEndPoint
+    pScene, pStartPoint, direction
+    ;pScene, pStartPoint, pEndPoint ; in terms of this project it'll be easier to 
+    ; locate the runner direction using direction. otherwise - change the structure of
+    ; other elements...
 
+    locals
+        pFinalPoint   Vector3 
+    endl 
 ; allocating memory for the RunnerData structure
 ; and saving a pointer to it 
     mov     edi, [pScene]
@@ -12,12 +18,46 @@ proc Runner.InitializeRunner uses esi edi,\
     lea     eax, [esi + RunnerData.startPos]
     stdcall Vector3.Copy, eax, [pStartPoint]
 
+; calculating end point 
+    lea     eax, [pFinalPoint]
+    stdcall Vector3.Copy, eax, [pStartPoint]
+    push    ROADLENGTHTWICE
+    fld     dword[esp]                  ; lenOfPath
+    pop     eax 
+    mov     eax, [direction]
+    JumpIf  DIRECTION_UP, .up 
+    JumpIf  DIRECTION_DOWN, .down
+    JumpIf  DIRECTION_LEFT, .left 
+    JumpIf  DIRECTION_RIGHT, .right
+    jmp     .return 
+.up:
+    fadd    [pFinalPoint + Vector3.z]   ; lenOfPath + startPoint.z
+    fstp    [pFinalPoint + Vector3.z]
+    jmp     .calcDir 
+.down:
+    fsub    [pFinalPoint + Vector3.z]   ; lenOfPath - startPoint.z
+    fstp    [pFinalPoint + Vector3.z]
+    jmp     .calcDir
+.left:
+    fadd    [pFinalPoint + Vector3.x]   ; lenOfPath + startPoint.x
+    fstp    [pFinalPoint + Vector3.x]
+    jmp     .calcDir
+.right:
+    fsub    [pFinalPoint + Vector3.x]   ; lenOfPath - startPoint.x
+    fstp    [pFinalPoint + Vector3.x]
+
+
+
+.calcDir:
+
 ; calculating the direction vector
     lea     eax, [esi + RunnerData.dirVector]
     push    eax         ; pDirVector
     push    eax         ; pDirVector
     push    eax         ; pDirVector 
-    stdcall Vector3.Copy, eax, [pEndPoint]
+
+    lea     edx, [pFinalPoint]
+    stdcall Vector3.Copy, eax, edx
     pop     eax         ; pDirVector
     stdcall Vector3.Sub, eax, [pStartPoint]
     pop     eax         ; pDirVector
@@ -44,6 +84,7 @@ proc Runner.InitializeRunner uses esi edi,\
     stdcall Vector3.Copy, edi, VecUpward
     stdcall Vector3.Scale, edi, [RunnerStep]
 
+.return:
     ret
 endp 
 

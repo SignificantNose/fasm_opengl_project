@@ -101,8 +101,7 @@ Scenes.TrackListCount = ($-Scenes.TrackList)/sizeof.Track
 Scenes.PackedScenes: 
         packedindependentspectator      PackedScene     independenttrack
 
-        SG1_SpectatorStart_Packed       PackedScene     SceneTrack.Start 
-        ; SG1_ChoiceFirst_Packed          PackedScene     SceneTrack.ChoiceTrack 
+        SG1_SpectatorStart_Packed       PackedScene     SceneTrack.Start
         SG1_RunnerFirst_Packed          PackedScene     SceneTrack.RunnerFirst         
 
         SG2_SpectatorAfterRun_Packed    PackedScene     SceneTrack.AfterRunTrack
@@ -126,8 +125,7 @@ Scenes.SceneList:
         independentspectator            Scene           SCENEMODE_INDEPENDENT, 100.0, ?, <?, ?>
 
         SG1_SpectatorStart_Scene        Scene           SCENEMODE_SPECTATOR, 32.0, ?, <?, ?>
-        ; SG1_ChoiceFirst_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
-        SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
+        SG1_RunnerFirst_Scene           Scene           SCENEMODE_RUNNER, 10.0, ?, <?, ?>
 
         SG2_SpectatorAfterRun_Scene     Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>     ; look to the left and right 
         SG2_ChoiceFirst_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>

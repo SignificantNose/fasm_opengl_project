@@ -1,5 +1,5 @@
 proc Choice.InitializeChoice uses edi,\
-    pScene, chIndex, pStandingPoint, pStandingDirection
+    pScene, chIndex, pStandingPoint, standingDirection
 
     mov     edi, [pScene]
     invoke  HeapAlloc, [hHeap], 8, sizeof.ChoiceData
@@ -18,10 +18,32 @@ proc Choice.InitializeChoice uses edi,\
     mov     ecx, [chIndex]
     mov     [edi + ChoiceData.choiceIndex], cl 
 
+; saving standing point 
     mov     eax, [pStandingPoint]
     lea     edx, [edi + ChoiceData.standingPoint]
     stdcall Vector3.Copy, edx, eax 
-    mov     eax, [pStandingDirection]
+    
+
+; initializing standing direction
+    mov     eax, [standingDirection]
+    mov     [edi + ChoiceData.choiceDirectionIndex], al 
+    JumpIf  DIRECTION_UP, .up 
+    JumpIf  DIRECTION_DOWN, .down 
+    JumpIf  DIRECTION_LEFT, .left 
+    JumpIf  DIRECTION_RIGHT, .right 
+.up:
+    lea     eax, [dirVector_up]
+    jmp     .copyDirection
+.down:
+    lea     eax, [dirVector_down]
+    jmp     .copyDirection
+.left:
+    lea     eax, [dirVector_left]
+    jmp     .copyDirection
+.right:
+    lea     eax, [dirVector_right]
+    
+.copyDirection:
     lea     edx, [edi + ChoiceData.standingDirection]
     stdcall Vector3.Copy, edx, eax
 
@@ -34,9 +56,10 @@ proc Choice.InitializeChoice uses edi,\
     ret 
 endp
 
-proc Choice.ApplyChoice,\
+proc Choice.ApplyChoice uses edi,\
     pChoiceData
 
+; save the choice 
     mov     eax, [pChoiceData]
     mov     cl, byte[eax + ChoiceData.choiceIndex]
     test    [eax + ChoiceData.choiceHasBeenMade], 00000010b
@@ -46,6 +69,15 @@ proc Choice.ApplyChoice,\
     shl     al, cl 
     or      [Choice.Value], al 
 .secondChoice:
+
+; initialize other scenes
+    mov     edi, [currentScene]     ; which is the following scene 
+    
+
+    ; pre init
+    ; runner init
+    ; after init 
+    ; choice init
 
 
 
