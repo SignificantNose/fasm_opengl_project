@@ -76,6 +76,7 @@ EnvKick       EnvelopeADSR     0.0005, KICK_TIME, 0.150, 1.0, 1.0, INTERP_LINEAR
 EnvSnareTail  EnvelopeADSR     0.0005, 0.667, 0.0015, 0.0, 1.0, INTERP_LINEAR, INTERP_QUADRA, INTERP_LINEAR
 EnvSnareBody  EnvelopeADSR     0.0005, 0.287, 0.0015, 0.0, 1.0, INTERP_LINEAR, INTERP_CUBIC, INTERP_LINEAR
 EnvKey        EnvelopeADSR     0.03, 0.1, 1.0, 1.0, 1.0, INTERP_SQUARE, INTERP_LINEAR, INTERP_CUBIC              
+EnvLaser      EnvelopeADSR     0.0005, 0.850, 0.035, 0.0, 1.0, INTERP_LINEAR, INTERP_LINEAR, INTERP_LINEAR 
 
 instruments:
 ; INSTR_SINE = ($-instruments)/sizeof.Instrument
@@ -109,6 +110,8 @@ INSTR_SNAREBODY = ($-instruments)/sizeof.Instrument
 instrSnareBody Instrument      EnvSnareBody, 1.5, MONO_FALSE, 0, 0, 0, 0
 INSTR_KEY = ($ - instruments)/sizeof.Instrument
 instrKey       Instrument      EnvKey, 1.2, MONO_TRUE, 0, 0, 0, 0
+INSTR_LASER = ($ - instruments)/sizeof.Instrument 
+instrLaser     Instrument      EnvLaser, 1.3, MONO_FALSE, 0, 0, 0, 0
 instrumentsEnd:
 instrumentsCount = ($ - instruments)/sizeof.Instrument
 
@@ -123,15 +126,16 @@ OSC_SAW = 2
 OSC_TRIANGLE = 3
 OSC_NOISE = 4
 
-oscSine       Oscillator    OSC_SINE, 0, 0.0, 0
-oscTomSine    Oscillator    OSC_SINE, 0, 0.0, LFOTomCoarse
-oscKickSine   Oscillator    OSC_SINE, 0, 0.0, LFOKickCoarse
-oscSnareSine  Oscillator    OSC_SINE, 0, 0.0, LFOSnareCoarse
-oscSquare     Oscillator    OSC_SQUARE, 0, 0.0, 0
-oscSaw        Oscillator    OSC_SAW, 0, 0.0, 0
-oscSawPads    Oscillator    OSC_SAW, 4, 0.6, 0
-oscSynthSaw   Oscillator    OSC_SAW, 0, 0.0, LFOSynthFine
-oscKeySaw     Oscillator    OSC_SAW, 2, 0.1, 0
-oscTriangle   Oscillator    OSC_TRIANGLE, 0, 0.0, 0
-oscNoise      Oscillator    OSC_NOISE, 0, 0.0, 0
-oscSnareNoise Oscillator    OSC_NOISE, 0, 0.0, 0
+oscSine              Oscillator    OSC_SINE, 0, 0.0, 0
+oscTomSine           Oscillator    OSC_SINE, 0, 0.0, LFOTomCoarse
+oscKickSine          Oscillator    OSC_SINE, 0, 0.0, LFOKickCoarse
+oscSnareSine         Oscillator    OSC_SINE, 0, 0.0, LFOSnareCoarse
+oscSquare            Oscillator    OSC_SQUARE, 0, 0.0, 0
+oscLaserSquare       Oscillator    OSC_SQUARE, 0, 0.0, LFOLaserCoarse
+oscSaw               Oscillator    OSC_SAW, 0, 0.0, 0
+oscSawPads           Oscillator    OSC_SAW, 4, 0.6, 0
+oscSynthSaw          Oscillator    OSC_SAW, 0, 0.0, LFOSynthFine
+oscKeySaw            Oscillator    OSC_SAW, 2, 0.1, 0
+oscTriangle          Oscillator    OSC_TRIANGLE, 0, 0.0, 0
+oscNoise             Oscillator    OSC_NOISE, 0, 0.0, 0
+oscSnareNoise        Oscillator    OSC_NOISE, 0, 0.0, 0

@@ -653,6 +653,8 @@ proc Sound.Init uses edi ecx
     stdcall     Reverb.GenerateReverberator, 0.2, 0.5
     mov         [instrKey + Instrument.reverb], eax 
 
+    stdcall     Sound.AddOscillator, oscLaserSquare, instrLaser
+
     stdcall     Filter.Initialize, instrSynth, FILTERCOEF_CONST, 2200.0
     stdcall     Filter.Initialize, instrBass, FILTERCOEF_DYNAMIC, LFOCutoff
 
