@@ -19,3 +19,4 @@ struct ColorRGBA
 ends
 
 VecUpward       Vector3         0.0, 1.0, 0.0
+nullVector          Vector3     0.0, 0.0, 0.0

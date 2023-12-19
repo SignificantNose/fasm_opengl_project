@@ -299,6 +299,9 @@ proc Draw.ObstaclesDraw uses esi edi,\
      invoke    glPushMatrix 
      invoke    glLoadIdentity
      invoke    glTranslatef, [esi + RunnerData.startPos + Vector3.x], [esi + RunnerData.startPos + Vector3.y], [esi + RunnerData.startPos + Vector3.z]
+     lea       eax, [nullVector]
+     lea       edx, [esi + RunnerData.dirNegativeVec]
+     stdcall   Camera.LookAt, eax, edx, VecUpward
      lea       eax, [edi + ObstacleData.model]
      stdcall   Draw.ModelDraw, eax, false
      invoke    glPopMatrix

@@ -124,6 +124,7 @@ graphics:
         the current position, not the position of roads.
     lots of code duplication in building a layout. solve
     finish starting spline 
+    the graphics code is purely just 0_0
     
 
 general:

@@ -26,10 +26,16 @@ proc Runner.InitializeRunner uses esi edi,\
     push    edx         ; 
     fstp    dword[esp]
     pop     edx         ; multiplier
-    stdcall Vector3.Scale, eax, edx     
+    stdcall Vector3.Scale, eax, edx  
+
+    pop     eax         ; pDirVector
+    push    eax         ; pDirVector
+    lea     edi, [esi + RunnerData.dirNegativeVec]
+    stdcall Vector3.Copy, edi, eax 
+    stdcall Vector3.Scale, edi, -1.0
 
 ; calculating the right and up vector 
-    pop     eax
+    pop     eax         ; pDirVector
     lea     edi, [esi + RunnerData.vectorRight] 
     stdcall Vector3.Cross, eax, VecUpward, edi 
     stdcall Vector3.Normalize, edi 
