@@ -37,8 +37,6 @@ Scenes.PackedTracks:
                 0, 0,\
                 0, 0
 
-
-
         ; ScenePackedTrack.Choice         PackedTrack     1.33333333, 0,\
         ;         ST_Choice.Msgs, ST_Choice.MsgsCount,\
         ;         ST_Choice.Seqs, ST_Choice.SeqsCount
