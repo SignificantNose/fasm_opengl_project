@@ -10,28 +10,10 @@ proc Draw uses edi
      fld       dword[edi + Scene.sceneDuration]   ; sceneDur, t
      FPU_CMP 
      ja        .checkBufferEnd
-; :(
-     ; jmp       .switchScene
-.switchScene:
-     movzx     edx, byte[edi + Scene.mode]
-     cmp       edx, SCENEMODE_CHOICE
-     jne       @F
-     nop
-     mov       eax, [edi + Scene.movement]
+
 .switchChoiceScene:
-     stdcall   Choice.ApplyChoice, eax 
-@@:
 
-     add       edi, sizeof.Scene
-     cmp       edi, Scenes.SceneListEnd
-     je        .terminate 
-
-     ; play the new buffer
-     cominvk   PlayBuffer, Stop
-     mov       eax, [edi + Scene.soundtrack + Track.buffer]
-     mov       [PlayBuffer], eax 
-     cominvk   PlayBuffer, Play, 0, 0, 0
-     mov       [currentScene], edi
+     stdcall   Scene.SwitchScene
 
      ; restore the time intervals
      ; xor       eax, eax 
@@ -67,9 +49,9 @@ proc Draw uses edi
      test      byte[eax + ChoiceData.choiceHasBeenMade], 1
      jz        .continueDraw 
      jmp       .switchChoiceScene
-     
 .terminate:
      invoke    ExitProcess, 0
+     
 .continueDraw:
      lea       eax, [playCursor]
      cominvk   PlayBuffer, GetCurrentPosition, eax, ebx
@@ -95,9 +77,10 @@ proc Draw uses edi
      ; some procedure for changing the camera position based on the current time moment and the 
      ; status of the current scene
 
-     ; make a global variable for the current scene
+     ; maybe it's not so optimal to make 2 separate routines in terms 
+     ; of efficiency, but at least the structure is kept
      stdcall   Camera.UpdateScene, [currentScene], [currentTime]
-
+     stdcall   Scene.ProcessScene, [currentScene], [currentTime]
 
 
      ; (potentially this is the place for changing the scene)
@@ -111,15 +94,16 @@ proc Draw uses edi
 .Skip:
 
 ; clearing the scene
-     invoke     glClearColor, 0.3,0.3,0.3,1.0           ; basically bgColor characteristics
+     invoke     glClearColor, 0.07058, 0.0, 0.19607, 1.0           ; basically bgColor characteristics
      invoke     glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
      ; ! uniforms must be after the useprogram function call
-     invoke    glUseProgram, [shaderProgram]
+     invoke     glUseProgram, [shaderProgram]
      stdcall    Draw.SetUpViewMx, [deltaTime]
 
      stdcall    Draw.ModelDraw, planeModel, true 
      stdcall    Draw.LayoutDraw
+     stdcall    Draw.ObstaclesDraw, SG1_RunnerFirst_Scene
 
      ; stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
      ; stdcall    Draw.TownDraw, townM11
@@ -291,6 +275,34 @@ proc Draw.LayoutDraw uses esi
      pop       ecx 
      add       esi, sizeof.Town 
      loop      .looperTown 
+
+     ret 
+endp 
+
+proc Draw.ObstaclesDraw uses esi edi,\
+     pRunnerScene
+
+     mov       esi, [pRunnerScene]
+     mov       esi, [esi + Scene.movement]
+     mov       ecx, [esi + RunnerData.obstacles + Obstacles.obstCount]
+     mov       edi, [esi + RunnerData.obstacles + Obstacles.arrObstacles]
+
+.looper:
+     push      ecx 
+     invoke    glMatrixMode, GL_MODELVIEW
+     invoke    glPushMatrix 
+     invoke    glLoadIdentity
+     invoke    glTranslatef, [esi + RunnerData.startPos + Vector3.x], [esi + RunnerData.startPos + Vector3.y], [esi + RunnerData.startPos + Vector3.z]
+     lea       eax, [nullVector]
+     lea       edx, [esi + RunnerData.dirNegativeVec]
+     stdcall   Camera.LookAt, eax, edx, VecUpward
+     lea       eax, [edi + ObstacleData.model]
+     stdcall   Draw.ModelDraw, eax, false
+     invoke    glPopMatrix
+     add       edi, sizeof.ObstacleData
+     pop       ecx 
+     loop      .looper
+
 
      ret 
 endp 

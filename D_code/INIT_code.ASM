@@ -74,7 +74,7 @@ proc Init uses esi edi
 
      ; stdcall    Build.GenerateTowerModel, towerModel
      ; stdcall    Build.GenerateTowerModel, towerIndicatorCenter
-     stdcall    Build.GenerateLayout, 4.0, 90.0  
+     stdcall    Build.GenerateLayout, UNITLENGTH, ROADLENGTH 
 
      stdcall    Build.ModelByTemplate, planeModel, templatePackedPlane, [textureGroundID]
 
@@ -158,11 +158,18 @@ proc Init uses esi edi
      pop       edx
      sub       eax, edx  
      stdcall   Debug.OutputTickCount, eax
+     
+     mov       eax, [SceneTrack.Crash + Track.buffer]
+     mov       [SFXBuffer], eax
 
 
      ; invoke    SetEvent, [hEventNotify]
      stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, testStartingPoint, testEndingPoint
-     stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
+     stdcall   Runner.InitializeObstacles, SG1_RunnerFirst_Scene, 32, DIFFICULTY_EASY
+     ; stdcall   Choice.InitializeChoice, SG1_ChoiceFirst_Scene, 0, testStartingPoint, testEndingPoint
+     stdcall   Spectator.InitializeSpectator, SG1_SpectatorStart_Scene, cameraPosSpline, cameraFrontSpline
+     ; stdcall   Spectator.InitializeSpectator, SG2_SpectatorAfterRun_Scene,
+     stdcall   Spectator.AfterRunInitialize, SG2_SpectatorAfterRun_Scene, DIRECTION_UP, testEndingPoint
 
 ; it's just some buffer. can be any buffer, because
 ; it's only used to calculate the current time in the buffer

@@ -39,6 +39,7 @@ step            GLfloat      3.14
 length          GLfloat      6.0
 oneSecond       GLfloat      1000.0
 PlayBuffer      IDirectSoundBuffer8
+SFXBuffer       IDirectSoundBuffer8
 
 
 
@@ -134,7 +135,6 @@ EBO             GLuint          0
         include 'D_code\MATRIX_code.asm'
         include 'D_code\SMOOTH_code.asm'
         include 'D_code\MESH_code.asm'
-        include 'D_code\MOVEMENT_code.asm'
         include 'D_code\GLEXT_code.asm'
         include 'D_code\DRAW_code.asm'
         include 'D_code\FILE_code.asm'
@@ -142,14 +142,16 @@ EBO             GLuint          0
         include 'D_code\BUILD_code.asm'
         include 'D_code\MEMORY_code.asm'
         include 'D_code\TEXTURE_code.asm'
-        include 'D_code\CAMERA_code.asm'
         include 'D_code\THREADS_code.asm'
-        include 'D_code\SCENE_code.asm'
-        include 'D_code\RUNNER_code.asm'
         include 'D_code\KEYBOARD_code.asm'
         include 'D_code\INIT_code.asm'
-        include 'D_code\CHOICE_code.asm'
 
+        include 'D_code\SCENE_code\MOVEMENT_code.asm'
+        include 'D_code\SCENE_code\CAMERA_code.asm'
+        include 'D_code\SCENE_code\SCENE_code.asm'
+        include 'D_code\SCENE_code\RUNNER_code.asm'
+        include 'D_code\SCENE_code\CHOICE_code.asm'
+        include 'D_code\SCENE_code\SPECTATOR_code.asm'
 
 proc WinMain
      locals

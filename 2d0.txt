@@ -123,6 +123,8 @@ graphics:
     it has come to my (yet) thinking mind that the scene switch must be completed based on 
         the current position, not the position of roads.
     lots of code duplication in building a layout. solve
+    finish starting spline 
+    the graphics code is purely just 0_0
     
 
 general:

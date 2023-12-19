@@ -456,10 +456,18 @@ proc Camera.UpdateScene uses esi edi,\
 
 .spectator:
 
+        mov     esi, [esi + Scene.movement]     ; esi now points at the SpectatorData struct
+        lea     edx, [esi + SpectatorData.splineCameraPosData]
+        lea     eax, [cameraPos]
+        stdcall Spline.GetPoint, edx, eax, [time]
+
+        lea     edx, [esi + SpectatorData.splineFrontData]
+        lea     eax, [cameraFront]
+        stdcall Spline.GetPoint, edx, eax, [time]
+
         jmp     .return 
 .runner:
 
-        nop
         mov     esi, [esi + Scene.movement]     ; esi now points at the RunnerData struct
         
         lea     edi, [AdditionalOffset]
@@ -492,7 +500,7 @@ proc Camera.UpdateScene uses esi edi,\
         movsx   eax, [esi + RunnerData.playerData + PlayerPos.posVertical]
         cmp     eax, 0
         je      @F
-        lea     eax, [VecUpward]
+        lea     eax, [esi + RunnerData.vectorUp]
         jl      .vertNegative 
 .vertPositive:
         stdcall Vector3.Add, edi, eax 
@@ -508,6 +516,11 @@ proc Camera.UpdateScene uses esi edi,\
 
         lea     eax, [cameraPos]
         stdcall Vector3.Copy, eax, edi
+
+        lea     eax, [cameraFront]
+        lea     edx, [esi + RunnerData.dirVector]
+        ; lea     edx, [testLookDown]
+        stdcall Vector3.Copy, eax, edx 
 
         ; make addition for the current pattern
         ; then - logic for patterns 

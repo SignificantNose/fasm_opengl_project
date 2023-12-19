@@ -15,23 +15,36 @@ struct PlayerPos
     posVertical     db      ?
 ends 
 
-struct Obstacle
-    arrObstacles    dd      ?
-    arrCount        dd      ?
-    nextObstacle    dw      ?
+struct ObstacleData 
+    mask            dw      ?
+    time            dd      ?
+    model           Model 
+ends 
+
+struct Obstacles
+    arrObstacles            dd      ?
+    obstCount               dd      ?
 ends 
 
 struct RunnerData 
     startPos        Vector3 
     dirVector       Vector3
+    dirNegativeVec  Vector3         ; this is getting ridiculous
+    vectorUp        Vector3         ; just to not scale it while drawing 
     vectorRight     Vector3         ; because it will be calculated very fast, I do not think it 
                                     ; will be efficient to recalculate it every time. but maybe will
                                     ; try it
     ; currAddOffset   Vector3
+    indexNextObstacle   db      ?   ; two separate structs, because
+    nextObstacleTime    dd      ?   ; when there'll be last element, it'll crash
 
     playerData      PlayerPos
-    obstacles       Obstacle
+    obstacles       Obstacles
 ends 
+
+DIFFICULTY_EASY             = 0
+DIFFICULTY_MEDIUM           = 1
+DIFFICULTY_HARD             = 2
 
 
 RUNMASK_CANTMOVUP           equ     111000000b
@@ -70,4 +83,9 @@ Runner.CurrStateLeftAlt     db      ?               ; '<'
 Runner.CurrStateRight       db      ?               ; 'd'
 Runner.CurrStateRightAlt    db      ?               ; '>'
 
-RunnerStep      dd      2.66666666      ; = width of road / 3 
+RunnerStep                  dd      2.66666666      ; = width of road / 3  = UNITLENGTHTWICE / 3
+
+
+testStartingPoint   Vector3     0.0, 10.0, 4.0
+testEndingPoint     Vector3     0.0, 10.0, 184.0
+testLookDown        Vector3     0.0, -10000000.0, 1.0
