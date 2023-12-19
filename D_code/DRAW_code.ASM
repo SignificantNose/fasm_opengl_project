@@ -94,7 +94,7 @@ proc Draw uses edi
 .Skip:
 
 ; clearing the scene
-     invoke     glClearColor, 0.3,0.3,0.3,1.0           ; basically bgColor characteristics
+     invoke     glClearColor, 0.07058, 0.0, 0.19607, 1.0           ; basically bgColor characteristics
      invoke     glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
      ; ! uniforms must be after the useprogram function call
