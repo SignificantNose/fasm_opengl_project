@@ -75,6 +75,10 @@ Scenes.PackedTracks:
                 ST_Final.Msgs, ST_Final.MsgsCount,\
                 ST_Final.Seqs, ST_Final.MsgsCount 
 
+        ScenePackedfTrack.Crash         PackedTrack     0.5, 0,\
+                ST_Crash.Msgs, ST_Crash.MsgsCount,\
+                ST_Crash.Seqs, ST_Crash.SeqsCount
+
 Scenes.PackedTracksCount = ($-Scenes.PackedTracks)/sizeof.PackedTrack 
 
 ; tracks that will be used during the gameplay process
@@ -89,6 +93,7 @@ Scenes.TrackList:
         SceneTrack.AfterRunTrack        Track           ?, ?
         SceneTrack.PreRunTrack          Track           ?, ?
         SceneTrack.Final                Track           ?, ?
+        SceneTrack.Crash                Track           ?, ?
 Scenes.TrackListCount = ($-Scenes.TrackList)/sizeof.Track 
 ; must be the same as Scenes.PackedTracksCount
 

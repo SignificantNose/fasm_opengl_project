@@ -65,9 +65,10 @@ proc Runner.InitializeObstacles uses ebx esi edi,\
     fld1                                    ; 1, n, sceneDur
     faddp                                   ; 1+n, sceneDur
     fdivp                                   ; dt 
-    fstp    [timeIncrement]                 ; 
-
+    fst     [timeIncrement]                 ; 
+; also for game logic we must initialize the scene's next obstacle time
     mov     esi, [esi + Scene.movement]     ; esi now points to RunnerData
+    fstp    [esi + RunnerData.nextObstacleTime]
 
 ; initializing the array
     mov     eax, [amntOfObstacles]

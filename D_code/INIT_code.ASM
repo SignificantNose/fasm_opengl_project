@@ -158,6 +158,9 @@ proc Init uses esi edi
      pop       edx
      sub       eax, edx  
      stdcall   Debug.OutputTickCount, eax
+     
+     mov       eax, [SceneTrack.Crash + Track.buffer]
+     mov       [SFXBuffer], eax
 
 
      ; invoke    SetEvent, [hEventNotify]

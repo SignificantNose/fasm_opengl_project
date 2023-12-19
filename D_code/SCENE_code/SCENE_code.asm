@@ -108,3 +108,71 @@ proc Scene.SwitchScene uses edi
 
     ret 
 endp
+
+
+proc Scene.ProcessScene uses edi,\
+    pScene, time
+
+    mov     edi, [pScene]
+    movzx   eax, [edi + Scene.mode]
+    JumpIf  SCENEMODE_RUNNER, .runner 
+    JumpIf  SCENEMODE_CHOICE, .choice 
+    JumpIf  SCENEMODE_SPECTATOR, .spectator
+    JumpIf  SCENEMODE_INDEPENDENT, .independent
+    jmp     .return 
+.runner:
+    mov     edi, [edi + Scene.movement]     ; edx now points to RunnerData struct 
+    fld     [edi + RunnerData.nextObstacleTime]     ; ot
+    fld     [time]                                  ; t, ot 
+    FPU_CMP 
+    jb      .runnerNotChecking
+
+; acquire the pointer to the current obstacle 
+    movzx   eax, byte[edi + RunnerData.indexNextObstacle]
+    imul    eax, sizeof.ObstacleData
+    mov     edx, [edi + RunnerData.obstacles + Obstacles.arrObstacles]
+    add     edx, eax
+
+    cmp     eax, [edi + RunnerData.obstacles + Obstacles.obstCount]
+    jne     .initNextObstacle
+    mov     [edi + RunnerData.nextObstacleTime], 999999999.0        ; yikes 
+    jmp     .continueChecking
+.initNextObstacle:
+    mov     eax, sizeof.ObstacleData 
+    add     eax, edx        ; p to next obstacle 
+    mov     eax, [eax + ObstacleData.time]
+    mov     [edi + RunnerData.nextObstacleTime], eax 
+    inc     byte[edi + RunnerData.indexNextObstacle]
+.continueChecking:
+
+; acquiring the current obstacle
+    movzx   ecx, word[edx + ObstacleData.mask]
+
+; acquiring the current player position bit 
+    movsx   eax, byte[edi + RunnerData.playerData + PlayerPos.posVertical]
+    inc     eax 
+    imul    eax, 3
+    movsx   edx, byte[edi + RunnerData.playerData + PlayerPos.posHorizontal]
+    neg     edx 
+    inc     edx 
+    add     eax, edx 
+    
+    nop 
+    bt      ecx, eax 
+    jnc     .notCrash
+
+    cominvk SFXBuffer, Play, 0, 0, 0
+
+.notCrash:
+
+
+.runnerNotChecking:
+    jmp     .return
+.choice:
+.spectator:
+.independent:
+.return:
+
+    ret 
+
+endp 

@@ -77,9 +77,10 @@ proc Draw uses edi
      ; some procedure for changing the camera position based on the current time moment and the 
      ; status of the current scene
 
-     ; make a global variable for the current scene
+     ; maybe it's not so optimal to make 2 separate routines in terms 
+     ; of efficiency, but at least the structure is kept
      stdcall   Camera.UpdateScene, [currentScene], [currentTime]
-
+     stdcall   Scene.ProcessScene, [currentScene], [currentTime]
 
 
      ; (potentially this is the place for changing the scene)

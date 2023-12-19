@@ -35,6 +35,8 @@ struct RunnerData
                                     ; will be efficient to recalculate it every time. but maybe will
                                     ; try it
     ; currAddOffset   Vector3
+    indexNextObstacle   db      ?   ; two separate structs, because
+    nextObstacleTime    dd      ?   ; when there'll be last element, it'll crash
 
     playerData      PlayerPos
     obstacles       Obstacles

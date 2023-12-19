@@ -39,6 +39,7 @@ step            GLfloat      3.14
 length          GLfloat      6.0
 oneSecond       GLfloat      1000.0
 PlayBuffer      IDirectSoundBuffer8
+SFXBuffer       IDirectSoundBuffer8
 
 
 
