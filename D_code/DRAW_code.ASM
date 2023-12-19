@@ -278,17 +278,34 @@ proc Draw.LayoutDraw uses esi
      ret 
 endp 
 
-proc Draw.ObstaclesDraw uses edi,\
+proc Draw.ObstaclesDraw uses esi edi,\
      pRunnerScene
 
-     mov       edi, [pRunnerScene]
-     mov       edi, [edi + Scene.movement]
-     mov       ecx, [edi + RunnerData.obstacles + Obstacles.obstCount]
-     mov       edi, [edi + RunnerData.obstacles + Obstacles.arrObstacles]
+     mov       esi, [pRunnerScene]
+     mov       esi, [esi + Scene.movement]
+     mov       ecx, [esi + RunnerData.obstacles + Obstacles.obstCount]
+     mov       edi, [esi + RunnerData.obstacles + Obstacles.arrObstacles]
 
+     nop 
+; set up transformation matrix beforehand
+
+     ; invoke    glRotatef, [esi + Town.townRot + Vector3.x], 1.0, 0.0, 0.0
+     ; invoke    glRotatef, [esi + Town.townRot + Vector3.y], 0.0, 1.0, 0.0
+     ; invoke    glRotatef, [esi + Town.townRot + Vector3.z], 0.0, 0.0, 1.0
+
+.looper:
+     push      ecx 
+     invoke    glMatrixMode, GL_MODELVIEW
+     invoke    glPushMatrix 
+     invoke    glLoadIdentity
+     invoke    glTranslatef, [esi + RunnerData.startPos + Vector3.x], [esi + RunnerData.startPos + Vector3.y], [esi + RunnerData.startPos + Vector3.z]
      lea       eax, [edi + ObstacleData.model]
+     stdcall   Draw.ModelDraw, eax, false
+     invoke    glPopMatrix
+     add       edi, sizeof.ObstacleData
+     pop       ecx 
+     loop      .looper
 
-     stdcall   Draw.ModelDraw, eax, true
 
      ret 
 endp 

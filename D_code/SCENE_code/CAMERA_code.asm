@@ -500,7 +500,7 @@ proc Camera.UpdateScene uses esi edi,\
         movsx   eax, [esi + RunnerData.playerData + PlayerPos.posVertical]
         cmp     eax, 0
         je      @F
-        lea     eax, [VecUpward]
+        lea     eax, [esi + RunnerData.vectorUp]
         jl      .vertNegative 
 .vertPositive:
         stdcall Vector3.Add, edi, eax 

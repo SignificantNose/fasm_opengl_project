@@ -29,6 +29,7 @@ ends
 struct RunnerData 
     startPos        Vector3 
     dirVector       Vector3
+    vectorUp        Vector3         ; just to not scale it while drawing 
     vectorRight     Vector3         ; because it will be calculated very fast, I do not think it 
                                     ; will be efficient to recalculate it every time. but maybe will
                                     ; try it

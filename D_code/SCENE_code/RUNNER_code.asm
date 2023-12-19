@@ -28,25 +28,29 @@ proc Runner.InitializeRunner uses esi edi,\
     pop     edx         ; multiplier
     stdcall Vector3.Scale, eax, edx     
 
-; calculating the right vector 
+; calculating the right and up vector 
     pop     eax
     lea     edi, [esi + RunnerData.vectorRight] 
     stdcall Vector3.Cross, eax, VecUpward, edi 
     stdcall Vector3.Normalize, edi 
     stdcall Vector3.Scale, edi, [RunnerStep]
+    lea     edi, [esi + RunnerData.vectorUp]
+    stdcall Vector3.Copy, edi, VecUpward
+    stdcall Vector3.Scale, edi, [RunnerStep]
 
     ret
 endp 
 
-proc Runner.InitializeObstacles uses esi edi,\
+proc Runner.InitializeObstacles uses ebx esi edi,\
     pScene, amntOfObstacles, difficulty
 
     locals
-        tempTime        dd      0.0
-        timeIncrement   dd      ?
-        currTransform   Transform   <0.0, 0.0, 0.0>,\
-                                    <0.0, 0.0, 0.0>,\
-                                    <1.0, 1.0, 1.0>
+        tempTime            dd      0.0
+        timeIncrement       dd      ?
+        vectorIncrement     Vector3 
+        currTransform       Transform   <0.0, 0.0, 0.0>,\
+                                        <0.0, 0.0, 0.0>,\
+                                        <1.0, 1.0, 1.0>
     endl 
 
     mov     esi, [pScene]
@@ -67,6 +71,13 @@ proc Runner.InitializeObstacles uses esi edi,\
     mov     [esi + RunnerData.obstacles + Obstacles.arrObstacles], eax 
     mov     edi, eax 
 
+; initializing the increment vector
+    lea     edx, [esi + RunnerData.dirVector] 
+    lea     ebx, [vectorIncrement]
+    stdcall Vector3.Copy, ebx, edx
+    stdcall Vector3.Scale, ebx, [timeIncrement]
+    lea     ebx, [currTransform]
+
 ; acquiring the range of disabled cells
     mov     eax, [difficulty]
     JumpIf  DIFFICULTY_EASY, .easy 
@@ -85,7 +96,6 @@ proc Runner.InitializeObstacles uses esi edi,\
     mov     ah, 8
 @@:
     
-    nop
 
 ; generating the cells themselves 
     movzx   edx, al 
@@ -107,10 +117,16 @@ proc Runner.InitializeObstacles uses esi edi,\
     fstp    [tempTime]
     pop     edx     ; nOfBits 
 
-    lea     ecx, [currTransform]
-    push    ecx 
+    push    ebx 
+    push    edx 
+    push    eax 
     lea     ecx, [edi + ObstacleData.model]
-    stdcall GenerateModelOfObstacle, ecx, eax, edx ;, currtransform
+    push    ecx 
+    
+    lea     eax, [vectorIncrement]
+    lea     ecx, [ebx + Transform.position]
+    stdcall Vector3.Add, ecx, eax 
+    stdcall GenerateModelOfObstacle;, ecx, eax, edx, ebx 
 
     add     edi, sizeof.ObstacleData
 
@@ -253,7 +269,7 @@ endp
 proc GenerateVerticesForObstacle uses ebx edi,\
     pPackedMesh, mask, nOfBits 
     locals
-        currPos     Vector3     ?, 8.0, 0.0
+        currPos     Vector3     ?, 4.0, 0.0
         rHalf       dd      ?
         wOfSector   dd      ?
         index       dd      ?
