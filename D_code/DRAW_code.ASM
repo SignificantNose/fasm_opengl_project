@@ -286,13 +286,6 @@ proc Draw.ObstaclesDraw uses esi edi,\
      mov       ecx, [esi + RunnerData.obstacles + Obstacles.obstCount]
      mov       edi, [esi + RunnerData.obstacles + Obstacles.arrObstacles]
 
-     nop 
-; set up transformation matrix beforehand
-
-     ; invoke    glRotatef, [esi + Town.townRot + Vector3.x], 1.0, 0.0, 0.0
-     ; invoke    glRotatef, [esi + Town.townRot + Vector3.y], 0.0, 1.0, 0.0
-     ; invoke    glRotatef, [esi + Town.townRot + Vector3.z], 0.0, 0.0, 1.0
-
 .looper:
      push      ecx 
      invoke    glMatrixMode, GL_MODELVIEW

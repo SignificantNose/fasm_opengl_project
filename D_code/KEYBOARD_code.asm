@@ -32,7 +32,6 @@ proc Keyboard.KeyDown,\
         stdcall Runner.Move, RUNDIR_UP, ecx
         jmp     .return 
 .down:
-        nop
         movzx   eax, [Runner.CurrStateDown]
         cmp     eax, 0
         jne     .return 

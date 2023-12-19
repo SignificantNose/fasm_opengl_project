@@ -317,7 +317,6 @@ proc GenerateVerticesForObstacle uses ebx edi,\
     bt      bx,  ax 
     jnc     @F 
     lea     eax, [currPos]
-    nop
     stdcall GetVisualVertex, eax, edi  
     add     edi, sizeof.Vector3*4
 @@: 
