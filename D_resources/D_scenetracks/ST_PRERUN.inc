@@ -1,8 +1,9 @@
 ST_PreRun.Msgs:
-    ;    UnprocessedMessage        <E3,2.66,0.0>, INSTR_BASS
-    ;    UnprocessedMessage        <G3,2.66,2.66>, INSTR_BASS
-    ;    UnprocessedMessage        <B3,2.66,5.32>, INSTR_BASS
-    ;    UnprocessedMessage        <A3,2.66,7.98>, INSTR_BASS
+       UnprocessedMessage          <C3, 1.0, 0.0>, INSTR_BASS
+       UnprocessedMessage          <D3, 1.0, 1.0>, INSTR_BASS
+
+       UnprocessedMessage          <E2, 0.333333333, 1.66666666>, INSTR_TOM 
+       UnprocessedMessage          <E2, 0.333333333, 1.83333333>, INSTR_TOM 
 ST_PreRun.MsgsCount = ($-ST_PreRun.Msgs)/sizeof.UnprocessedMessage
 
 

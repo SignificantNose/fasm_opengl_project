@@ -1,8 +1,25 @@
 ST_Final.Msgs:
-    ;    UnprocessedMessage        <E3,2.66,0.0>, INSTR_BASS
-    ;    UnprocessedMessage        <G3,2.66,2.66>, INSTR_BASS
-    ;    UnprocessedMessage        <B3,2.66,5.32>, INSTR_BASS
-    ;    UnprocessedMessage        <A3,2.66,7.98>, INSTR_BASS
+
+       UnprocessedMessage        <E5, 0.3333333, 0.0>, INSTR_SYNTH
+       UnprocessedMessage        <D5, 0.1666666, 0.3333333>, INSTR_SYNTH
+       UnprocessedMessage        <E5, 1.3333333, 0.5>, INSTR_SYNTH
+
+       UnprocessedMessage        <B4, 0.1666666, 4.8333333>, INSTR_SYNTH
+       UnprocessedMessage        <C5, 0.1666666, 5.0>, INSTR_SYNTH
+       UnprocessedMessage        <D5, 0.1666666, 5.1666666>, INSTR_SYNTH
+       UnprocessedMessage        <E5, 0.3333333, 5.3333333>, INSTR_SYNTH
+       UnprocessedMessage        <D5, 0.1666666, 5.6666666>, INSTR_SYNTH
+       UnprocessedMessage        <E5, 1.3333333, 5.8333333>, INSTR_SYNTH
+
+
+       
+       UnprocessedMessage        <C3, 1.3333333, 0.0>, INSTR_BASS
+       UnprocessedMessage        <D3, 1.3333333, 1.3333333>, INSTR_BASS
+       UnprocessedMessage        <E3, 2.6666666, 2.6666666>, INSTR_BASS
+       UnprocessedMessage        <C3, 1.3333333, 5.3333333>, INSTR_BASS
+       UnprocessedMessage        <D3, 1.3333333, 6.6666666>, INSTR_BASS
+       UnprocessedMessage        <E3, 2.6666666, 8.0>, INSTR_BASS
+
 ST_Final.MsgsCount = ($-ST_Final.Msgs)/sizeof.UnprocessedMessage
 
 

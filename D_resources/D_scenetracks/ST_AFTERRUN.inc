@@ -1,8 +1,16 @@
 ST_AfterRun.Msgs:
-    ;    UnprocessedMessage        <E3,2.66,0.0>, INSTR_BASS
-    ;    UnprocessedMessage        <G3,2.66,2.66>, INSTR_BASS
-    ;    UnprocessedMessage        <B3,2.66,5.32>, INSTR_BASS
-    ;    UnprocessedMessage        <A3,2.66,7.98>, INSTR_BASS
+       UnprocessedMessage          <D3, 5.333333333333333, 0.0>, INSTR_BASS
+
+       UnprocessedMessage          <E5, 0.333333333, 0.0>, INSTR_SYNTH
+       UnprocessedMessage          <D5, 0.166666666, 0.333333333>, INSTR_SYNTH
+       UnprocessedMessage          <E5, 0.333333333, 0.5>, INSTR_SYNTH
+       UnprocessedMessage          <D5, 0.166666666, 0.833333333>, INSTR_SYNTH
+       UnprocessedMessage          <E5, 1.333333333, 1.0>, INSTR_SYNTH
+
+       UnprocessedMessage          <E2, 0.333333333, 4.833333333>, INSTR_TOM
+       UnprocessedMessage          <D2, 0.333333333, 5.0>, INSTR_TOM
+       UnprocessedMessage          <A1, 0.333333333, 5.166666666>, INSTR_TOM
+
 ST_AfterRun.MsgsCount = ($-ST_AfterRun.Msgs)/sizeof.UnprocessedMessage
 
 
