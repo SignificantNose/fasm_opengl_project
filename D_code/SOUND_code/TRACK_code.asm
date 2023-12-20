@@ -93,9 +93,9 @@ proc Track.GenerateTrack uses esi edi,\
 
     cominvk     BufferObject, Unlock, [ptrPart1], [bytesPart1], [ptrPart2], [bytesPart2]
 
-    cominvk     BufferObject, QueryInterface, IID_IDirectSoundNotify8, lpDSNotify 
-    cominvk     lpDSNotify, SetNotificationPositions, 1, PositionNotify
-    cominvk     lpDSNotify, Release
+    ; cominvk     BufferObject, QueryInterface, IID_IDirectSoundNotify8, lpDSNotify 
+    ; cominvk     lpDSNotify, SetNotificationPositions, 1, PositionNotify
+    ; cominvk     lpDSNotify, Release
 
     mov         eax, [BufferObject]
     mov         edx, [esi + PackedTrack.trackDuration]

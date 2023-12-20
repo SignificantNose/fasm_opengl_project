@@ -574,7 +574,7 @@ endp
 ; of the instruments, freeing the memory,
 ; removing the effect of the reverberation,
 ; filter effect and re-initializing the instrument
-proc Sound.ClearInstruments uses esi,\
+proc Sound.ClearInstruments uses esi edi,\
     pTrackInstrList
 
     mov     esi, [pTrackInstrList]

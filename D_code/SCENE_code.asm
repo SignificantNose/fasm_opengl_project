@@ -13,7 +13,6 @@ proc Scene.UnpackSceneTracks uses esi edi
 
 .looper:
     push    ecx 
-
     stdcall Track.GenerateTrack, esi 
     ; return value:
     ; eax - buffer 

@@ -103,15 +103,15 @@ Scenes.PackedTracks:
 
         ScenePackedTrack.RunnerSecond   PackedTrack     1.0, 0,\
                 ST_RunnerSecond.Msgs, ST_RunnerSecond.MsgsCount,\
-                ST_RunnerSecond.Seqs, ST_RunnerSecond.MsgsCount
+                ST_RunnerSecond.Seqs, ST_RunnerSecond.SeqsCount
 
         ScenePackedTrack.RunnerThird    PackedTrack     1.0, 0,\
                 ST_RunnerThird.Msgs, ST_RunnerThird.MsgsCount,\
-                ST_RunnerThird.Seqs, ST_RunnerThird.MsgsCount
+                ST_RunnerThird.Seqs, ST_RunnerThird.SeqsCount
 
         ScenePackedTrack.AfterRun       PackedTrack     1.0, 0,\
                 ST_AfterRun.Msgs, ST_AfterRun.MsgsCount,\
-                ST_AfterRun.Seqs, ST_AfterRun.MsgsCount 
+                ST_AfterRun.Seqs, ST_AfterRun.SeqsCount 
 
         ScenePackedTrack.PreRun         PackedTrack     1.0, 0,\
                 ST_PreRun.Msgs, ST_PreRun.MsgsCount,\
