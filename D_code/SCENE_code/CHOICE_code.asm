@@ -144,7 +144,7 @@ proc Choice.ApplyChoice uses ebx esi edi,\
 
     add     edi, sizeof.Scene       ; current scene is AfterRun
     lea     eax, [nextStartPoint]
-    stdcall Spectator.AfterRunInitialize, edi, ebx, eax  
+    ; stdcall Spectator.AfterRunInitialize, edi, ebx, eax         ;!!!!!!!!!
     lea     edx, [nextEndPoint]
     stdcall Vector3.Copy, edx, eax
 

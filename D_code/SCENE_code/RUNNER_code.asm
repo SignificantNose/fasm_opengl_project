@@ -1,11 +1,11 @@
-proc Runner.InitializeRunner uses esi edi,\
+proc Runner.InitializeRunner uses ebx esi edi,\
     pScene, pStartPoint, direction
     ;pScene, pStartPoint, pEndPoint ; in terms of this project it'll be easier to 
     ; locate the runner direction using direction. otherwise - change the structure of
     ; other elements...
 
     locals
-        pFinalPoint   Vector3 
+        pFinalPoint   dd        ? 
     endl 
 ; allocating memory for the RunnerData structure
 ; and saving a pointer to it 
@@ -13,14 +13,18 @@ proc Runner.InitializeRunner uses esi edi,\
     invoke  HeapAlloc, [hHeap], 8, sizeof.RunnerData 
     mov     [edi + Scene.movement], eax
     mov     esi, eax
+    
+; allocating memory for final point
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
+    mov     [pFinalPoint], eax
 
 ; initializing the starting point 
     lea     eax, [esi + RunnerData.startPos]
     stdcall Vector3.Copy, eax, [pStartPoint]
 
 ; calculating end point 
-    lea     eax, [pFinalPoint]
-    stdcall Vector3.Copy, eax, [pStartPoint]
+    mov     ebx, [pFinalPoint]
+    stdcall Vector3.Copy, ebx, [pStartPoint]
     push    ROADLENGTHTWICE
     mov     eax, [direction]
     JumpIf  DIRECTION_UP, .up 
@@ -30,24 +34,24 @@ proc Runner.InitializeRunner uses esi edi,\
     pop     eax 
     jmp     .return 
 .up:
-    fld     [pFinalPoint + Vector3.z]   ; startPoint.z
-    fadd    dword[esp]                  ; startPoint.z + lenOfPath
-    fstp    [pFinalPoint + Vector3.z]   ; 
+    fld     [ebx + Vector3.z]   ; startPoint.z
+    fadd    dword[esp]          ; startPoint.z + lenOfPath
+    fstp    [ebx + Vector3.z]   ; 
     jmp     .calcDir 
 .down:
-    fld     [pFinalPoint + Vector3.z]   ; startPoint.z
-    fsub    dword[esp]                  ; startPoint.z - lenOfPath
-    fstp    [pFinalPoint + Vector3.z]   ; 
+    fld     [ebx + Vector3.z]   ; startPoint.z
+    fsub    dword[esp]          ; startPoint.z - lenOfPath
+    fstp    [ebx + Vector3.z]   ; 
     jmp     .calcDir    
 .left:
-    fld     [pFinalPoint + Vector3.x]   ; startPoint.x
-    fadd    dword[esp]                  ; startPoint.x + lenOfPath
-    fstp    [pFinalPoint + Vector3.x]   ; 
+    fld     [ebx + Vector3.x]   ; startPoint.x
+    fadd    dword[esp]          ; startPoint.x + lenOfPath
+    fstp    [ebx + Vector3.x]   ; 
     jmp     .calcDir
 .right: 
-    fld     [pFinalPoint + Vector3.x]   ; startPoint.x
-    fsub    dword[esp]                  ; startPoint.x - lenOfPath 
-    fstp    [pFinalPoint + Vector3.x]   ; 
+    fld     [ebx + Vector3.x]   ; startPoint.x
+    fsub    dword[esp]          ; startPoint.x - lenOfPath 
+    fstp    [ebx + Vector3.x]   ; 
 
 
 .calcDir:
@@ -59,8 +63,8 @@ proc Runner.InitializeRunner uses esi edi,\
     push    eax         ; pDirVector
     push    eax         ; pDirVector 
 
-    lea     edx, [pFinalPoint]
-    stdcall Vector3.Copy, eax, edx
+    ; lea     edx, [pFinalPoint]
+    stdcall Vector3.Copy, eax, ebx
     pop     eax         ; pDirVector
     stdcall Vector3.Sub, eax, [pStartPoint]
     pop     eax         ; pDirVector
@@ -88,6 +92,7 @@ proc Runner.InitializeRunner uses esi edi,\
     stdcall Vector3.Scale, edi, [RunnerStep]
 
 .return:
+    mov     eax, [pFinalPoint]
     ret
 endp 
 
