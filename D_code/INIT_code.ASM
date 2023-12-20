@@ -67,6 +67,7 @@ proc Init uses esi edi
      stdcall    Texture.LoadTexture, textureGroundPath, textureGroundID, GL_BGR
      stdcall    Texture.LoadTexture, textureRoadPath, textureRoadID, GL_BGR
      stdcall    Texture.LoadTexture, textureCrossroadPath, textureCrossroadID, GL_BGR
+     stdcall    Texture.LoadTexture, textureLaserWallPath, textureLaserWallID, GL_BGR
 
 ; generating meshes
      invoke     GetTickCount
@@ -169,7 +170,7 @@ proc Init uses esi edi
      
      stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, firstRunnerStartPoint, DIRECTION_UP 
      push      eax 
-     stdcall   Runner.InitializeObstacles, SG1_RunnerFirst_Scene, 32, DIFFICULTY_EASY, DIRECTION_UP 
+     stdcall   Runner.InitializeObstacles, SG1_RunnerFirst_Scene, 10, DIFFICULTY_EASY, DIRECTION_UP 
      stdcall   Spectator.AfterRunInitialize, SG2_SpectatorAfterRun_Scene, DIRECTION_UP;, eax   
      stdcall   Choice.InitializeChoice, SG2_ChoiceFirst_Scene, 0, eax, DIRECTION_UP 
 

@@ -115,7 +115,7 @@ Scenes.PackedScenes:
         SG3_RunnerSecond_Packed         PackedScene     SceneTrack.RunnerThird  
 
         SG4_SpectatorAfterRun_Packed    PackedScene     SceneTrack.AfterRunTrack
-        SG4_ChoiceFinal_Packed          PackedScene     SceneTrack.ChoiceTrack
+        ; SG4_ChoiceFinal_Packed          PackedScene     SceneTrack.ChoiceTrack
         SG4_SpectatorFinal_Packed       PackedScene     SceneTrack.Final    
 Scenes.PackedScenesCount = ($ - Scenes.PackedScenes)/sizeof.PackedScene
 
@@ -135,11 +135,11 @@ Scenes.SceneList:
         SG3_SpectatorAfterRun_Scene     Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
         SG3_ChoiceSecond_Scene          Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
         SG3_SpectatorPreRun_Scene       Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
-        SG3_RunnerThird_Scene           Scene           SCENEMODE_RUNNER, 85.33333333, ?, <?, ?>
+        SG3_RunnerThird_Scene           Scene           SCENEMODE_RUNNER, 10.0, ?, <?, ?>
 
         SG4_SpectatorAfterRun_Scene     Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
-        SG4_ChoiceFinal_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
-        SG4_SpectatorFinal_Scene        Scene           SCENEMODE_SPECTATOR, 3.0, ?, <?, ?>
+        ; SG4_ChoiceFinal_Scene           Scene           SCENEMODE_CHOICE, 5.333333333, ?, <?, ?>
+        SG4_SpectatorFinal_Scene        Scene           SCENEMODE_SPECTATOR, 10.0, ?, <?, ?>
 
 Scenes.SceneListEnd:
 Scenes.SceneListCount = (Scenes.SceneListEnd - Scenes.SceneList)/sizeof.Scene     

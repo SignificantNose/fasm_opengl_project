@@ -22,3 +22,6 @@ textureRoadID     GLuint        0
 
 textureCrossroadPath db         'D_textures\txtrCrossroad.bmp',0
 textureCrossroadID  GLuint      0
+
+textureLaserWallPath db         'D_textures\txtrLaserWall.bmp', 0
+textureLaserWallID  GLuint      0

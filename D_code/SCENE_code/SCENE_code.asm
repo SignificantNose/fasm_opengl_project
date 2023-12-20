@@ -68,6 +68,7 @@ endp
 
 proc Scene.SwitchScene uses edi
 
+    nop 
     mov         edi, [currentScene]
     push        edi     ; prevScene
 
@@ -138,11 +139,12 @@ proc Scene.ProcessScene uses edi,\
 
 ; acquire the pointer to the current obstacle 
     movzx   eax, byte[edi + RunnerData.indexNextObstacle]
+    mov     ecx, eax
     imul    eax, sizeof.ObstacleData
     mov     edx, [edi + RunnerData.obstacles + Obstacles.arrObstacles]
     add     edx, eax
 
-    cmp     eax, [edi + RunnerData.obstacles + Obstacles.obstCount]
+    cmp     ecx, [edi + RunnerData.obstacles + Obstacles.obstCount]
     jne     .initNextObstacle
     mov     [edi + RunnerData.nextObstacleTime], 999999999.0        ; yikes 
     jmp     .continueChecking
@@ -170,6 +172,7 @@ proc Scene.ProcessScene uses edi,\
     bt      ecx, eax 
     jnc     .notCrash
     
+    nop
     movzx   ecx, [amntOfLives]
     dec     ecx
     mov     [amntOfLives], cl

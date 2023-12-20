@@ -272,7 +272,7 @@ proc GenerateModelOfObstacle uses ebx esi edi,\
     stdcall GenerateVerticesForObstacle, esi, [mask], ebx  
     
     mov     edi, [pModel]
-    stdcall Build.ModelByTemplate, edi, esi, [textureGroundID]
+    stdcall Build.ModelByTemplate, edi, esi, [textureLaserWallID]
     mov     ebx, [pTransform]
     lea     eax, [edi + Model.positionData]
     stdcall Memory.memcpy, eax, ebx, sizeof.Transform

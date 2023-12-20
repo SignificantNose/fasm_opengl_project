@@ -489,3 +489,141 @@ proc Spectator.PreRunInitialize uses ebx esi edi,\
     pop     eax     ; startRunner
     ret
 endp 
+
+proc Spectator.InitFinal uses ebx esi edi,\
+    pScene, pStartPos, direction
+
+    nop
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    mov     edi, eax
+    stdcall Vector3.Copy, edi, [pStartPos]
+    fld     [edi + Vector3.y]
+    push    20.0
+    fadd    dword[esp]
+    fstp    [edi + Vector3.y]
+    pop     eax 
+
+    push    edi     ; endFinalPoint 
+
+
+    mov     esi, [pScene]
+    invoke  HeapAlloc, [hHeap], 8, sizeof.SpectatorData
+    mov     [esi + Scene.movement], eax
+    mov     edi, eax
+
+; allocating memory for camera position spline
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Spline.Point*2
+    mov     [edi + SpectatorData.SPCameraPos], eax 
+
+    mov     [edi + SpectatorData.splineCameraPosData + Spline.pointsCount], 2
+    mov     [edi + SpectatorData.splineCameraPosData + Spline.points], eax 
+    fld1
+    fadd    [esi + Scene.sceneDuration]
+    fstp    [edi + SpectatorData.splineCameraPosData + Spline.time]
+    xchg    eax, ebx
+
+; allocating memory for camera front spline 
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Spline.Point*2
+    mov     [edi + SpectatorData.SPFront], eax
+
+    mov     [edi + SpectatorData.splineFrontData + Spline.pointsCount], 2
+    mov     [edi + SpectatorData.splineFrontData + Spline.points], eax 
+    fld1
+    fadd    [esi + Scene.sceneDuration]
+    fstp    [edi + SpectatorData.splineFrontData + Spline.time]
+    xchg    edi, eax
+
+    ; edi points to an array of camerafront points
+    ; ebx points to an array of camerapos points
+    mov     eax, [direction]
+    JumpIf  DIRECTION_UP, .up
+    JumpIf  DIRECTION_DOWN, .down
+    JumpIf  DIRECTION_LEFT, .left
+    JumpIf  DIRECTION_RIGHT, .right
+.up: 
+    lea     eax, [dirVector_down]
+    push    eax 
+    lea     eax, [dirVector_left]
+    push    eax 
+    lea     eax, [dirVector_up]
+    push    eax 
+    jmp     .store 
+.down: 
+    lea     eax, [dirVector_up]
+    push    eax 
+    lea     eax, [dirVector_right]
+    push    eax 
+    lea     eax, [dirVector_down]
+    push    eax 
+    jmp     .store 
+.left: 
+    lea     eax, [dirVector_right]
+    push    eax 
+    lea     eax, [dirVector_down]
+    push    eax 
+    lea     eax, [dirVector_left]
+    push    eax 
+    jmp     .store 
+.right: 
+    lea     eax, [dirVector_left]
+    push    eax 
+    lea     eax, [dirVector_up]
+    push    eax 
+    lea     eax, [dirVector_right]
+    push    eax 
+
+.store:
+
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    pop     edx
+    push    eax     ; firstVector 
+    stdcall Vector3.Copy, eax, edx
+    pop     eax     ; firstVector
+    stosd
+    stosd 
+
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3   
+    pop     edx
+    push    eax     ; secondVector
+    stdcall Vector3.Copy, eax, edx
+    pop     eax     ; secondVector
+    stosd 
+
+    xchg    eax, edx
+    mov     eax, [esi + Scene.sceneDuration]
+    stosd 
+
+    xchg    eax, edx
+    stosd 
+
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    pop     edx
+    push    eax     ; thirdVector
+    stdcall Vector3.Copy, eax, edx
+    pop     eax     ; thirdVector
+    stosd 
+    stosd 
+    mov     eax, 100000.0
+    stosd
+
+    xchg    ebx, edi 
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
+    mov     ebx, eax
+    stdcall Vector3.Copy, ebx, [pStartPos]
+    mov     eax, ebx 
+    mov     ecx, 3
+    rep     stosd 
+    mov     eax, [esi + Scene.sceneDuration]
+    stosd 
+    pop     eax     ; endFinalPoint 
+    mov     ecx, 3
+    rep     stosd 
+    mov     eax, 10000.0
+    stosd 
+
+
+
+
+
+    ret 
+endp

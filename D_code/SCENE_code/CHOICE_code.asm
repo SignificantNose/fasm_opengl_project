@@ -171,10 +171,19 @@ proc Choice.ApplyChoice uses ebx esi edi,\
     stdcall Vector3.Copy, edx, eax
 
     add     edi, sizeof.Scene       ; current scene is Choice 
+    cmp     [edi + Scene.mode], SCENEMODE_CHOICE
+    jne     .finalsomething    
     lea     eax, [nextEndPoint]
     movzx   edx, byte[esi + ChoiceData.choiceDirectionIndex]
     inc     edx
     stdcall Choice.InitializeChoice, edi, edx, eax, ebx  
+    jmp     .return
+.finalsomething:
+    ; this means final 
+    lea     eax, [nextEndPoint]
+    stdcall Spectator.InitFinal, edi, eax, ebx
+
+.return:
 
 
     ret 
