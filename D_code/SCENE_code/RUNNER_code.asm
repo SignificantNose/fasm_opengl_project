@@ -1,3 +1,4 @@
+; ! warning ! returns end point of runner
 proc Runner.InitializeRunner uses ebx esi edi,\
     pScene, pStartPoint, direction
     ;pScene, pStartPoint, pEndPoint ; in terms of this project it'll be easier to 

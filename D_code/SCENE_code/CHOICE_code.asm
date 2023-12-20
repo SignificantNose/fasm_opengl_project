@@ -60,16 +60,18 @@ proc Choice.ApplyChoice uses ebx esi edi,\
     pChoiceData
 
     locals 
-        nextStartPoint  Vector3
-        nextEndPoint    Vector3
-        prevDir         dd      ?
-        nextDir         dd      ?
+        nextStartPoint      Vector3
+        nextEndPoint        Vector3
+        prevDir             dd      ?
+        nextDir             dd      ?
+        nextLvlObstacles    dd      ?
+        nextLvlDifficulty   dd      ?
     endl 
 
 ; save the choice 
     mov     esi, [pChoiceData]
     xor     eax, eax
-    mov     cl, byte[esi + ChoiceData.choiceIndex]
+    movzx   ecx, byte[esi + ChoiceData.choiceIndex]
     test    [esi + ChoiceData.choiceHasBeenMade], 00000010b
     jnz     .secondChoice
 .firstChoice:
@@ -78,6 +80,18 @@ proc Choice.ApplyChoice uses ebx esi edi,\
     or      [Choice.Value], al 
 .secondChoice:
     
+
+    jecxz   .nextLvlMedium
+    jmp     .nextLvlHard 
+.nextLvlMedium:
+    mov     [nextLvlObstacles], 32
+    mov     [nextLvlDifficulty], DIFFICULTY_MEDIUM
+    jmp     .getNextDirection
+.nextLvlHard:
+    mov     [nextLvlObstacles], 32
+    mov     [nextLvlDifficulty], DIFFICULTY_HARD
+.getNextDirection:
+
     mov     ecx, eax
     movzx   eax, [esi + ChoiceData.choiceDirectionIndex]
     JumpIf  DIRECTION_DOWN, .prevDown
@@ -132,25 +146,35 @@ proc Choice.ApplyChoice uses ebx esi edi,\
     mov     edi, [currentScene]     ; which is the following scene 
     ; add     edi, sizeof.Scene       ; current scene is PreRun
     lea     eax, [esi + ChoiceData.standingPoint]
-    stdcall Spectator.PreRunInitialize, edi, [prevDir], ebx, eax
+    stdcall Spectator.PreRunInitialize, edi, [prevDir], ebx, eax        
+    ; ! returns ptr to next point that is the starting point for runner
+    ; that's why:
     lea     edx, [nextStartPoint]
     stdcall Vector3.Copy, edx, eax
 
+    nop
     add     edi, sizeof.Scene       ; current scene is Runner
     lea     eax, [nextStartPoint]
     stdcall Runner.InitializeRunner, edi, eax, ebx
-    stdcall Runner.InitializeObstacles, edi, 32, DIFFICULTY_EASY, ebx
+    ; ! returns pointer to end point of runner
+    ; that's why:
+    push    eax         ; endRunner
+    stdcall Runner.InitializeObstacles, edi, [nextLvlObstacles], [nextLvlDifficulty], ebx
     mov     [currObstacleScene], edi
 
     add     edi, sizeof.Scene       ; current scene is AfterRun
-    lea     eax, [nextStartPoint]
-    ; stdcall Spectator.AfterRunInitialize, edi, ebx, eax         ;!!!!!!!!!
+    ; ; lea     eax, [nextStartPoint]
+    ; pop     eax         ; endRunner
+    stdcall Spectator.AfterRunInitialize, edi, ebx;, eax      
+    ; ! returns pointer to the end point of afterrun   
     lea     edx, [nextEndPoint]
     stdcall Vector3.Copy, edx, eax
 
     add     edi, sizeof.Scene       ; current scene is Choice 
     lea     eax, [nextEndPoint]
-    stdcall Choice.InitializeChoice, edi, 0, eax, ebx  
+    movzx   edx, byte[esi + ChoiceData.choiceDirectionIndex]
+    inc     edx
+    stdcall Choice.InitializeChoice, edi, edx, eax, ebx  
 
 
     ret 
