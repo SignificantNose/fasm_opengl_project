@@ -107,7 +107,7 @@ cameraPosPoints:
                 Spline.Point    cameraSecondMove1, cameraSecondMovePrev1, cameraSecondMoveNext1, 1.333333333
                 Spline.Point    cameraSecondMove2, cameraSecondMovePrev2, cameraSecondMoveNext2, 0.0
 
-                Spline.Point    cameraThirdMove1, cameraThirdMovePrev1, cameraThirdMoveNext1, 2.666666666
+                Spline.Point    cameraThirdMove1, cameraThirdMovePrev1, cameraThirdMoveNext1, 42.666666666
                 Spline.Point    cameraThirdMove2, cameraThirdMovePrev2, cameraThirdMoveNext2, 0.0
 
                 ;
@@ -162,7 +162,7 @@ cameraFrontPoints:
                 Spline.Point    frontSecondMove1, frontSecondMovePrev1, frontSecondMoveNext1, 1.333333333
                 Spline.Point    frontSecondMove2, frontSecondMovePrev2, frontSecondMoveNext2, 0.0
 
-                Spline.Point    frontThirdMove1, frontThirdMovePrev1, frontThirdMoveNext1, 2.666666666
+                Spline.Point    frontThirdMove1, frontThirdMovePrev1, frontThirdMoveNext1, 42.666666666
                 Spline.Point    frontThirdMove2, frontThirdMovePrev2, frontThirdMoveNext2, 0.0
 
 

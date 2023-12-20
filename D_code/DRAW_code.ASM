@@ -103,7 +103,7 @@ proc Draw uses edi
 
      stdcall    Draw.ModelDraw, planeModel, true 
      stdcall    Draw.LayoutDraw
-     stdcall    Draw.ObstaclesDraw, [currObstacleScene]
+     ; stdcall    Draw.ObstaclesDraw, [currObstacleScene]
 
      ; stdcall    Draw.ModelDraw, towerIndicatorCenter, true 
      ; stdcall    Draw.TownDraw, townM11

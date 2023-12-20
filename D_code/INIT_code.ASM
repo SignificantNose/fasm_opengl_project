@@ -164,13 +164,13 @@ proc Init uses esi edi
      
      mov       [amntOfLives], 200
 
-     mov       [currObstacleScene], SG1_RunnerFirst_Scene
+     ; mov       [currObstacleScene], SG1_RunnerFirst_Scene
      stdcall   Spectator.InitializeSpectator, SG1_SpectatorStart_Scene, cameraPosSpline, cameraFrontSpline
      
      stdcall   Runner.InitializeRunner, SG1_RunnerFirst_Scene, firstRunnerStartPoint, DIRECTION_UP 
      stdcall   Runner.InitializeObstacles, SG1_RunnerFirst_Scene, 32, DIFFICULTY_EASY, DIRECTION_UP 
-     stdcall   Spectator.AfterRunInitialize, SG2_SpectatorAfterRun_Scene, DIRECTION_UP, firstRunnerStartPoint   
-     stdcall   Choice.InitializeChoice, SG2_ChoiceFirst_Scene, 0, firstChoiceEndPoint, DIRECTION_UP 
+     ; stdcall   Spectator.AfterRunInitialize, SG2_SpectatorAfterRun_Scene, DIRECTION_UP, firstRunnerStartPoint   
+     ; stdcall   Choice.InitializeChoice, SG2_ChoiceFirst_Scene, 0, firstChoiceEndPoint, DIRECTION_UP 
      ; stdcall   Spectator.PreRunInitialize, SG2_SpectatorPreRun_Scene, DIRECTION_UP, DIRECTION_RIGHT, firstChoiceEndPoint
 
 
