@@ -86,6 +86,6 @@ Runner.CurrStateRightAlt    db      ?               ; '>'
 RunnerStep                  dd      2.66666666      ; = width of road / 3  = UNITLENGTHTWICE / 3
 
 
-firstRunnerStartPoint   Vector3     0.0, 10.0, 4.0
+firstRunnerStartPoint   Vector3     0.0, 4.0, 4.0
 
 currObstacleScene           dd      ?

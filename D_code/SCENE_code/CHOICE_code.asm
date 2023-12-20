@@ -84,11 +84,11 @@ proc Choice.ApplyChoice uses ebx esi edi,\
     jecxz   .nextLvlMedium
     jmp     .nextLvlHard 
 .nextLvlMedium:
-    mov     [nextLvlObstacles], 32
+    mov     [nextLvlObstacles], 40
     mov     [nextLvlDifficulty], DIFFICULTY_MEDIUM
     jmp     .getNextDirection
 .nextLvlHard:
-    mov     [nextLvlObstacles], 32
+    mov     [nextLvlObstacles], 38
     mov     [nextLvlDifficulty], DIFFICULTY_HARD
 .getNextDirection:
 

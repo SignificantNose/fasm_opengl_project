@@ -191,8 +191,8 @@ proc WindowProc uses ebx,\
 .KeyDown:
      cmp        [wParam], VK_ESCAPE
      je         .Destroy
-     cmp        [wParam], VK_SPACE
-     je         .DebugSwitchScene
+     ; cmp        [wParam], VK_SPACE
+     ; je         .DebugSwitchScene
 
      stdcall    Keyboard.KeyDown, [wParam]
      jmp        .ReturnZero

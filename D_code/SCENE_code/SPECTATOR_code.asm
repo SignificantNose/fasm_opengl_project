@@ -579,32 +579,30 @@ proc Spectator.InitFinal uses ebx esi edi,\
     push    eax     ; firstVector 
     stdcall Vector3.Copy, eax, edx
     pop     eax     ; firstVector
-    stosd
-    stosd 
+    mov     [edi + Spline.Point.pMainVertex], eax
+    mov     [edi + Spline.Point.pDirectionPrev], eax 
 
     invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3   
     pop     edx
     push    eax     ; secondVector
     stdcall Vector3.Copy, eax, edx
     pop     eax     ; secondVector
-    stosd 
-
-    xchg    eax, edx
-    mov     eax, [esi + Scene.sceneDuration]
-    stosd 
-
-    xchg    eax, edx
-    stosd 
+    mov     [edi + Spline.Point.pDirectionNext], eax
+    mov     [edi + sizeof.Spline.Point + Spline.Point.pDirectionPrev], eax 
 
     invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
     pop     edx
     push    eax     ; thirdVector
     stdcall Vector3.Copy, eax, edx
     pop     eax     ; thirdVector
-    stosd 
-    stosd 
+    mov     [edi + sizeof.Spline.Point + Spline.Point.pMainVertex], eax
+    mov     [edi + sizeof.Spline.Point + Spline.Point.pDirectionNext], eax  
+    
+    mov     eax, [esi + Scene.sceneDuration]
+    mov     [edi + Spline.Point.time], eax 
     mov     eax, 100000.0
-    stosd
+    mov     [edi + sizeof.Spline.Point + Spline.Point.time], eax
+    
 
     xchg    ebx, edi 
     invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3 
