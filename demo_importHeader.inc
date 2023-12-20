@@ -31,6 +31,7 @@
         include 'D_resources\D_scenetracks\ST_PRERUN.inc'
         include 'D_resources\D_scenetracks\ST_FINAl.inc'
         include 'D_resources\D_scenetracks\ST_CRASH.inc'
+        include 'D_resources\D_scenetracks\ST_DEATH.inc'
 
         include 'D_STRUCTS\DEBUG_structs.inc'
         include 'D_structs\VECTOR_structs.inc'
