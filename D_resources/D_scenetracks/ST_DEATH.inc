@@ -1,12 +1,8 @@
 ST_Death.Msgs:
-       UnprocessedMessage          <E3, 0.6666666, 0.0>, INSTR_BASS
-       UnprocessedMessage          <G3, 0.3333333, 0.6666666>, INSTR_BASS
-       UnprocessedMessage          <E3, 0.3333333, 1.0>, INSTR_BASS
+       UnprocessedMessage          <C1, 2.66, 0.0>, INSTR_LASER
+       UnprocessedMessage          <G0, 2.66, 0.2>, INSTR_LASER
+       UnprocessedMessage          <C0, 2.66, 0.4>, INSTR_LASER
 
-       UnprocessedMessage          <E3, 0.05, 0.0>, INSTR_KEY
-       UnprocessedMessage          <E3, 0.05, 0.3333333>, INSTR_KEY
-       UnprocessedMessage          <G3, 0.05, 0.6666666>, INSTR_KEY
-       UnprocessedMessage          <E3, 0.05, 1.0>, INSTR_KEY
 ST_Death.MsgsCount = ($-ST_Death.Msgs)/sizeof.UnprocessedMessage
 
 

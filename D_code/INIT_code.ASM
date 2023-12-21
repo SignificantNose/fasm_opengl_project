@@ -165,6 +165,12 @@ proc Init uses esi edi
      
      mov       [amntOfLives], 5
 
+; ######
+    mov     eax, [SpectatorDeath_PackedScene + PackedScene.pSceneTrack]
+    lea     edx, [SpectatorDeath_Scene + Scene.soundtrack]
+    stdcall Memory.memcpy, edx, eax, sizeof.Track
+; ######
+
      mov       [currObstacleScene], SG1_RunnerFirst_Scene
      stdcall   Spectator.InitializeSpectator, SG1_SpectatorStart_Scene, cameraPosSpline, cameraFrontSpline
      

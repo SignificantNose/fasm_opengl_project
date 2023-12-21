@@ -92,6 +92,7 @@ proc Scene.SwitchScene uses edi
     JumpIf      SCENEMODE_INDEPENDENT, .return 
     JumpIf      SCENEMODE_RUNNER, .runner
     JumpIf      SCENEMODE_SPECTATOR, .return
+    JumpIf      SCENEMODE_DEATH, .death
     jmp         .terminate 
 .switchChoiceScene:
     ; make smooth choice change 
@@ -111,7 +112,7 @@ proc Scene.SwitchScene uses edi
 
     jmp         .return 
 
-
+.death:
 .terminate:     
     invoke      ExitProcess, 0
 .return:
@@ -129,6 +130,7 @@ proc Scene.ProcessScene uses edi,\
     JumpIf  SCENEMODE_CHOICE, .choice 
     JumpIf  SCENEMODE_SPECTATOR, .spectator
     JumpIf  SCENEMODE_INDEPENDENT, .independent
+    JumpIf  SCENEMODE_DEATH, .deathScene
     jmp     .return 
 .runner:
     mov     edi, [edi + Scene.movement]     ; edx now points to RunnerData struct 
@@ -182,8 +184,7 @@ proc Scene.ProcessScene uses edi,\
     cominvk SFXBuffer, Play, 0, 0, 0
     jmp     .notCrash 
 .death:
-
-    invoke  ExitProcess, 0
+    stdcall Spectator.InitializeDeath, SpectatorDeath_Scene
 .notCrash:
 
 
@@ -192,6 +193,7 @@ proc Scene.ProcessScene uses edi,\
 .choice:
 .spectator:
 .independent:
+.deathScene:
 .return:
 
     ret 

@@ -452,6 +452,7 @@ proc Camera.UpdateScene uses esi edi,\
         JumpIf  SCENEMODE_RUNNER, .runner 
         JumpIf  SCENEMODE_CHOICE, .choice 
         JumpIf  SCENEMODE_INDEPENDENT, .return 
+        JumpIf  SCENEMODE_DEATH, .spectator 
         jmp     .return 
 
 .spectator:

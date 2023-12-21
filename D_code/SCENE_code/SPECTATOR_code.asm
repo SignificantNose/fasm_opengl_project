@@ -625,3 +625,89 @@ proc Spectator.InitFinal uses ebx esi edi,\
 
     ret 
 endp
+
+
+proc Spectator.InitializeDeath uses ebx esi edi,\
+    pScene
+
+
+    nop
+    mov         esi, [pScene]
+    cominvk     PlayBuffer, Stop
+    mov         eax, [esi + Scene.soundtrack + Track.buffer]
+    mov         [PlayBuffer], eax 
+    cominvk     PlayBuffer, Play, 0, 0, 0
+    mov         [currentScene], esi
+    mov         [lastBufferTime], 0
+    mov         [currentTime], 0
+
+
+
+    invoke      HeapAlloc, [hHeap], 8, sizeof.SpectatorData  
+    mov         [esi + Scene.movement], eax
+    mov         edi, eax
+
+; allocating memory for camera position spline
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Spline.Point*2
+    mov     [edi + SpectatorData.SPCameraPos], eax 
+
+    mov     [edi + SpectatorData.splineCameraPosData + Spline.pointsCount], 2
+    mov     [edi + SpectatorData.splineCameraPosData + Spline.points], eax 
+    fld1
+    fadd    [esi + Scene.sceneDuration]
+    fstp    [edi + SpectatorData.splineCameraPosData + Spline.time]
+    xchg    eax, ebx
+
+; allocating memory for camera front spline 
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Spline.Point*2
+    mov     [edi + SpectatorData.SPFront], eax
+
+    mov     [edi + SpectatorData.splineFrontData + Spline.pointsCount], 2
+    mov     [edi + SpectatorData.splineFrontData + Spline.points], eax 
+    fld1
+    fadd    [esi + Scene.sceneDuration]
+    fstp    [edi + SpectatorData.splineFrontData + Spline.time]
+    xchg    edi, eax
+
+    ; edi points to an array of camerafront points
+    ; ebx points to an array of camerapos points
+
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    push    eax     ; front
+    stdcall Vector3.Copy, eax, cameraFront
+    pop     eax     ; front 
+    mov     ecx, 3
+    rep     stosd 
+    mov     eax, [esi + Scene.sceneDuration]
+    stosd   
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    mov     [eax + Vector3.x], 0.0
+    mov     [eax + Vector3.y], -0.99
+    mov     [eax + Vector3.z], 0.0
+    mov     ecx, 3
+    rep     stosd
+    mov     eax, 10000.0
+    stosd
+
+    xchg    ebx, edi
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    push    eax     ; cameraPos
+    stdcall Vector3.Copy, eax, cameraPos
+    pop     eax     ; cameraPos
+    mov     ecx, 3
+    rep     stosd 
+    mov     eax, [esi + Scene.sceneDuration]
+    stosd   
+    invoke  HeapAlloc, [hHeap], 8, sizeof.Vector3
+    push    eax     ; cameraPos
+    stdcall Vector3.Copy, eax, cameraPos
+    pop     eax     ; cameraPos
+    mov     edx, 1.0
+    mov     [eax + Vector3.y], edx
+    mov     ecx, 3
+    rep     stosd
+    mov     eax, 10000.0
+    stosd
+
+    ret 
+endp

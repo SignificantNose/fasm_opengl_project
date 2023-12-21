@@ -1,6 +1,7 @@
 SCENEMODE_SPECTATOR     =       0
 SCENEMODE_RUNNER        =       1
 SCENEMODE_CHOICE        =       2
+SCENEMODE_DEATH         =       3 
 SCENEMODE_INDEPENDENT   =       10000000b
 
 struct Scene
@@ -71,9 +72,9 @@ Scenes.PackedTracks:
         ;         0, 0
 
 
-        ; ; independentpackedtrack          PackedTrack     100.0, 0,\
-        ; ;         0, 0,\
-        ; ;         0, 0
+        ; independentpackedtrack          PackedTrack     100.0, 0,\
+        ;         0, 0,\
+        ;         0, 0
             
         ScenePackedTrack.Start          PackedTrack     32.0, 0,\
                 ST_Start.Msgs, ST_Start.MsgsCount,\
@@ -192,3 +193,7 @@ Scenes.SceneList:
 Scenes.SceneListEnd:
 Scenes.SceneListCount = (Scenes.SceneListEnd - Scenes.SceneList)/sizeof.Scene     
 ; must be the same as Scenes.ArrPackedCount
+
+
+SpectatorDeath_PackedScene      PackedScene     SceneTrack.Death 
+SpectatorDeath_Scene            Scene           SCENEMODE_DEATH, 1.0, ?, <?, ?>
