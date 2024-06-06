@@ -19,7 +19,7 @@ STATE_OFF            equ    0
 STATE_ON             equ    1
 DELETE_FLAG          equ    0xFFFFFFFF
 LIST_NONE            equ    0
-FRDISC_VALUE         equ    44100
+FRDISC_VALUE         equ    11025
 BYTES_PER_SECOND     equ    FRDISC_VALUE * 4
 BUFFERSIZE_BYTES     equ    BYTES_PER_SECOND * 8 
 
@@ -78,6 +78,6 @@ IID_IDirectSoundNotify8     GUID   0xB0210783, 0x89CD, 0x11D0, <0xAF, 0x8, 0x0, 
 
 dsbd            DSBUFFERDESC sizeof.DSBUFFERDESC, DSBCAPS_GLOBALFOCUS or DSBCAPS_CTRLPOSITIONNOTIFY,\
                 0, 0, mywaveformat, <0,0,0,0>      
-mywaveformat    WAVEFORMATEX 1, 2, 44100, 4*44100, 4, 16, 0
+mywaveformat    WAVEFORMATEX 1, 2, FRDISC_VALUE, BYTES_PER_SECOND, 4, 16, 0
 
 PositionNotify  DSBPOSITIONNOTIFY   DSBPN_OFFSETSTOP, ?

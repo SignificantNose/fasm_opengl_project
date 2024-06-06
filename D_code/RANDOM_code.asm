@@ -1,40 +1,5 @@
-proc    Rand.GetRandomNumber uses ebx, minValue, maxValue
-        mov             eax, [seed]
-        or              eax, eax
-        jnz             label2
-label1:
-        invoke          GetTickCount 
-        or              eax, eax
-        jz              label1
-label2:
-        xor             edx, edx
-        mov             ebx, 127773
-        div             ebx
-        push            eax 
-        mov             eax, 16807 
-        mul             edx 
-        pop             edx 
-        push            eax 
-        mov             eax, 2836 
-        mul             edx 
-        pop             edx 
-        sub             edx, eax 
-        mov             eax, edx 
-        mov             [seed], edx
-        xor             edx, edx
-        mov             ebx, [maxValue]
-        sub             ebx, [minValue]
-        inc             ebx
-        div             ebx
-        mov             eax, edx
-        add             eax, [minValue]
-        mov             [RandomValue], eax
-
-        ;mov eax, 6
-        ret
-endp
-
-
+; parameter values for PRNG are taken from this article:
+; https://en.wikipedia.org/wiki/Linear_congruential_generator 
 proc Rand.MyGen, Min, Max
         mov eax, [RandValue]
 .myLabel1:
@@ -43,15 +8,18 @@ proc Rand.MyGen, Min, Max
         invoke  GetTickCount
         jmp .myLabel1
 .myLabel2:
-        ;xor     edx, edx
-        ;mov     ecx, 69069
-        ;mul     ecx
-        ;adc     eax, 5
-        ;rol      eax, 32
-        ;adc      eax, 23
-        mov     ecx, 8088405h                     ;or: imul    edx, seed, 8088405h
+        ; 1) edx:eax = A*Xn
+        nop 
         xor     edx, edx
-        mul     ecx
+        mov     ecx, 0x0019660D
+        mul     ecx 
+
+        ; 2) edx:eax = A*Xn + C
+        add     eax, 0x3C6EF35F
+        ; adc     edx, 0
+
+        ; 3) eax = (A*Xn+C) mod 2^32
+        mov     [RandValue], eax
 
         mov     ecx, [Max]
         sub     ecx, [Min]
@@ -60,20 +28,20 @@ proc Rand.MyGen, Min, Max
         div     ecx
         mov     eax, edx
         add     eax, [Min]
-        mov     [RandValue], eax
         ret
 endp
 
-; the more preferrable (i.e. later on) way to generate random numbers
-proc Rand.GetRandomInBetween, \
-        min, max
-    rdrand eax
-    mov ecx, [max]
-    sub ecx, [min]
-    inc ecx
-    xor edx, edx
-    div ecx
-    mov eax, edx
-    add eax, [min]
-    ret
-endp
+; note: rdrand is an extremely slow instruction.
+; ; the more preferrable (i.e. later on) way to generate random numbers
+; proc Rand.GetRandomInBetween, \
+;         min, max
+;     rdrand eax
+;     mov ecx, [max]
+;     sub ecx, [min]
+;     inc ecx
+;     xor edx, edx
+;     div ecx
+;     mov eax, edx
+;     add eax, [min]
+;     ret
+; endp

@@ -7,7 +7,8 @@ proc Choice.InitializeChoice uses edi,\
     mov     edi, eax 
 
 ; initializing the choice
-    stdcall Rand.GetRandomInBetween, 1, 2
+    ; stdcall Rand.GetRandomInBetween, 1, 2
+    stdcall Rand.MyGen, 1, 2
     mov     ecx, 1
     xchg    ecx, eax 
     shl     eax, cl

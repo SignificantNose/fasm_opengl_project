@@ -187,7 +187,8 @@ proc Runner.InitializeObstacles uses ebx esi edi,\
     push    edx
     push    eax 
 
-    stdcall Rand.GetRandomInBetween, edx, eax 
+    ; stdcall Rand.GetRandomInBetween, edx, eax 
+    stdcall Rand.MyGen, edx, eax
     push    eax     ; nOfBits
     stdcall Runner.GetMask, eax 
 
@@ -230,7 +231,8 @@ proc Runner.GetMask uses ebx,\
 .looper:
     push    ecx 
     dec     ecx
-    stdcall Rand.GetRandomInBetween, 0, ecx 
+    ; stdcall Rand.GetRandomInBetween, 0, ecx 
+    stdcall Rand.MyGen, 0, ecx
     pop     edx 
     push    edx 
     dec     edx

@@ -39,6 +39,9 @@ endp
 proc Sound.GenSample,\
     oscType,freq
 
+    ; xor eax, eax
+    ; jmp .Return
+
     fld1                ; 1
     fld     [currTime]  ; t, 1
     fmul    [freq]      ; t*freq, 1
@@ -52,16 +55,21 @@ proc Sound.GenSample,\
     JumpIf OSC_SAW, .saw
     JumpIf OSC_TRIANGLE, .triangle
     JumpIf OSC_NOISE, .noise
+    
+    push_st0
+    pop eax 
     xor eax, eax
     jmp .Return
 
 .sine:  
+    ; jmp .getResult
     push_st0
     stdcall Sound.Hz2Angular
     FPU_LD eax               ; 2*pi*phase
     fsin                     ; sin(2*pi*phase)
     jmp .getResult
 .square:
+    ; jmp .getResult
 
     ; combine with sine??
     push_st0
@@ -76,6 +84,7 @@ proc Sound.GenSample,\
 @@:
     jmp .getResult
 .saw:
+    ; jmp .getResult
     fimul   [two]            ; 2*t
     fld1                     ; 1, 2*t
     fsubp                    ; 2*t-1
@@ -96,9 +105,10 @@ proc Sound.GenSample,\
     jmp .getResult
 .noise:
 
-    ;stdcall     Rand.GetRandomNumber, 0, [randNoise]
     fstp        st0                   ; 
-    stdcall     Rand.GetRandomInBetween, 0, [randNoise]
+    ; stdcall     Rand.GetRandomNumber, 0, [randNoise]
+    ; stdcall     Rand.GetRandomInBetween, 0, [randNoise]
+    stdcall     Rand.MyGen, 0, [randNoise]
     push        eax
     fild        dword[esp]            ; x = [0,max]
     pop         eax
@@ -680,7 +690,7 @@ proc Sound.Init uses edi ecx
 ; ;    stdcall     Sound.StartTimeSequencer, 0.0
 
 ; initialization of a global variable for one second
-    mov         eax, 44100
+    mov         eax, FRDISC_VALUE
     push        eax
     fld1                    ; 1
     fidiv       dword[esp]  ; dt

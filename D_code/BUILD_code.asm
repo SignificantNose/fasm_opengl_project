@@ -81,7 +81,8 @@ proc    Build.GeneratePackedTower uses ebx edi,\
         ; fstp    [currHeight]
 
 ; generating the amount of floors; literal floors, not walls: walls = numOfFloorsLiterally-1
-        stdcall   Rand.GetRandomInBetween, [floorsMin], [floorsMax]               ; generating the amount of floors
+        ; stdcall   Rand.GetRandomInBetween, [floorsMin], [floorsMax]               ; generating the amount of floors
+        stdcall   Rand.MyGen, [floorsMin], [floorsMax]               ; generating the amount of floors
         mov       [numOfFloorsLiterally], eax     ; i can just push it?
 
 ; allocating the memory and saving the handle
@@ -104,9 +105,12 @@ proc    Build.GeneratePackedTower uses ebx edi,\
         push    ecx
 
 ;gen sin, cos
-        stdcall Rand.GetRandomNumber, ebx, 10000
+        ; stdcall Rand.GetRandomNumber, ebx, 10000
+        stdcall Rand.MyGen, ebx, 10000
+        mov     edx, 0x12345678
         fild    [anEighty]              ; 80
-        fild    [RandomValue]           ; [0;10000], 80
+        FPU_ILD eax                     ; [0;10000], 80
+        pop     eax                     
         fidiv   [aThousand]             ; [0;10], 80
         fchs                            ; -x, 80
         fiadd   [anEleven]              ; -x+11, 80
