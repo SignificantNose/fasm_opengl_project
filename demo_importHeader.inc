@@ -1,12 +1,12 @@
         format PE GUI 5.0
         entry WinMain
 
-        include '..\INCLUDE\win32ax.inc'
+        include 'D_includes\win32ax.inc'
 
-        include '..\INCLUDE\api\kernel32.inc'
-        include '..\INCLUDE\api\user32.inc'
-        include '..\INCLUDE\api\gdi32.inc'
-        include '..\INCLUDE\api\opengl.inc'
+        include 'D_includes\API\kernel32.inc'
+        include 'D_includes\API\user32.inc'
+        include 'D_includes\API\gdi32.inc'
+        include 'D_includes\API\opengl.inc'
 
 ; sound structs
         include 'D_STRUCTS\SOUND_structs\TRACK_structs.inc'
