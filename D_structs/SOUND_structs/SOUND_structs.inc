@@ -19,7 +19,7 @@ STATE_OFF            equ    0
 STATE_ON             equ    1
 DELETE_FLAG          equ    0xFFFFFFFF
 LIST_NONE            equ    0
-FRDISC_VALUE         equ    11025
+FRDISC_VALUE         equ    44100
 BYTES_PER_SECOND     equ    FRDISC_VALUE * 4
 BUFFERSIZE_BYTES     equ    BYTES_PER_SECOND * 8 
 
